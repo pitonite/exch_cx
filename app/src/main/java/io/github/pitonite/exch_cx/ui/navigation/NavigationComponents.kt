@@ -277,6 +277,23 @@ fun ModalNavigationDrawerContent(
                           unselectedContainerColor = Color.Transparent),
                   onClick = { navigateTo(section.route) })
             }
+
+            NavigationDrawerItem(
+                selected = selectedDestination == SecondaryDestinations.SETTINGS_ROUTE,
+                label = {
+                  Text(
+                      text = stringResource(R.string.settings),
+                      modifier = Modifier.padding(horizontal = 16.dp))
+                },
+                icon = {
+                  Icon(
+                      imageVector = Icons.Default.Settings,
+                      contentDescription = stringResource(R.string.settings))
+                },
+                colors =
+                NavigationDrawerItemDefaults.colors(
+                    unselectedContainerColor = Color.Transparent),
+                onClick = { navigateTo(SecondaryDestinations.SETTINGS_ROUTE)  })
           }
         },
         measurePolicy = navigationMeasurePolicy(navigationContentPosition))
