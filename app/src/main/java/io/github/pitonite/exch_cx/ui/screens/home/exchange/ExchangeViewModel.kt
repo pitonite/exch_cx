@@ -9,10 +9,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.pitonite.exch_cx.data.IRateFeeRepository
-import io.github.pitonite.exch_cx.data.NetworkFeeChoice
-import io.github.pitonite.exch_cx.data.RateFee
-import io.github.pitonite.exch_cx.data.RateFeeMode
+import io.github.pitonite.exch_cx.data.RateFeeRepository
+import io.github.pitonite.exch_cx.model.NetworkFeeChoice
+import io.github.pitonite.exch_cx.model.RateFee
+import io.github.pitonite.exch_cx.model.RateFeeMode
 import io.github.pitonite.exch_cx.ui.screens.home.exchange.currencyselect.CurrencySelection
 import io.github.pitonite.exch_cx.utils.combine
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,7 +43,7 @@ class ExchangeViewModel
 @Inject
 constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val rateFeeRepository: IRateFeeRepository,
+    private val rateFeeRepository: RateFeeRepository,
 ) : ViewModel() {
 
   private val _fromCurrency: MutableStateFlow<String> = MutableStateFlow("btc")

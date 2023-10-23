@@ -22,3 +22,8 @@
 
 # for ktor build issue
 -dontwarn org.slf4j.impl.StaticLoggerBinder
+
+# for protobuf fields
+-keepclassmembers class * extends androidx.datastore.preferences.protobuf.GeneratedMessageLite {
+    <fields>;
+}

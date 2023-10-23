@@ -4,7 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.github.pitonite.exch_cx.data.RateFeesObjectTransformer
+import io.github.pitonite.exch_cx.model.RateFeesObjectTransformer
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
 import io.ktor.client.plugins.BrowserUserAgent

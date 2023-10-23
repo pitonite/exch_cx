@@ -10,7 +10,8 @@ plugins {
 // from https://chrisbanes.me/posts/composable-metrics/
 // to use: gradlew assembleRelease -PenableComposeCompilerReports=true
 // metrics can be found after inside: ./app/build/compose_metrics
-// if things seem stale, use "--rerun-tasks" as well: gradlew assembleRelease -PenableComposeCompilerReports=true --rerun-tasks
+// if things seem stale, use "--rerun-tasks" as well:
+// gradlew assembleRelease -PenableComposeCompilerReports=true --rerun-tasks
 subprojects {
   tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {

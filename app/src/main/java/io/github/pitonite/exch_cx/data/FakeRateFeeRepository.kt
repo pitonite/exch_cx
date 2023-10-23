@@ -1,12 +1,16 @@
 package io.github.pitonite.exch_cx.data
 
+import io.github.pitonite.exch_cx.model.CurrencyDetail
+import io.github.pitonite.exch_cx.model.NetworkFeeChoice
+import io.github.pitonite.exch_cx.model.RateFee
+import io.github.pitonite.exch_cx.model.RateFeeMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import java.math.BigDecimal
 
-class FakeRateFeeRepository() : IRateFeeRepository {
+class FakeRateFeeRepository() : RateFeeRepository {
 
   companion object {
     val rates =

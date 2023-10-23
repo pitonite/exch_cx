@@ -9,7 +9,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.pitonite.exch_cx.data.IRateFeeRepository
+import io.github.pitonite.exch_cx.data.RateFeeRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
@@ -21,7 +21,7 @@ class CurrencySelectViewModel
 @Inject
 constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val feeRepository: IRateFeeRepository,
+    private val feeRepository: RateFeeRepository,
 ) : ViewModel() {
 
   var searchTerm by mutableStateOf("")

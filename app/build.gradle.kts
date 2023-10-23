@@ -4,7 +4,10 @@ plugins {
   kotlin("kapt")
   id("com.google.dagger.hilt.android")
   kotlin("plugin.serialization") version "1.9.10"
+  id("com.google.protobuf") version "0.9.4"
 }
+
+val protobufVersion = "3.24.4"
 
 android {
   namespace = "io.github.pitonite.exch_cx"
@@ -88,7 +91,33 @@ dependencies {
   // for parsing xml (these are installed automatically by ktor xml dependency:
   //  implementation("io.github.pdvrieze.xmlutil:core-android:0.86.2")
   //  implementation("io.github.pdvrieze.xmlutil:serialization-android:0.86.2")
+
+  // for datastore
+  implementation("androidx.datastore:datastore:1.0.0")
+  implementation("com.google.protobuf:protobuf-javalite:$protobufVersion")
+  implementation("com.google.protobuf:protobuf-kotlin-lite:$protobufVersion")
 }
 
 // Allow references to generated code
 kapt { correctErrorTypes = true }
+
+// for datastore
+protobuf {
+  // Configures the Protobuf compilation and the protoc executable
+  protoc {
+    // Downloads from the repositories
+    artifact = "com.google.protobuf:protoc:$protobufVersion"
+  }
+
+  // Generates the java Protobuf-lite code for the Protobufs in this project
+  generateProtoTasks {
+    all().forEach { task ->
+      task.builtins {
+        // Configures the task output type
+        // Lite has smaller code size and is recommended for Android
+        create("java") { option("lite") }
+        create("kotlin") { option("lite") }
+      }
+    }
+  }
+}

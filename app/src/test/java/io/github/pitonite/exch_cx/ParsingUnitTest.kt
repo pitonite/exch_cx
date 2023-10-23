@@ -1,10 +1,10 @@
 package io.github.pitonite.exch_cx
 
-import io.github.pitonite.exch_cx.data.Order
-import io.github.pitonite.exch_cx.data.RateFeeResponse
-import io.github.pitonite.exch_cx.data.RateFeesObjectTransformer
-import io.github.pitonite.exch_cx.data.Rates
 import io.github.pitonite.exch_cx.di.HttpClientModule.getHttpClient
+import io.github.pitonite.exch_cx.model.Order
+import io.github.pitonite.exch_cx.model.RateFeeResponse
+import io.github.pitonite.exch_cx.model.RateFeesObjectTransformer
+import io.github.pitonite.exch_cx.model.Rates
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import kotlinx.coroutines.runBlocking

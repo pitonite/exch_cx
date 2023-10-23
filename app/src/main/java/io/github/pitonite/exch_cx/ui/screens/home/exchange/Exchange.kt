@@ -42,8 +42,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.FakeRateFeeRepository
-import io.github.pitonite.exch_cx.data.NetworkFeeChoice
-import io.github.pitonite.exch_cx.data.RateFeeMode
+import io.github.pitonite.exch_cx.model.NetworkFeeChoice
+import io.github.pitonite.exch_cx.model.RateFeeMode
 import io.github.pitonite.exch_cx.ui.components.Card
 import io.github.pitonite.exch_cx.ui.components.CurrencyInput
 import io.github.pitonite.exch_cx.ui.navigation.SecondaryDestinations

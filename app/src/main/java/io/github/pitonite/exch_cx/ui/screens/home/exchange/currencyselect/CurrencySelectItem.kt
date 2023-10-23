@@ -24,7 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.pitonite.exch_cx.R
-import io.github.pitonite.exch_cx.data.CurrencyDetail
+import io.github.pitonite.exch_cx.model.CurrencyDetail
 import io.github.pitonite.exch_cx.ui.components.ExchDrawable
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 import io.github.pitonite.exch_cx.utils.nonScaledSp
