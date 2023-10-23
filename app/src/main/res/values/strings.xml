@@ -1,0 +1,29 @@
+<resources>
+  <string name="app_name">eXch.</string>
+  <string name="navigation_drawer">Navigation Drawer</string>
+  <string name="exchange">Exchange</string>
+  <string name="orders">Orders</string>
+  <string name="history">History</string>
+  <string name="details">Details</string>
+  <string name="overview">Overview</string>
+  <string name="dropdown_arrow">dropdown arrow</string>
+  <string name="DYNAMIC">Dynamic</string>
+  <string name="FLAT">Flat</string>
+  <string name="available_amount">Available:</string>
+  <string name="label_back">Back</string>
+  <string name="you_pay">You Pay</string>
+  <string name="you_receive">You Receive</string>
+  <string name="label_search">Search</string>
+  <string name="label_swap_currencies">Swap Currencies</string>
+  <string name="select_currency">Select Currency</string>
+  <string name="refresh">Refresh</string>
+  <string name="label_service_fee">Service Fee:</string>
+  <string name="label_network_fee">Network Fee</string>
+  <string name="QUICK">Quick</string>
+  <string name="MEDIUM">Medium</string>
+  <string name="SLOW">Slow</string>
+  <string name="Unknown">Unknown</string>
+  <string name="label_amount">Amount:</string>
+  <string name="Free">Free</string>
+  <string name="settings">Settings</string>
+</resources>
