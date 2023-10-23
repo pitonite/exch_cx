@@ -1,6 +1,7 @@
 package io.github.pitonite.exch_cx.ui.screens.home.exchange
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -37,6 +38,7 @@ data class ExchangeUiState(
 )
 
 @HiltViewModel
+@Stable
 class ExchangeViewModel
 @Inject
 constructor(

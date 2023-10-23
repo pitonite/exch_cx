@@ -1,5 +1,6 @@
 package io.github.pitonite.exch_cx.ui.screens.home.exchange.currencyselect
 
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
+@Stable
 class CurrencySelectViewModel
 @Inject
 constructor(
