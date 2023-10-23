@@ -14,4 +14,6 @@ interface UserSettingsRepository {
 
   /** sets the preferred domain for accessing exch.cx website */
   suspend fun updateDomainOption(newDomainType: PreferredDomainType)
+
+  suspend fun saveSettings(userSettings: UserSettings)
 }

@@ -24,6 +24,7 @@ import io.github.pitonite.exch_cx.ui.screens.home.exchange.currencyselect.Curren
 import io.github.pitonite.exch_cx.ui.screens.home.exchange.currencyselect.CurrencySelection
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.OrderDetail
 import io.github.pitonite.exch_cx.ui.screens.settings.Settings
+import io.github.pitonite.exch_cx.ui.screens.settings.SettingsViewModel
 import io.github.pitonite.exch_cx.utils.enumByNameIgnoreCase
 
 enum class PrimaryDestinations(
@@ -164,5 +165,8 @@ private fun NavGraphBuilder.addSettings(
     upPress: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-  composable(SecondaryDestinations.SETTINGS_ROUTE) { Settings(upPress, modifier) }
+  composable(SecondaryDestinations.SETTINGS_ROUTE) {
+    val viewModel = hiltViewModel<SettingsViewModel>()
+    Settings(viewModel, upPress, modifier)
+  }
 }

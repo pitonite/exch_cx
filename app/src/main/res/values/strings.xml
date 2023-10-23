@@ -26,4 +26,7 @@
   <string name="label_amount">Amount:</string>
   <string name="Free">Free</string>
   <string name="settings">Settings</string>
+  <string name="label_api_key">Api Key</string>
+  <string name="label_save">Save</string>
+  <string name="label_api_settings">Api</string>
 </resources>

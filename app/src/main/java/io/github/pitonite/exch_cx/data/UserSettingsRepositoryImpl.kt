@@ -47,6 +47,10 @@ constructor(private val userSettingsStore: DataStore<UserSettings>) : UserSettin
       currentSettings.toBuilder().setPreferredDomainType(newDomainType).build()
     }
   }
+
+  override suspend fun saveSettings(userSettings: UserSettings) {
+    userSettingsStore.updateData { it.toBuilder().mergeFrom(userSettings).build() }
+  }
 }
 
 @Module
