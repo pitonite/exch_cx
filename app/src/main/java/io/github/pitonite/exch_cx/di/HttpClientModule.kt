@@ -1,9 +1,5 @@
 package io.github.pitonite.exch_cx.di
 
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
 import io.github.pitonite.exch_cx.PreferredDomainType
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
 import io.github.pitonite.exch_cx.model.RateFeesObjectTransformer
@@ -13,10 +9,14 @@ import io.ktor.client.plugins.BrowserUserAgent
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.accept
+import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.URLProtocol
+import io.ktor.http.Url
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.serialization.kotlinx.xml.xml
 import kotlinx.coroutines.runBlocking
@@ -25,25 +25,30 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
 import nl.adaptivity.xmlutil.serialization.XML
+import javax.inject.Inject
 import javax.inject.Singleton
 
-@Module
-@InstallIn(SingletonComponent::class)
-object HttpClientModule {
+private const val NORMAL_HOST = "exch.cx"
+private const val ONION_HOST = "hszyoqwrcp7cxlxnqmovp6vjvmnwj33g4wviuxqzq47emieaxjaperyd.onion"
 
-  @OptIn(ExperimentalSerializationApi::class)
-  @Singleton
-  @Provides
-  fun getHttpClient(userSettingsRepository: UserSettingsRepository): HttpClient {
-    var apiKey: String
-    var preferredDomain: PreferredDomainType
+@OptIn(ExperimentalSerializationApi::class)
+@Singleton
+class ExchHttpClient
+@Inject
+constructor(private val userSettingsRepository: UserSettingsRepository) {
+  /** Don't use this client directly. Use the provided wrappers to set the required defaults. */
+  val _client: HttpClient
+  private var apiKey: String
+  private var preferredDomainType: PreferredDomainType
+
+  init {
     runBlocking {
       val settings = userSettingsRepository.fetchSettings()
       apiKey = settings.apiKey
-      preferredDomain = settings.preferredDomainType
+      preferredDomainType = settings.preferredDomainType
     }
 
-    val client =
+    _client =
         HttpClient(Android) {
           expectSuccess = true // throw on non-2xx
 
@@ -53,17 +58,6 @@ object HttpClientModule {
           BrowserUserAgent()
 
           defaultRequest {
-            url {
-              protocol = URLProtocol.HTTPS
-              if (preferredDomain == PreferredDomainType.ONION) {
-                host = "hszyoqwrcp7cxlxnqmovp6vjvmnwj33g4wviuxqzq47emieaxjaperyd.onion"
-              } else {
-                host = "exch.cx"
-              }
-              if (apiKey.isNotEmpty()) {
-                parameters.append("api_key", apiKey)
-              }
-            }
             header("X-Requested-With", "XMLHttpRequest")
             accept(ContentType.Application.Json)
           }
@@ -91,6 +85,50 @@ object HttpClientModule {
                     })
           }
         }
-    return client
+  }
+
+  fun setApiKey(apiKey: String) {
+    this.apiKey = apiKey
+  }
+
+  fun setPreferredDomain(preferredDomainType: PreferredDomainType) {
+    this.preferredDomainType = preferredDomainType
+  }
+
+  fun HttpRequestBuilder.applyDefaultConfigurations() {
+    url {
+      protocol = URLProtocol.HTTPS
+      host = if (preferredDomainType == PreferredDomainType.ONION) ONION_HOST else NORMAL_HOST
+      if (apiKey.isNotEmpty()) {
+        parameters["api_key"] = apiKey
+      }
+    }
+  }
+
+  suspend inline fun get(crossinline block: HttpRequestBuilder.() -> Unit): HttpResponse {
+    return this._client.get {
+      applyDefaultConfigurations()
+      this.apply(block)
+    }
+  }
+
+  suspend inline fun get(
+      url: Url,
+      crossinline block: HttpRequestBuilder.() -> Unit = {}
+  ): HttpResponse {
+    return this._client.get(url) {
+      applyDefaultConfigurations()
+      this.apply(block)
+    }
+  }
+
+  suspend inline fun get(
+      urlString: String,
+      crossinline block: HttpRequestBuilder.() -> Unit = {}
+  ): HttpResponse {
+    return this._client.get(urlString) {
+      applyDefaultConfigurations()
+      this.apply(block)
+    }
   }
 }

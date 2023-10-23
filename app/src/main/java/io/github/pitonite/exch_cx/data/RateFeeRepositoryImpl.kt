@@ -4,13 +4,12 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.github.pitonite.exch_cx.di.ExchHttpClient
 import io.github.pitonite.exch_cx.model.CurrencyDetail
 import io.github.pitonite.exch_cx.model.RateFee
 import io.github.pitonite.exch_cx.model.RateFeeMode
 import io.github.pitonite.exch_cx.model.RateFeeResponse
-import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.request.get
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,9 +18,18 @@ import kotlinx.coroutines.flow.update
 import java.math.BigDecimal
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.collections.List
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.emptyList
+import kotlin.collections.find
+import kotlin.collections.forEach
+import kotlin.collections.map
+import kotlin.collections.mutableMapOf
+import kotlin.collections.set
 
 @Singleton
-class RateFeeRepositoryImpl @Inject constructor(private val httpClient: HttpClient) :
+class RateFeeRepositoryImpl @Inject constructor(private val httpClient: ExchHttpClient) :
     RateFeeRepository {
 
   private val _rateFees = MutableStateFlow(emptyList<RateFee>())
