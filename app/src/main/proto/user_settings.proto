@@ -3,13 +3,13 @@ syntax = "proto3";
 option java_package = "io.github.pitonite.exch_cx";
 option java_multiple_files = true;
 
-enum ExchDomainType {
+enum PreferredDomainType {
   NORMAL = 0;
-  TOR = 1;
+  ONION = 1;
 }
 
 message UserSettings {
   bool first_init = 1;
   string api_key = 2;
-  ExchDomainType domain_type = 3;
+  PreferredDomainType preferred_domain_type = 3;
 }

@@ -1,6 +1,6 @@
 package io.github.pitonite.exch_cx.data
 
-import io.github.pitonite.exch_cx.ExchDomainType
+import io.github.pitonite.exch_cx.PreferredDomainType
 import io.github.pitonite.exch_cx.UserSettings
 import kotlinx.coroutines.flow.Flow
 
@@ -13,5 +13,5 @@ interface UserSettingsRepository {
   suspend fun updateApiKey(newKey: String)
 
   /** sets the preferred domain for accessing exch.cx website */
-  suspend fun updateDomainOption(newDomainType: ExchDomainType)
+  suspend fun updateDomainOption(newDomainType: PreferredDomainType)
 }

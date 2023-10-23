@@ -6,7 +6,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.github.pitonite.exch_cx.ExchDomainType
+import io.github.pitonite.exch_cx.PreferredDomainType
 import io.github.pitonite.exch_cx.UserSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -15,7 +15,7 @@ import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
-// does not need to be singleton since the underlying data store is singleton
+@Singleton
 class UserSettingsRepositoryImpl
 @Inject
 constructor(private val userSettingsStore: DataStore<UserSettings>) : UserSettingsRepository {
@@ -34,7 +34,7 @@ constructor(private val userSettingsStore: DataStore<UserSettings>) : UserSettin
         }
       }
 
-  override suspend fun fetchSettings() = userSettingsStore.data.first()
+  override suspend fun fetchSettings() = userSettingsFlow.first()
 
   override suspend fun updateApiKey(newKey: String) {
     userSettingsStore.updateData { currentSettings ->
@@ -42,9 +42,9 @@ constructor(private val userSettingsStore: DataStore<UserSettings>) : UserSettin
     }
   }
 
-  override suspend fun updateDomainOption(newDomainType: ExchDomainType) {
+  override suspend fun updateDomainOption(newDomainType: PreferredDomainType) {
     userSettingsStore.updateData { currentSettings ->
-      currentSettings.toBuilder().setDomainType(newDomainType).build()
+      currentSettings.toBuilder().setPreferredDomainType(newDomainType).build()
     }
   }
 }

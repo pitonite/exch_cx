@@ -4,6 +4,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.github.pitonite.exch_cx.PreferredDomainType
+import io.github.pitonite.exch_cx.data.UserSettingsRepository
 import io.github.pitonite.exch_cx.model.RateFeesObjectTransformer
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
@@ -17,6 +19,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.URLProtocol
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.serialization.kotlinx.xml.xml
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
@@ -31,7 +34,15 @@ object HttpClientModule {
   @OptIn(ExperimentalSerializationApi::class)
   @Singleton
   @Provides
-  fun getHttpClient(): HttpClient {
+  fun getHttpClient(userSettingsRepository: UserSettingsRepository): HttpClient {
+    var apiKey: String
+    var preferredDomain: PreferredDomainType
+    runBlocking {
+      val settings = userSettingsRepository.fetchSettings()
+      apiKey = settings.apiKey
+      preferredDomain = settings.preferredDomainType
+    }
+
     val client =
         HttpClient(Android) {
           expectSuccess = true // throw on non-2xx
@@ -44,7 +55,14 @@ object HttpClientModule {
           defaultRequest {
             url {
               protocol = URLProtocol.HTTPS
-              host = "exch.cx"
+              if (preferredDomain == PreferredDomainType.ONION) {
+                host = "hszyoqwrcp7cxlxnqmovp6vjvmnwj33g4wviuxqzq47emieaxjaperyd.onion"
+              } else {
+                host = "exch.cx"
+              }
+              if (apiKey.isNotEmpty()) {
+                parameters.append("api_key", apiKey)
+              }
             }
             header("X-Requested-With", "XMLHttpRequest")
             accept(ContentType.Application.Json)
