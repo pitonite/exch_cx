@@ -10,7 +10,6 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalContext
 import io.github.pitonite.exch_cx.model.SnackbarMessage
 import io.github.pitonite.exch_cx.model.asString
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -57,10 +56,10 @@ val LocalSnackbarHostState = staticCompositionLocalOf { SnackbarHostState() }
 
 /** should be called as early on composable stack */
 @Composable
-fun SnackbarMessageHandler(
-    coroutineScope: CoroutineScope,
-) {
+fun SnackbarMessageHandler() {
   val context = LocalContext.current
+  val coroutineScope = rememberCoroutineScope()
+
   LaunchedEffect(true) {
     coroutineScope.launch {
       SnackbarManager.messages.collect { currentMessages ->
