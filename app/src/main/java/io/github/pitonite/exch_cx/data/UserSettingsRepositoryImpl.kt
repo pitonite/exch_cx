@@ -49,7 +49,7 @@ constructor(private val userSettingsStore: DataStore<UserSettings>) : UserSettin
   }
 
   override suspend fun saveSettings(userSettings: UserSettings) {
-    userSettingsStore.updateData { it.toBuilder().mergeFrom(userSettings).build() }
+    userSettingsStore.updateData { it.toBuilder().clear().mergeFrom(userSettings).build() }
   }
 }
 

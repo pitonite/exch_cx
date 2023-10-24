@@ -19,6 +19,9 @@ import io.ktor.http.URLProtocol
 import io.ktor.http.Url
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.serialization.kotlinx.xml.xml
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
@@ -42,7 +45,15 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
   private var preferredDomainType: PreferredDomainType
 
   init {
+    CoroutineScope(Dispatchers.Main).launch {
+      userSettingsRepository.userSettingsFlow.collect {
+        apiKey = it.apiKey
+        preferredDomainType = it.preferredDomainType
+      }
+    }
+
     runBlocking {
+      // for initial load
       val settings = userSettingsRepository.fetchSettings()
       apiKey = settings.apiKey
       preferredDomainType = settings.preferredDomainType
@@ -85,14 +96,6 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
                     })
           }
         }
-  }
-
-  fun setApiKey(apiKey: String) {
-    this.apiKey = apiKey
-  }
-
-  fun setPreferredDomain(preferredDomainType: PreferredDomainType) {
-    this.preferredDomainType = preferredDomainType
   }
 
   fun HttpRequestBuilder.applyDefaultConfigurations() {
