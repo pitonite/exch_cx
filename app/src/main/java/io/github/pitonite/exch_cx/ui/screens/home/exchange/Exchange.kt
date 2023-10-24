@@ -18,6 +18,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
@@ -88,12 +89,12 @@ fun Exchange(
             },
             actions = {
               val angle by rememberRotateInfinite()
-              IconButton(onClick = { viewModel.updateFeeRates() }, enabled = !uiState.working) {
+              IconButton(onClick = { viewModel.updateFeeRates() }, enabled = !uiState.refreshing) {
                 Icon(
                     modifier =
                         Modifier.size(32.dp)
                             .then(
-                                if (uiState.working) Modifier.graphicsLayer { rotationZ = angle }
+                                if (uiState.refreshing) Modifier.graphicsLayer { rotationZ = angle }
                                 else Modifier),
                     imageVector = Icons.Default.Refresh,
                     contentDescription = stringResource(R.string.refresh),
@@ -134,7 +135,7 @@ fun Exchange(
                     onNavigateToRoute = onNavigateToRoute,
                     onValueChange = viewModel::updateFromAmount,
                     onFocusLost = { viewModel.updateConversionAmounts(CurrencySelection.FROM) },
-                    enabled = !uiState.working,
+                    enabled = uiState.enabled,
                     currencySelection = CurrencySelection.FROM,
                 )
               }
@@ -148,12 +149,12 @@ fun Exchange(
                     onClick = { viewModel.swapCurrencies() },
                     border =
                         BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)),
-                    enabled = !uiState.working,
+                    enabled = uiState.enabled,
                 ) {
                   Icon(
                       imageVector = Icons.Outlined.SwapVert,
                       contentDescription = stringResource(R.string.label_swap_currencies),
-                      tint = MaterialTheme.colorScheme.onSurface)
+                      tint = LocalContentColor.current)
                 }
               }
 
@@ -168,7 +169,7 @@ fun Exchange(
                     onNavigateToRoute = onNavigateToRoute,
                     onValueChange = viewModel::updateToAmount,
                     onFocusLost = { viewModel.updateConversionAmounts(CurrencySelection.TO) },
-                    enabled = !uiState.working,
+                    enabled = uiState.enabled,
                     imeAction = ImeAction.Done,
                     currencySelection = CurrencySelection.TO,
                 )
@@ -194,7 +195,7 @@ fun Exchange(
                                       RoundedCornerShape(
                                           dimensionResource(R.dimen.rounded_sm),
                                       )),
-                          enabled = !uiState.working,
+                          enabled = uiState.enabled,
                       )
                       SegmentedButton(
                           label = {
@@ -212,10 +213,10 @@ fun Exchange(
                                   baseShape =
                                       RoundedCornerShape(dimensionResource(R.dimen.rounded_sm)),
                               ),
-                          enabled = !uiState.working,
+                          enabled = uiState.enabled,
                       )
                     }
-                if (!uiState.working && uiState.rateFee != null) {
+                if (uiState.enabled && uiState.rateFee != null) {
                   Text(
                       stringResource(R.string.label_service_fee) +
                           " ${uiState.rateFee!!.svcFee.setScale(1)}%",
@@ -263,7 +264,7 @@ fun Exchange(
                                     RoundedCornerShape(
                                         dimensionResource(R.dimen.rounded_sm),
                                     )),
-                        enabled = !uiState.working,
+                        enabled = uiState.enabled,
                     )
                   }
                 }

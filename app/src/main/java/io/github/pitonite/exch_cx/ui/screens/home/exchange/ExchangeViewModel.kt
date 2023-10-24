@@ -34,7 +34,8 @@ data class ExchangeUiState(
     val rateFee: RateFee? = null,
     val svcFee: BigDecimal? = null,
     val networkFeeChoice: NetworkFeeChoice? = null,
-    val working: Boolean = true,
+    val enabled: Boolean = false,
+    val refreshing: Boolean = false,
 )
 
 @HiltViewModel
@@ -65,7 +66,8 @@ constructor(
               scope = viewModelScope,
               started = SharingStarted.WhileSubscribed(5_000),
               initialValue = null)
-  private val _working: MutableStateFlow<Boolean> = MutableStateFlow(true)
+  private val _enabled: MutableStateFlow<Boolean> = MutableStateFlow(false)
+  private val _refreshing: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
   init {
     viewModelScope.launch {
@@ -79,10 +81,18 @@ constructor(
   }
 
   private suspend fun _updateFeeRates() {
-    _working.value = true
-    rateFeeRepository.updateRateFees(_rateFeeMode.value)
-    updateConversionAmounts(CurrencySelection.FROM)
-    _working.value = false
+    if (_refreshing.value) return
+    _enabled.value = false
+    _refreshing.value = true
+    try {
+      rateFeeRepository.updateRateFees(_rateFeeMode.value)
+      updateConversionAmounts(CurrencySelection.FROM)
+      _enabled.value = true
+    } catch (e: Exception) {
+      // todo show snackbar message
+    } finally {
+      _refreshing.value = false
+    }
   }
 
   fun updateFeeRates() {
@@ -90,22 +100,31 @@ constructor(
   }
 
   val uiState: StateFlow<ExchangeUiState> =
-      combine(_fromCurrency, _toCurrency, _rateFeeMode, _rateFee, _networkFeeChoice, _working) {
-              fromCurrency,
-              toCurrency,
-              rateFeeMode,
-              rateFee,
-              networkFeeChoice,
-              working ->
-            ExchangeUiState(
-                fromCurrency = fromCurrency,
-                toCurrency = toCurrency,
-                rateFeeMode = rateFeeMode,
-                rateFee = rateFee,
-                networkFeeChoice = networkFeeChoice,
-                working = working,
-            )
-          }
+      combine(
+              _fromCurrency,
+              _toCurrency,
+              _rateFeeMode,
+              _rateFee,
+              _networkFeeChoice,
+              _enabled,
+              _refreshing) {
+                  fromCurrency,
+                  toCurrency,
+                  rateFeeMode,
+                  rateFee,
+                  networkFeeChoice,
+                  enabled,
+                  refreshing ->
+                ExchangeUiState(
+                    fromCurrency = fromCurrency,
+                    toCurrency = toCurrency,
+                    rateFeeMode = rateFeeMode,
+                    rateFee = rateFee,
+                    networkFeeChoice = networkFeeChoice,
+                    enabled = enabled,
+                    refreshing = refreshing,
+                )
+              }
           .stateIn(
               scope = viewModelScope,
               started = SharingStarted.WhileSubscribed(5_000),
@@ -195,7 +214,7 @@ constructor(
   }
 
   fun updateWorking(newState: Boolean) {
-    _working.value = newState
+    _enabled.value = newState
   }
 
   fun swapCurrencies() {
