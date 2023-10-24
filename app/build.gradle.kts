@@ -2,6 +2,7 @@ plugins {
   id("com.android.application")
   id("org.jetbrains.kotlin.android")
   kotlin("kapt")
+  id("com.google.devtools.ksp")
   id("com.google.dagger.hilt.android")
   kotlin("plugin.serialization") version "1.9.10"
   id("com.google.protobuf") version "0.9.4"
@@ -96,6 +97,14 @@ dependencies {
   implementation("androidx.datastore:datastore:1.0.0")
   implementation("com.google.protobuf:protobuf-javalite:$protobufVersion")
   implementation("com.google.protobuf:protobuf-kotlin-lite:$protobufVersion")
+
+  // for room
+  val room_version = "2.6.0"
+  implementation("androidx.room:room-runtime:$room_version")
+  annotationProcessor("androidx.room:room-compiler:$room_version")
+  ksp("androidx.room:room-compiler:$room_version")
+  implementation("androidx.room:room-ktx:$room_version")
+  implementation("androidx.room:room-paging:$room_version")
 }
 
 // Allow references to generated code
