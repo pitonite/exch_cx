@@ -83,10 +83,10 @@ private fun NavGraphBuilder.addExchangeGraph(
               backStackEntry.sharedViewModel<ExchangeViewModel>(exchNavController.navController)
 
           Exchange(
-              viewModel,
+              viewModel = viewModel,
               onOrderCreated = { id -> onOrderSelected(id, backStackEntry) },
-              onNavigateToRoute,
-              modifier)
+              onNavigateToRoute = onNavigateToRoute,
+              modifier = modifier)
         }
 
         composable(

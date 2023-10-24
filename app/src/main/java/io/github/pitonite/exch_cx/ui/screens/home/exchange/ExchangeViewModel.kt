@@ -1,5 +1,7 @@
 package io.github.pitonite.exch_cx.ui.screens.home.exchange
 
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -9,10 +11,14 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.RateFeeRepository
 import io.github.pitonite.exch_cx.model.NetworkFeeChoice
 import io.github.pitonite.exch_cx.model.RateFee
 import io.github.pitonite.exch_cx.model.RateFeeMode
+import io.github.pitonite.exch_cx.model.SnackbarMessage
+import io.github.pitonite.exch_cx.model.UserMessage
+import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import io.github.pitonite.exch_cx.ui.screens.home.exchange.currencyselect.CurrencySelection
 import io.github.pitonite.exch_cx.utils.combine
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -89,7 +95,18 @@ constructor(
       updateConversionAmounts(CurrencySelection.FROM)
       _enabled.value = true
     } catch (e: Exception) {
-      // todo show snackbar message
+      SnackbarManager.showMessage(
+          SnackbarMessage.from(
+              message = UserMessage.from(R.string.snack_network_error),
+              withDismissAction = true,
+              actionLabelMessage = UserMessage.from(R.string.snack_action_retry),
+              duration = SnackbarDuration.Long,
+              onSnackbarResult = {
+                if (it == SnackbarResult.ActionPerformed) {
+                  updateFeeRates()
+                }
+              },
+          ))
     } finally {
       _refreshing.value = false
     }

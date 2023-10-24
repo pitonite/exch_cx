@@ -32,4 +32,6 @@
   <string name="label_preferred_domain">Preferred Domain</string>
   <string name="label_domain_type_normal">Normal</string>
   <string name="label_domain_type_onion">Onion (Tor)</string>
+  <string name="snack_network_error">There was a network error.</string>
+  <string name="snack_action_retry">Retry</string>
 </resources>

@@ -25,6 +25,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -47,6 +48,7 @@ import io.github.pitonite.exch_cx.model.NetworkFeeChoice
 import io.github.pitonite.exch_cx.model.RateFeeMode
 import io.github.pitonite.exch_cx.ui.components.Card
 import io.github.pitonite.exch_cx.ui.components.CurrencyInput
+import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import io.github.pitonite.exch_cx.ui.navigation.SecondaryDestinations
 import io.github.pitonite.exch_cx.ui.screens.home.exchange.currencyselect.CurrencySelection
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
@@ -65,15 +67,16 @@ val FeeStringResourceMap =
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Exchange(
+    modifier: Modifier = Modifier,
     viewModel: ExchangeViewModel,
     onOrderCreated: (String) -> Unit,
     onNavigateToRoute: (String) -> Unit,
-    modifier: Modifier = Modifier
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val focusManager = LocalFocusManager.current
 
   Scaffold(
+      snackbarHost = { SnackbarHost(hostState = SnackbarManager.snackbarHostState) },
       topBar = {
         CenterAlignedTopAppBar(
             colors = TopAppBarDefaults.topAppBarColors(),
@@ -293,5 +296,5 @@ fun Exchange(
 fun ExchangePreview() {
   val viewModel = ExchangeViewModel(SavedStateHandle(), FakeRateFeeRepository())
   viewModel.updateWorking(false)
-  ExchTheme(darkTheme = true) { Exchange(viewModel, onOrderCreated = {}, onNavigateToRoute = {}) }
+  ExchTheme(darkTheme = true) { Exchange(viewModel = viewModel, onNavigateToRoute = {}, onOrderCreated = {}) }
 }

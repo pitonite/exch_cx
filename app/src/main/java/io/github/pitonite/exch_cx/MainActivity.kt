@@ -5,9 +5,12 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
+import io.github.pitonite.exch_cx.ui.components.ProvideSnackbarHostState
+import io.github.pitonite.exch_cx.ui.components.SnackbarMessageHandler
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,9 +29,12 @@ class MainActivity : AppCompatActivity() {
 
     setContent {
       ExchTheme {
+        val coroutineScope = rememberCoroutineScope()
         val windowSize = calculateWindowSizeClass(this)
 
-        MainCompose(windowSize)
+        SnackbarMessageHandler(coroutineScope)
+
+        ProvideSnackbarHostState() { MainCompose(windowSize) }
       }
     }
   }
