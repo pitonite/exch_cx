@@ -105,6 +105,9 @@ dependencies {
   ksp("androidx.room:room-compiler:$room_version")
   implementation("androidx.room:room-ktx:$room_version")
   implementation("androidx.room:room-paging:$room_version")
+
+  // for immutable collections (stability fix for compose)
+  implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.6")
 }
 
 // Allow references to generated code

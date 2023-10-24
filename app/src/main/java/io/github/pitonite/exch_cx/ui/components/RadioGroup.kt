@@ -18,10 +18,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.immutableListOf
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun RadioGroup(
-    options: List<String>,
+    options: ImmutableList<String>,
     selectedOption: String,
     onOptionSelected: (String) -> Unit,
 ) =
@@ -34,10 +37,10 @@ fun RadioGroup(
 
 @Composable
 fun <T> RadioGroup(
-    options: List<T>,
-    selectedOption: T,
-    onOptionSelected: (T) -> Unit,
-    label: @Composable (T) -> Unit,
+  options: ImmutableList<T>,
+  selectedOption: T,
+  onOptionSelected: (T) -> Unit,
+  label: @Composable (T) -> Unit,
 ) {
   Column(
       verticalArrangement = Arrangement.spacedBy(5.dp)
@@ -64,7 +67,7 @@ fun <T> RadioGroup(
 fun RadioGroupPreview() {
   ExchTheme {
     RadioGroup(
-        options = listOf("option 1", "option 2"),
+        options = persistentListOf("option 1", "option 2"),
         selectedOption = "option 1",
         onOptionSelected = {},
     )

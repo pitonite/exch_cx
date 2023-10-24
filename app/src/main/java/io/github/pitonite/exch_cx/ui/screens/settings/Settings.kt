@@ -37,6 +37,7 @@ import io.github.pitonite.exch_cx.ui.components.RadioGroup
 import io.github.pitonite.exch_cx.ui.components.UpBtn
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 import io.github.pitonite.exch_cx.utils.noRippleClickable
+import kotlinx.collections.immutable.persistentListOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -91,7 +92,7 @@ fun Settings(viewModel: SettingsViewModel, upPress: () -> Unit, modifier: Modifi
 
               Text(text = stringResource(R.string.label_preferred_domain), fontSize = 20.sp)
               RadioGroup(
-                  options = listOf(PreferredDomainType.NORMAL, PreferredDomainType.ONION),
+                  options = persistentListOf(PreferredDomainType.NORMAL, PreferredDomainType.ONION),
                   selectedOption = viewModel.preferredDomainTypeDraft,
                   onOptionSelected = { viewModel.updatePreferredDomainDraft(it) },
                   label = {
