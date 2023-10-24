@@ -7,6 +7,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
 import io.ktor.client.plugins.BrowserUserAgent
 import io.ktor.client.plugins.HttpRequestRetry
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.HttpRequestBuilder
@@ -63,7 +64,11 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
         HttpClient(Android) {
           expectSuccess = true // throw on non-2xx
 
-          engine { connectTimeout = 15_000 }
+          install(HttpTimeout) {
+            requestTimeoutMillis = 8_000
+            connectTimeoutMillis = 8_000
+            socketTimeoutMillis = 8_000
+          }
 
           //      install(UserAgent) {
           //        agent = "Ktor client"
