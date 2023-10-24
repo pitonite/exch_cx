@@ -29,4 +29,7 @@
   <string name="label_api_key">Api Key</string>
   <string name="label_save">Save</string>
   <string name="label_api_settings">Api</string>
+  <string name="label_preferred_domain">Preferred Domain</string>
+  <string name="label_domain_type_normal">Normal</string>
+  <string name="label_domain_type_onion">Onion (Tor)</string>
 </resources>

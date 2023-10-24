@@ -2,12 +2,14 @@ package io.github.pitonite.exch_cx.ui.screens.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -22,13 +24,16 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.pitonite.exch_cx.PreferredDomainType
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.FakeUserSettingsRepository
 import io.github.pitonite.exch_cx.ui.components.Card
+import io.github.pitonite.exch_cx.ui.components.RadioGroup
 import io.github.pitonite.exch_cx.ui.components.UpBtn
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 import io.github.pitonite.exch_cx.utils.noRippleClickable
@@ -80,6 +85,24 @@ fun Settings(viewModel: SettingsViewModel, upPress: () -> Unit, modifier: Modifi
                   value = viewModel.apiKeyDraft,
                   onValueChange = { viewModel.updateApiKeyDraft(it) },
                   label = { Text(stringResource(R.string.label_api_key)) })
+
+              HorizontalDivider(Modifier.weight(1f).padding(top = 10.dp))
+              Spacer(Modifier.padding(bottom = 10.dp))
+
+              Text(text = stringResource(R.string.label_preferred_domain), fontSize = 20.sp)
+              RadioGroup(
+                  options = listOf(PreferredDomainType.NORMAL, PreferredDomainType.ONION),
+                  selectedOption = viewModel.preferredDomainTypeDraft,
+                  onOptionSelected = { viewModel.updatePreferredDomainDraft(it) },
+                  label = {
+                    Text(
+                        when (it) {
+                          PreferredDomainType.NORMAL -> stringResource(R.string.label_domain_type_normal)
+                          PreferredDomainType.ONION ->
+                              stringResource(R.string.label_domain_type_onion)
+                          else -> stringResource(R.string.Unknown)
+                        })
+                  })
 
               Button(onClick = { viewModel.saveChanges() }) {
                 Text(stringResource(R.string.label_save))

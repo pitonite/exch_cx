@@ -63,6 +63,8 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
         HttpClient(Android) {
           expectSuccess = true // throw on non-2xx
 
+          engine { connectTimeout = 15_000 }
+
           //      install(UserAgent) {
           //        agent = "Ktor client"
           //      }
