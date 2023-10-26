@@ -52,6 +52,6 @@ data class Rate(
 @Serializable
 @XmlSerialName("rates")
 @Immutable
-data class Rates(
+data class RatesResponse(
     @XmlSerialName("item") val rates: List<Rate>,
 )

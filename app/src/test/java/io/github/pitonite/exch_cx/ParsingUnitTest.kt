@@ -1,10 +1,10 @@
 package io.github.pitonite.exch_cx
 
 import io.github.pitonite.exch_cx.di.HttpClientModule.getHttpClient
-import io.github.pitonite.exch_cx.model.api.Order
+import io.github.pitonite.exch_cx.model.api.OrderResponse
 import io.github.pitonite.exch_cx.model.api.RateFeeResponse
 import io.github.pitonite.exch_cx.model.api.RateFeesObjectTransformer
-import io.github.pitonite.exch_cx.model.api.Rates
+import io.github.pitonite.exch_cx.model.api.RatesResponse
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import kotlinx.coroutines.runBlocking
@@ -50,9 +50,9 @@ class ParsingUnitTest {
     "transaction_id_sent": null
 }"""
 
-    val order = format.decodeFromString(Order.serializer(), resp)
+    val orderResponse = format.decodeFromString(OrderResponse.serializer(), resp)
 
-    assertNotNull(order)
+    assertNotNull(orderResponse)
   }
 
   @Test
@@ -119,9 +119,9 @@ class ParsingUnitTest {
       """
             .trimIndent()
 
-    val rates = formatXML.decodeFromString(Rates.serializer(), resp)
+    val ratesResponse = formatXML.decodeFromString(RatesResponse.serializer(), resp)
 
-    assertNotNull(rates)
+    assertNotNull(ratesResponse)
   }
 
   @Test

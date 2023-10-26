@@ -22,7 +22,7 @@ enum class OrderState {
 
 @Serializable
 @Immutable
-data class Order(
+data class OrderResponse(
     /** Exchange order ID */
     @SerialName("orderid") val id: String? = null,
     /** Order creation timestamp (unix timestamp, in seconds) */
