@@ -1,4 +1,4 @@
-package io.github.pitonite.exch_cx.model
+package io.github.pitonite.exch_cx.model.api
 
 import androidx.compose.runtime.Immutable
 import io.github.pitonite.exch_cx.utils.BigDecimalSerializer

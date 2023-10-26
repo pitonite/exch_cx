@@ -2,7 +2,7 @@ package io.github.pitonite.exch_cx.di
 
 import io.github.pitonite.exch_cx.PreferredDomainType
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
-import io.github.pitonite.exch_cx.model.RateFeesObjectTransformer
+import io.github.pitonite.exch_cx.model.api.RateFeesObjectTransformer
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
 import io.ktor.client.plugins.BrowserUserAgent

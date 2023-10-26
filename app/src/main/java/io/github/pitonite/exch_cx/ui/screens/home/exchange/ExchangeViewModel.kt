@@ -13,11 +13,11 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.RateFeeRepository
-import io.github.pitonite.exch_cx.model.NetworkFeeChoice
-import io.github.pitonite.exch_cx.model.RateFee
-import io.github.pitonite.exch_cx.model.RateFeeMode
 import io.github.pitonite.exch_cx.model.SnackbarMessage
 import io.github.pitonite.exch_cx.model.UserMessage
+import io.github.pitonite.exch_cx.model.api.NetworkFeeChoice
+import io.github.pitonite.exch_cx.model.api.RateFee
+import io.github.pitonite.exch_cx.model.api.RateFeeMode
 import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import io.github.pitonite.exch_cx.ui.screens.home.exchange.currencyselect.CurrencySelection
 import io.github.pitonite.exch_cx.utils.combine

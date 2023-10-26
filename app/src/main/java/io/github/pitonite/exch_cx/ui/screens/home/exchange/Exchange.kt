@@ -44,8 +44,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.FakeRateFeeRepository
-import io.github.pitonite.exch_cx.model.NetworkFeeChoice
-import io.github.pitonite.exch_cx.model.RateFeeMode
+import io.github.pitonite.exch_cx.model.api.NetworkFeeChoice
+import io.github.pitonite.exch_cx.model.api.RateFeeMode
 import io.github.pitonite.exch_cx.ui.components.Card
 import io.github.pitonite.exch_cx.ui.components.CurrencyInput
 import io.github.pitonite.exch_cx.ui.components.SnackbarManager
@@ -296,5 +296,7 @@ fun Exchange(
 fun ExchangePreview() {
   val viewModel = ExchangeViewModel(SavedStateHandle(), FakeRateFeeRepository())
   viewModel.updateWorking(false)
-  ExchTheme(darkTheme = true) { Exchange(viewModel = viewModel, onNavigateToRoute = {}, onOrderCreated = {}) }
+  ExchTheme(darkTheme = true) {
+    Exchange(viewModel = viewModel, onNavigateToRoute = {}, onOrderCreated = {})
+  }
 }
