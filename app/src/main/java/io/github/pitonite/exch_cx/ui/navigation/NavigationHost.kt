@@ -108,12 +108,15 @@ private fun ExchAppContent(
     Column(
         Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
     ) {
-      Column(Modifier.weight(1f, true).fillMaxWidth()) {
+      Column(
+          Modifier.weight(1f, true).fillMaxWidth(),
+          horizontalAlignment = Alignment.CenterHorizontally,
+      ) {
         NavHost(
             navController = exchNavController.navController,
             startDestination = PrimaryDestinations.EXCHANGE.route,
             contentAlignment = Alignment.Center,
-            modifier = Modifier.weight(1f, true).fillMaxWidth(),
+            modifier = Modifier.widthIn(0.dp, 560.dp).weight(1f, true).fillMaxWidth(),
             enterTransition = { scaleIntoContainer() },
             exitTransition = { scaleOutOfContainer(direction = ScaleTransitionDirection.INWARDS) },
             popEnterTransition = {
@@ -125,7 +128,7 @@ private fun ExchAppContent(
               exchNavController = exchNavController,
               navigateTo = exchNavController::navigateTo,
               onOrderSelected = exchNavController::navigateToOrderDetail,
-              modifier = Modifier.widthIn(0.dp, 560.dp).weight(1f, true))
+              modifier = Modifier.weight(1f, true))
         }
       }
 
