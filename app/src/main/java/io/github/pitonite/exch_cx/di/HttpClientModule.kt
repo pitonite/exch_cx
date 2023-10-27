@@ -1,5 +1,6 @@
 package io.github.pitonite.exch_cx.di
 
+import io.github.pitonite.exch_cx.BuildConfig
 import io.github.pitonite.exch_cx.PreferredDomainType
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
 import io.github.pitonite.exch_cx.model.api.RateFeesObjectTransformer
@@ -10,6 +11,10 @@ import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.logging.DEFAULT
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.accept
 import io.ktor.client.request.get
@@ -101,6 +106,13 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
                       autoPolymorphic = true
                       repairNamespaces = true
                     })
+          }
+
+          if (BuildConfig.DEBUG) {
+            install(Logging) {
+              logger = Logger.DEFAULT
+              level = LogLevel.HEADERS
+            }
           }
         }
   }

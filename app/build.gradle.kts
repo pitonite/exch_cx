@@ -89,6 +89,7 @@ dependencies {
   implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
   implementation("io.ktor:ktor-serialization-kotlinx-xml:$ktorVersion")
   implementation("io.ktor:ktor-client-android:$ktorVersion")
+  implementation("io.ktor:ktor-client-logging:$ktorVersion")
   // for parsing xml (these are installed automatically by ktor xml dependency:
   //  implementation("io.github.pdvrieze.xmlutil:core-android:0.86.2")
   //  implementation("io.github.pdvrieze.xmlutil:serialization-android:0.86.2")
