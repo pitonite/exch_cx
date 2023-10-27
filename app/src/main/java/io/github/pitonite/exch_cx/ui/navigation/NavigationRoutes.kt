@@ -27,6 +27,7 @@ import io.github.pitonite.exch_cx.ui.screens.orderdetail.OrderDetail
 import io.github.pitonite.exch_cx.ui.screens.settings.Settings
 import io.github.pitonite.exch_cx.ui.screens.settings.SettingsViewModel
 import io.github.pitonite.exch_cx.utils.enumByNameIgnoreCase
+import io.github.pitonite.exch_cx.utils.sharedViewModel
 
 enum class PrimaryDestinations(
     @StringRes val title: Int,

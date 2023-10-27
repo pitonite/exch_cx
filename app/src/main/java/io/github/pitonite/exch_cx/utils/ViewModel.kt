@@ -1,4 +1,4 @@
-package io.github.pitonite.exch_cx.ui.navigation
+package io.github.pitonite.exch_cx.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
