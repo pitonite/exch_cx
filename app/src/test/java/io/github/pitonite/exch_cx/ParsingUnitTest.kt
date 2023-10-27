@@ -1,16 +1,22 @@
 package io.github.pitonite.exch_cx
 
-import io.github.pitonite.exch_cx.di.HttpClientModule.getHttpClient
+import io.github.pitonite.exch_cx.data.FakeUserSettingsRepository
+import io.github.pitonite.exch_cx.di.ExchHttpClient
 import io.github.pitonite.exch_cx.model.api.OrderResponse
 import io.github.pitonite.exch_cx.model.api.RateFeeResponse
 import io.github.pitonite.exch_cx.model.api.RateFeesObjectTransformer
 import io.github.pitonite.exch_cx.model.api.RatesResponse
 import io.ktor.client.call.body
-import io.ktor.client.request.get
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import kotlinx.serialization.json.Json
 import nl.adaptivity.xmlutil.serialization.XML
+import org.junit.After
 import org.junit.Assert.assertNotNull
+import org.junit.Before
 import org.junit.Test
 
 val format = Json {
@@ -25,6 +31,19 @@ val formatXML = XML {
 }
 
 class ParsingUnitTest {
+
+  private val mainThreadSurrogate = newSingleThreadContext("UI thread")
+
+  @Before
+  fun setUp() {
+    Dispatchers.setMain(mainThreadSurrogate)
+  }
+
+  @After
+  fun tearDown() {
+    Dispatchers.resetMain() // reset the main dispatcher to the original Main dispatcher
+    mainThreadSurrogate.close()
+  }
 
   @Test
   fun canParseOrder() {
@@ -126,7 +145,7 @@ class ParsingUnitTest {
 
   @Test
   fun canFetchRateFee() = runBlocking {
-    val client = getHttpClient()
+    val client = ExchHttpClient(FakeUserSettingsRepository())
     val resp: RateFeeResponse = client.get("/api/rates").body()
 
     assertNotNull(resp)
