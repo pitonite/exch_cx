@@ -16,12 +16,13 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.ui.screens.home.History
-import io.github.pitonite.exch_cx.ui.screens.home.Orders
 import io.github.pitonite.exch_cx.ui.screens.home.exchange.Exchange
 import io.github.pitonite.exch_cx.ui.screens.home.exchange.ExchangeViewModel
 import io.github.pitonite.exch_cx.ui.screens.home.exchange.currencyselect.CurrencySelect
 import io.github.pitonite.exch_cx.ui.screens.home.exchange.currencyselect.CurrencySelectViewModel
 import io.github.pitonite.exch_cx.ui.screens.home.exchange.currencyselect.CurrencySelection
+import io.github.pitonite.exch_cx.ui.screens.home.orders.Orders
+import io.github.pitonite.exch_cx.ui.screens.home.orders.OrdersViewModel
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.OrderDetail
 import io.github.pitonite.exch_cx.ui.screens.settings.Settings
 import io.github.pitonite.exch_cx.ui.screens.settings.SettingsViewModel
@@ -127,7 +128,13 @@ private fun NavGraphBuilder.addOrders(
 ) {
 
   composable(PrimaryDestinations.ORDERS.route) { from ->
-    Orders(onOrderSelected = { id -> onOrderSelected(id, from) }, onNavigateToRoute, modifier)
+    val viewModel = hiltViewModel<OrdersViewModel>()
+    Orders(
+        viewModel = viewModel,
+        onOrderSelected = { id -> onOrderSelected(id, from) },
+        onNavigateToRoute = onNavigateToRoute,
+        modifier = modifier,
+    )
   }
 }
 

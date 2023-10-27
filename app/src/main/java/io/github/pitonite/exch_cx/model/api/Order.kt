@@ -24,7 +24,7 @@ enum class OrderState {
 @Immutable
 data class OrderResponse(
     /** Exchange order ID */
-    @SerialName("orderid") val id: String? = null,
+    @SerialName("orderid") val id: String,
     /** Order creation timestamp (unix timestamp, in seconds) */
     @SerialName("created") val created: Long? = null,
 
@@ -35,7 +35,7 @@ data class OrderResponse(
      */
     @SerialName("from_addr") val fromAddr: String,
     /** The currency the user has to send to "from_addr" */
-    @SerialName("from_currency") val fromCurrency: String? = null,
+    @SerialName("from_currency") val fromCurrency: String,
     /** Amount of "from_currency" received (null when no amount received yet) */
     @Serializable(with = BigDecimalSerializer::class)
     @SerialName("from_amount_received")
@@ -58,7 +58,7 @@ data class OrderResponse(
     /** Current rate */
     @Serializable(with = BigDecimalSerializer::class) @SerialName("rate") val rate: BigDecimal,
     /** Rate mode ("flat" or "dynamic") */
-    @SerialName("rate_mode") val rateMode: String,
+    @SerialName("rate_mode") val rateMode: RateFeeMode,
     /**
      * Current state of the exchange, possible values: CREATED, CANCELLED, AWAITING_INPUT,
      * CONFIRMING_INPUT, EXCHANGING, CONFIRMING_SEND, COMPLETE, REFUND_REQUEST, REFUND_PENDING,
@@ -66,7 +66,7 @@ data class OrderResponse(
      */
     @SerialName("state") val state: OrderState,
     /** Current error state, if any (only present on error). such as "TO_ADDRESS_INVALID" */
-    @SerialName("state_error") val stateError: String? = null,
+    @SerialName("state_error") val stateError: String? = null, // todo, replace with error enum
     /**
      * Service fee as a string representing a decimal number. (included in the calculated amount of
      * to_currency)

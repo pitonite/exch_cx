@@ -34,4 +34,17 @@
   <string name="label_domain_type_onion">Onion (Tor)</string>
   <string name="snack_network_error">There was a network error.</string>
   <string name="snack_action_retry">Retry</string>
+  <string name="unknown_error">Unknown Error.</string>
+  <string name="label_import_order">Import Order</string>
+  <string name="label_from">From:</string>
+  <string name="label_to">To:</string>
+  <string name="label_status">Status:</string>
+  <string name="notice_empty_orders">You don\'t have any active order.</string>
+  <string name="hint_import_order">You can import an order using the import button</string>
+  <string name="label_order_id">Order ID</string>
+  <string name="label_import">Import</string>
+  <string name="desc_import_order">Enter your order id from website to track it inside the app:</string>
+  <string name="error_network_timedout">Network request timed out</string>
+  <string name="error_invalid_orderid">Invalid Order ID</string>
+  <string name="import_order_existed">Order already exists.</string>
 </resources>

@@ -2,20 +2,15 @@ package io.github.pitonite.exch_cx.data
 
 import io.github.pitonite.exch_cx.PreferredDomainType
 import io.github.pitonite.exch_cx.UserSettings
-import io.github.pitonite.exch_cx.userSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 
-class FakeUserSettingsRepository : UserSettingsRepository {
-  companion object {
-    val mockSettings = userSettings {
-      apiKey = "foobarapikey"
-      preferredDomainType = PreferredDomainType.ONION
-    }
-  }
+class FakeUserSettingsRepository(
+    private val userSettings: UserSettings = UserSettings.getDefaultInstance()
+) : UserSettingsRepository {
 
-  override val userSettingsFlow: Flow<UserSettings> = flow { emit(mockSettings) }
+  override val userSettingsFlow: Flow<UserSettings> = flow { emit(userSettings) }
 
   override suspend fun fetchSettings() = userSettingsFlow.first()
 

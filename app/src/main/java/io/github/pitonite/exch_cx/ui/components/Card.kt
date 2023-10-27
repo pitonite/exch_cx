@@ -18,3 +18,17 @@ fun Card(
       modifier = modifier.fillMaxWidth(),
       content = content)
 }
+
+@Composable
+fun Card(
+  modifier: Modifier = Modifier,
+  onClick: () -> Unit,
+  content: @Composable () -> Unit,
+) {
+  Surface(
+      color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+      shape = CardDefaults.shape,
+      modifier = modifier.fillMaxWidth(),
+      onClick = onClick,
+      content = content)
+}

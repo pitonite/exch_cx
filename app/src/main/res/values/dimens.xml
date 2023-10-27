@@ -2,6 +2,7 @@
 <resources>
   <dimen name="page_padding">10dp</dimen>
 
+  <dimen name="padding_xs">4dp</dimen>
   <dimen name="padding_sm">7dp</dimen>
   <dimen name="padding_md">10dp</dimen>
   <dimen name="padding_lg">14dp</dimen>
