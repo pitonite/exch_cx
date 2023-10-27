@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.math.BigDecimal
 
-class FakeOrderRepository : OrderRepository {
+class OrderRepositoryMock : OrderRepository {
   override fun getOrderList(archived: Boolean): Flow<PagingData<Order>> {
     return flow {
       emit(

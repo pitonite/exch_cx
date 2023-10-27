@@ -1,6 +1,6 @@
 package io.github.pitonite.exch_cx
 
-import io.github.pitonite.exch_cx.data.FakeUserSettingsRepository
+import io.github.pitonite.exch_cx.data.UserSettingsRepositoryMock
 import io.github.pitonite.exch_cx.di.ExchHttpClient
 import io.github.pitonite.exch_cx.model.api.OrderResponse
 import io.github.pitonite.exch_cx.model.api.RateFeeResponse
@@ -145,7 +145,7 @@ class ParsingUnitTest {
 
   @Test
   fun canFetchRateFee() = runBlocking {
-    val client = ExchHttpClient(FakeUserSettingsRepository())
+    val client = ExchHttpClient(UserSettingsRepositoryMock())
     val resp: RateFeeResponse = client.get("/api/rates").body()
 
     assertNotNull(resp)

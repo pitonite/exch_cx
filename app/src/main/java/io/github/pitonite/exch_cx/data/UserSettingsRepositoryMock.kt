@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 
-class FakeUserSettingsRepository(
+class UserSettingsRepositoryMock(
     private val userSettings: UserSettings = UserSettings.getDefaultInstance()
 ) : UserSettingsRepository {
 

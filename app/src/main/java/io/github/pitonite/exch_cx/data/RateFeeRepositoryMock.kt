@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import java.math.BigDecimal
 
-class FakeRateFeeRepository() : RateFeeRepository {
+class RateFeeRepositoryMock() : RateFeeRepository {
 
   companion object {
     val rates =

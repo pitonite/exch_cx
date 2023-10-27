@@ -31,7 +31,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.pitonite.exch_cx.PreferredDomainType
 import io.github.pitonite.exch_cx.R
-import io.github.pitonite.exch_cx.data.FakeUserSettingsRepository
+import io.github.pitonite.exch_cx.data.UserSettingsRepositoryMock
 import io.github.pitonite.exch_cx.ui.components.Card
 import io.github.pitonite.exch_cx.ui.components.RadioGroup
 import io.github.pitonite.exch_cx.ui.components.UpBtn
@@ -120,7 +120,7 @@ fun Settings(viewModel: SettingsViewModel, upPress: () -> Unit, modifier: Modifi
 fun SettingsPreview() {
   ExchTheme {
     Settings(
-        viewModel = SettingsViewModel(SavedStateHandle(), FakeUserSettingsRepository()),
+        viewModel = SettingsViewModel(SavedStateHandle(), UserSettingsRepositoryMock()),
         upPress = {})
   }
 }

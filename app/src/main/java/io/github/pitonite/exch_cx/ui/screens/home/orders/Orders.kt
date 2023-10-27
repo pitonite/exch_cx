@@ -39,7 +39,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import io.github.pitonite.exch_cx.R
-import io.github.pitonite.exch_cx.data.FakeOrderRepository
+import io.github.pitonite.exch_cx.data.OrderRepositoryMock
 import io.github.pitonite.exch_cx.model.SnackbarMessage
 import io.github.pitonite.exch_cx.model.UserMessage
 import io.github.pitonite.exch_cx.ui.components.Card
@@ -200,7 +200,7 @@ fun Orders(
 fun OrdersPreview() {
   ExchTheme {
     Orders(
-        viewModel = OrdersViewModel(FakeOrderRepository()),
+        viewModel = OrdersViewModel(OrderRepositoryMock()),
         onOrderSelected = {},
         onNavigateToRoute = {})
   }

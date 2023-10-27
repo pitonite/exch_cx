@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.pitonite.exch_cx.R
-import io.github.pitonite.exch_cx.data.FakeRateFeeRepository
+import io.github.pitonite.exch_cx.data.RateFeeRepositoryMock
 import io.github.pitonite.exch_cx.model.api.NetworkFeeChoice
 import io.github.pitonite.exch_cx.model.api.RateFeeMode
 import io.github.pitonite.exch_cx.ui.components.Card
@@ -285,7 +285,7 @@ fun Exchange(
 @Preview("large font", fontScale = 2f)
 @Composable
 fun ExchangePreview() {
-  val viewModel = ExchangeViewModel(SavedStateHandle(), FakeRateFeeRepository())
+  val viewModel = ExchangeViewModel(SavedStateHandle(), RateFeeRepositoryMock())
   viewModel.updateWorking(false)
   ExchTheme(darkTheme = true) {
     Exchange(viewModel = viewModel, onNavigateToRoute = {}, onOrderCreated = {})
