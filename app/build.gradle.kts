@@ -63,6 +63,7 @@ dependencies {
   androidTestImplementation("androidx.compose.ui:ui-test-junit4")
   debugImplementation("androidx.compose.ui:ui-tooling")
   debugImplementation("androidx.compose.ui:ui-test-manifest")
+  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
 
   // navigation
   implementation("androidx.navigation:navigation-compose:2.7.4")
@@ -100,12 +101,15 @@ dependencies {
   implementation("com.google.protobuf:protobuf-kotlin-lite:$protobufVersion")
 
   // for room
-  val room_version = "2.6.0"
-  implementation("androidx.room:room-runtime:$room_version")
-  annotationProcessor("androidx.room:room-compiler:$room_version")
-  ksp("androidx.room:room-compiler:$room_version")
-  implementation("androidx.room:room-ktx:$room_version")
-  implementation("androidx.room:room-paging:$room_version")
+  val roomVersion = "2.6.0"
+  implementation("androidx.room:room-runtime:$roomVersion")
+  annotationProcessor("androidx.room:room-compiler:$roomVersion")
+  ksp("androidx.room:room-compiler:$roomVersion")
+  implementation("androidx.room:room-ktx:$roomVersion")
+  implementation("androidx.room:room-paging:$roomVersion")
+  val pagingVersion = "3.2.1"
+  implementation("androidx.paging:paging-runtime-ktx:$pagingVersion")
+  implementation("androidx.paging:paging-compose:3.3.0-alpha02")
 
   // for immutable collections (stability fix for compose)
   implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.6")
