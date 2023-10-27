@@ -10,7 +10,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.SwapVert
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -32,7 +31,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -48,13 +46,13 @@ import io.github.pitonite.exch_cx.model.api.NetworkFeeChoice
 import io.github.pitonite.exch_cx.model.api.RateFeeMode
 import io.github.pitonite.exch_cx.ui.components.Card
 import io.github.pitonite.exch_cx.ui.components.CurrencyInput
+import io.github.pitonite.exch_cx.ui.components.RefreshButton
 import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import io.github.pitonite.exch_cx.ui.navigation.SecondaryDestinations
 import io.github.pitonite.exch_cx.ui.screens.home.exchange.currencyselect.CurrencySelection
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 import io.github.pitonite.exch_cx.utils.noRippleClickable
 import io.github.pitonite.exch_cx.utils.nonScaledSp
-import io.github.pitonite.exch_cx.utils.rememberRotateInfinite
 import java.math.BigDecimal
 
 val FeeStringResourceMap =
@@ -91,18 +89,11 @@ fun Exchange(
               }
             },
             actions = {
-              val angle by rememberRotateInfinite()
-              IconButton(onClick = { viewModel.updateFeeRates() }, enabled = !uiState.refreshing) {
-                Icon(
-                    modifier =
-                        Modifier.size(32.dp)
-                            .then(
-                                if (uiState.refreshing) Modifier.graphicsLayer { rotationZ = angle }
-                                else Modifier),
-                    imageVector = Icons.Default.Refresh,
-                    contentDescription = stringResource(R.string.refresh),
-                )
-              }
+              RefreshButton(
+                  onClick = { viewModel.updateFeeRates() },
+                  enabled = !uiState.refreshing,
+                  refreshing = uiState.refreshing,
+              )
             })
       }) { padding ->
         Column(
