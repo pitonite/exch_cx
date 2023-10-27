@@ -12,7 +12,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.PermanentNavigationDrawer
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -94,7 +93,6 @@ private fun ExchAppContent(
     modifier: Modifier = Modifier,
     onDrawerClicked: () -> Unit = {}
 ) {
-  val snackbarHostState = remember { SnackbarHostState() }
 
   Row(modifier = modifier.fillMaxSize()) {
     AnimatedVisibility(visible = navigationType == ExchNavigationType.NAVIGATION_RAIL) {
