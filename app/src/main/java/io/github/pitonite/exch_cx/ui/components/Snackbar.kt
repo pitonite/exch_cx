@@ -41,8 +41,6 @@ object SnackbarManager {
  */
 @Composable
 fun ProvideSnackbarHostState(content: @Composable () -> Unit) {
-  val coroutineScope = rememberCoroutineScope()
-
   CompositionLocalProvider(
       LocalSnackbarHostState provides SnackbarManager.snackbarHostState, content = content)
 }
