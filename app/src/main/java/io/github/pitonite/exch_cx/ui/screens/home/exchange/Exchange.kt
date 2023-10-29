@@ -100,7 +100,7 @@ fun Exchange(
             modifier =
                 modifier
                     .padding(padding)
-                    .padding(dimensionResource(R.dimen.page_padding))
+                    .padding(horizontal = dimensionResource(R.dimen.page_padding))
                     .verticalScroll(rememberScrollState())
                     .noRippleClickable() { focusManager.clearFocus() },
             horizontalAlignment = Alignment.CenterHorizontally,

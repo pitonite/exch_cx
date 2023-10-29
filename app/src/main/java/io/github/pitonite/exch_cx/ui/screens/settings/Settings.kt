@@ -68,7 +68,7 @@ fun Settings(viewModel: SettingsViewModel, upPress: () -> Unit, modifier: Modifi
             modifier =
                 Modifier.padding(padding)
                     .padding(
-                        dimensionResource(R.dimen.page_padding),
+                        horizontal = dimensionResource(R.dimen.page_padding),
                     )
                     .verticalScroll(rememberScrollState())
                     .noRippleClickable() { focusManager.clearFocus() },

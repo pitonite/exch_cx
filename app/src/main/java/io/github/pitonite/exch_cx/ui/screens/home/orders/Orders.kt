@@ -104,7 +104,7 @@ fun Orders(
     Box(
         modifier =
             Modifier.padding(padding)
-                .padding(dimensionResource(R.dimen.page_padding))
+                .padding(horizontal = dimensionResource(R.dimen.page_padding))
                 .fillMaxSize(),
     ) {
       when (orderPagingItems.loadState.refresh) {
