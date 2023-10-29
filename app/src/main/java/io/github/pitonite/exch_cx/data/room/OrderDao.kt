@@ -13,7 +13,7 @@ abstract class OrderDao : BaseDao<Order> {
   @Query("SELECT * FROM `order` WHERE id = :id") abstract fun orderWithId(id: String): Flow<Order>
 
   @Transaction
-  @Query("SELECT * FROM `Order` WHERE archived = :archived ORDER BY createdAt ASC")
+  @Query("SELECT * FROM `Order` WHERE archived = :archived ORDER BY createdAt DESC")
   abstract fun ordersSortedByCreatedAtPagingSource(
       archived: Boolean = false,
   ): PagingSource<Int, Order>
