@@ -17,7 +17,9 @@ enum class OrderState {
   REFUND_REQUEST,
   REFUND_PENDING,
   CONFIRMING_REFUND,
-  REFUNDED
+  REFUNDED,
+  BRIDGING, // experimental
+  FUNDED, // experimental
 }
 
 @Serializable
