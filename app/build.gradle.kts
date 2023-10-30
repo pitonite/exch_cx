@@ -73,12 +73,15 @@ dependencies {
   kapt("com.google.dagger:hilt-android-compiler:2.48")
   implementation("androidx.hilt:hilt-navigation-compose:1.1.0-rc01")
   implementation("androidx.hilt:hilt-navigation-fragment:1.1.0-rc01")
+  // for work manager
+  implementation("androidx.hilt:hilt-work:1.0.0")
+  implementation("androidx.work:work-runtime-ktx:2.8.1")
 
   // for locale change to work, all activities need to extend AppCompatActivity
-  val appcompat_version = "1.7.0-alpha03"
-  implementation("androidx.appcompat:appcompat:$appcompat_version")
+  val appcompatVersion = "1.7.0-alpha03"
+  implementation("androidx.appcompat:appcompat:$appcompatVersion")
   // For loading and tinting drawables on older versions of the platform
-  implementation("androidx.appcompat:appcompat-resources:$appcompat_version")
+  implementation("androidx.appcompat:appcompat-resources:$appcompatVersion")
   // for more icons:
   implementation("androidx.compose.material:material-icons-extended")
   // for json serialization
