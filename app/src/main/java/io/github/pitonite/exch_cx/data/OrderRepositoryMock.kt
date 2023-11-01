@@ -2,6 +2,7 @@ package io.github.pitonite.exch_cx.data
 
 import androidx.paging.PagingData
 import io.github.pitonite.exch_cx.data.room.Order
+import io.github.pitonite.exch_cx.data.room.OrderUpdate
 import io.github.pitonite.exch_cx.model.api.OrderState
 import io.github.pitonite.exch_cx.model.api.RateFeeMode
 import kotlinx.collections.immutable.persistentListOf
@@ -30,7 +31,24 @@ class OrderRepositoryMock : OrderRepository {
     }
   }
 
-  override suspend fun updateOrder(orderId: String): Boolean {
+  override suspend fun fetchOrder(orderId: String): Order {
+    return Order(
+        id = "ee902b8a5fe0844d41",
+        fromAddr = "_GENERATING_",
+        fromCurrency = "BTC",
+        toCurrency = "ETH",
+        rate = BigDecimal.valueOf(18.867924528301927),
+        rateMode = RateFeeMode.DYNAMIC,
+        state = OrderState.CREATED,
+        svcFee = BigDecimal.valueOf(1),
+        toAddress = "foo_address")
+  }
+
+  override suspend fun updateOrder(order: OrderUpdate): Boolean {
+    return false
+  }
+
+  override suspend fun fetchAndUpdateOrder(orderId: String): Boolean {
     return false
   }
 }

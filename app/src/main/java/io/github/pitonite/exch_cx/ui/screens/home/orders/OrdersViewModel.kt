@@ -66,7 +66,7 @@ class OrdersViewModel @Inject constructor(private val orderRepository: OrderRepo
     importOrderWork = WorkState.Working
     viewModelScope.launch {
       try {
-        if (orderRepository.updateOrder(orderId)) {
+        if (orderRepository.fetchAndUpdateOrder(orderId)) {
           SnackbarManager.showMessage(
               snackbarMessage =
                   SnackbarMessage.from(message = UserMessage.from(R.string.import_order_existed)))

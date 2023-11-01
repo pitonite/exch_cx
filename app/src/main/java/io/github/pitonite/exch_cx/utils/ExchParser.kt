@@ -2,6 +2,8 @@ package io.github.pitonite.exch_cx.utils
 
 import io.github.pitonite.exch_cx.model.api.OrderState
 import io.github.pitonite.exch_cx.model.api.RateFeeMode
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.toPersistentList
 import java.math.BigDecimal
 import javax.annotation.concurrent.Immutable
 
@@ -20,6 +22,13 @@ data class ParsedOrder(
     val toAddress: String?,
 )
 
+@Immutable
+data class ParsedRate(
+    val fromCurrency: String,
+    val toCurrency: String,
+    val rate: BigDecimal,
+)
+
 object ExchParser {
 
   private val orderParseRegex =
@@ -34,6 +43,9 @@ object ExchParser {
 
   private val amountRegex = """(?<amount>[\d.]+)""".toRegex()
 
+  private val rateParser =
+      """col-5 text-end text-muted.+?>\s*(\w+)\s*<[\s\S]+?start"\s*>\s*([\d.]+)""".toRegex()
+
   fun parseOrder(pageContent: String): ParsedOrder? {
     runCatching {
       val result = orderParseRegex.find(pageContent)
@@ -44,9 +56,9 @@ object ExchParser {
             RateFeeMode.valueOf(
                 result.groups["rateMode"]!!.value.uppercase().replace(' ', '_').trim())
         val rateParts = orderRateRegex.find(result.groups["rate"]!!.value.trim())!!
-        val fromCurrency = rateParts.groups["fromCurrency"]!!.value!!
-        val toCurrency = rateParts.groups["toCurrency"]!!.value!!
-        val rate = rateParts.groups["rateAmount"]!!.value!!.toBigDecimal()
+        val fromCurrency = rateParts.groups["fromCurrency"]!!.value
+        val toCurrency = rateParts.groups["toCurrency"]!!.value
+        val rate = rateParts.groups["rateAmount"]!!.value.toBigDecimal()
 
         // optional parameters
         val networkFee =
@@ -84,5 +96,22 @@ object ExchParser {
       }
     }
     return null
+  }
+
+  fun parseRates(homePageHtml: String): PersistentList<ParsedRate> {
+    val rates = mutableListOf<ParsedRate>()
+
+    val matches = rateParser.findAll(homePageHtml)
+
+    for (match in matches) {
+      if (!match.groups.isNullOrEmpty()) {
+        val (fromCurrency, toCurrency) =
+            match.groups[1]!!.value.trim().split('_').map { it.lowercase() }
+        val rate = match.groups[2]!!.value.trim().toBigDecimal()
+        rates.add(ParsedRate(fromCurrency, toCurrency, rate))
+      }
+    }
+
+    return rates.toPersistentList()
   }
 }

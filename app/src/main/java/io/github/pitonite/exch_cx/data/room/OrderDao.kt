@@ -1,5 +1,6 @@
 package io.github.pitonite.exch_cx.data.room
 
+import android.database.Cursor
 import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
@@ -29,4 +30,7 @@ abstract class OrderDao : BaseDao<Order> {
 
   @Query("SELECT EXISTS(SELECT 1 FROM `order` WHERE id = :id LIMIT 1)")
   abstract suspend fun exists(id: String): Boolean
+
+  @Query("SELECT `id`,`state` FROM `Order` WHERE archived = 0")
+  abstract fun getActiveOrdersCursor(): Cursor
 }

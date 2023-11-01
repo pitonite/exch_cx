@@ -18,7 +18,6 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.accept
 import io.ktor.client.request.get
-import io.ktor.client.request.header
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.URLProtocol
@@ -81,8 +80,10 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
           BrowserUserAgent()
 
           defaultRequest {
-            header("X-Requested-With", "XMLHttpRequest")
-            accept(ContentType.Application.Json)
+            if (!headers.contains("X-Requested-With")) {
+              headers["X-Requested-With"] = "XMLHttpRequest"
+              accept(ContentType.Application.Json)
+            }
           }
 
           install(HttpRequestRetry) {

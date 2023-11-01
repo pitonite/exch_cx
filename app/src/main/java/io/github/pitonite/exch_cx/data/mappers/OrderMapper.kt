@@ -27,10 +27,10 @@ fun OrderResponse.toOrderEntity() =
         transactionIdSent = this.transactionIdSent,
     )
 
-fun OrderResponse.toOrderUpdateEntity() =
+fun Order.toOrderUpdateEntity() =
     OrderUpdate(
         id = this.id,
-        createdAt = Date((this.created?.times(1000)) ?: System.currentTimeMillis()),
+        createdAt = this.createdAt,
         fromAddr = this.fromAddr,
         fromCurrency = this.fromCurrency,
         fromAmountReceived = this.fromAmountReceived,
@@ -47,4 +47,6 @@ fun OrderResponse.toOrderUpdateEntity() =
         toCurrency = this.toCurrency,
         transactionIdReceived = this.transactionIdReceived,
         transactionIdSent = this.transactionIdSent,
+        calculatedFromAmount = this.calculatedFromAmount,
+        calculatedToAmount = this.calculatedToAmount,
     )

@@ -55,7 +55,7 @@ constructor(
 
   private val _fromCurrency: MutableStateFlow<String> = MutableStateFlow("btc")
   private val _networkFeeChoice: MutableStateFlow<NetworkFeeChoice?> =
-      MutableStateFlow(NetworkFeeChoice.QUICK)
+      MutableStateFlow(NetworkFeeChoice.MEDIUM)
   private val _toCurrency: MutableStateFlow<String> = MutableStateFlow("eth")
   private val _rateFeeMode: MutableStateFlow<RateFeeMode> = MutableStateFlow(RateFeeMode.DYNAMIC)
   private val _rateFee =
@@ -63,7 +63,11 @@ constructor(
           .findRateStream(_fromCurrency, _toCurrency)
           .onEach {
             if (it?.networkFee != null) {
-              _networkFeeChoice.value = NetworkFeeChoice.QUICK
+              if (it.networkFee[NetworkFeeChoice.QUICK] != null) {
+                _networkFeeChoice.value = NetworkFeeChoice.QUICK
+              } else {
+                _networkFeeChoice.value = it.networkFee.keys.first()
+              }
             } else {
               _networkFeeChoice.value = null
             }
@@ -191,6 +195,13 @@ constructor(
             val newToAmount =
                 it.multiply(fee.rate, MathContext.DECIMAL64)
                     .multiply(svcFeeMultiplier, MathContext.DECIMAL64)
+                    .let {
+                      if (!fee.networkFee.isNullOrEmpty()) {
+                        val networkFee = fee.networkFee[_networkFeeChoice.value]!!
+                        return@let it.minus(networkFee)
+                      }
+                      return@let it
+                    }
                     .setScale(18, RoundingMode.CEILING)
             updateToAmount(newToAmount.stripTrailingZeros().toString())
           } else {
@@ -204,7 +215,14 @@ constructor(
             val svcFeeRevertMultiplier =
                 BigDecimal.ONE.divide(svcFeeMultiplier, MathContext.DECIMAL64)
             val newFromAmount =
-                it.multiply(svcFeeRevertMultiplier, MathContext.DECIMAL64)
+                it.let {
+                      if (!fee.networkFee.isNullOrEmpty()) {
+                        val networkFee = fee.networkFee[_networkFeeChoice.value]!!
+                        return@let it.plus(networkFee)
+                      }
+                      return@let it
+                    }
+                    .multiply(svcFeeRevertMultiplier, MathContext.DECIMAL64)
                     .divide(fee.rate, MathContext.DECIMAL64)
                     .setScale(18, RoundingMode.CEILING)
             updateFromAmount(newFromAmount.stripTrailingZeros().toString())
@@ -246,5 +264,6 @@ constructor(
 
   fun updateNetworkFeeChoice(networkFeeChoice: NetworkFeeChoice?) {
     _networkFeeChoice.value = networkFeeChoice
+    updateConversionAmounts(CurrencySelection.FROM)
   }
 }

@@ -19,7 +19,7 @@ data class Order(
     @ColumnInfo(defaultValue = CURRENT_TIMESTAMP_EXPRESSION) val modifiedAt: Date = Date(),
     @ColumnInfo(defaultValue = "FALSE")
     val archived: Boolean = false, // for moving orders to history
-    // order data:
+    // order data (api/v1):
     @PrimaryKey val id: String,
     val createdAt: Date = Date(),
     val fromAddr: String = "_GENERATING_",
@@ -37,7 +37,10 @@ data class Order(
     val toAddress: String,
     val toCurrency: String,
     val transactionIdReceived: String? = null,
-    val transactionIdSent: String? = null
+    val transactionIdSent: String? = null,
+    // custom added data:
+    val calculatedFromAmount: BigDecimal? = null,
+    val calculatedToAmount: BigDecimal? = null,
 )
 
 // to not touch archive when updating order
@@ -61,5 +64,7 @@ data class OrderUpdate(
     val toAddress: String,
     val toCurrency: String,
     val transactionIdReceived: String? = null,
-    val transactionIdSent: String? = null
+    val transactionIdSent: String? = null,
+    val calculatedFromAmount: BigDecimal? = null,
+    val calculatedToAmount: BigDecimal? = null,
 )
