@@ -182,19 +182,12 @@ constructor(
   fun updateConversionAmounts(edited: CurrencySelection) {
     val fee = _rateFee.value
     if (fee != null) {
-      val svcFeeMultiplier =
-          BigDecimal.ONE -
-              fee.svcFee.divide(
-                  BigDecimal.valueOf(100),
-                  MathContext.DECIMAL64) // since svcFee returned from api is in percent (1-100)
-
       if (edited == CurrencySelection.FROM) {
         // update to amount
         fromAmount.toBigDecimalOrNull()?.let { it ->
           if (it > BigDecimal.ZERO) { // we don't want infinity
             val newToAmount =
                 it.multiply(fee.rate, MathContext.DECIMAL64)
-                    .multiply(svcFeeMultiplier, MathContext.DECIMAL64)
                     .let {
                       if (!fee.networkFee.isNullOrEmpty()) {
                         val networkFee = fee.networkFee[_networkFeeChoice.value]!!
@@ -212,8 +205,6 @@ constructor(
         // update from amount
         toAmount.toBigDecimalOrNull()?.let {
           if (it > BigDecimal.ZERO) {
-            val svcFeeRevertMultiplier =
-                BigDecimal.ONE.divide(svcFeeMultiplier, MathContext.DECIMAL64)
             val newFromAmount =
                 it.let {
                       if (!fee.networkFee.isNullOrEmpty()) {
@@ -222,7 +213,6 @@ constructor(
                       }
                       return@let it
                     }
-                    .multiply(svcFeeRevertMultiplier, MathContext.DECIMAL64)
                     .divide(fee.rate, MathContext.DECIMAL64)
                     .setScale(18, RoundingMode.CEILING)
             updateFromAmount(newFromAmount.stripTrailingZeros().toString())
