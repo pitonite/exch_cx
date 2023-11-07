@@ -9,13 +9,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.pitonite.exch_cx.PreferredDomainType
-import io.github.pitonite.exch_cx.UserSettings
+import io.github.pitonite.exch_cx.copy
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
-import io.github.pitonite.exch_cx.userSettings
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,7 +30,6 @@ constructor(
   var preferredDomainTypeDraft by mutableStateOf(PreferredDomainType.NORMAL)
     private set
 
-
   fun updateApiKeyDraft(value: String) {
     apiKeyDraft = value
   }
@@ -45,7 +40,7 @@ constructor(
 
   fun reloadSettings() {
     viewModelScope.launch {
-      userSettingsRepository.userSettingsFlow.first().let {
+      userSettingsRepository.userSettingsFlow.firstOrNull()?.let {
         apiKeyDraft = it.apiKey
         preferredDomainTypeDraft = it.preferredDomainType
       }
@@ -54,11 +49,11 @@ constructor(
 
   fun saveChanges() {
     viewModelScope.launch {
-      userSettingsRepository.saveSettings(userSettings {
-        apiKey = apiKeyDraft
-        preferredDomainType = preferredDomainTypeDraft
-      })
+      userSettingsRepository.saveSettings(
+          userSettingsRepository.fetchSettings().copy {
+            apiKey = apiKeyDraft
+            preferredDomainType = preferredDomainTypeDraft
+          })
     }
   }
-
 }

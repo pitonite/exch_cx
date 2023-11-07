@@ -48,6 +48,12 @@ constructor(private val userSettingsStore: DataStore<UserSettings>) : UserSettin
     }
   }
 
+  override suspend fun updateExchangeTipDismissed(value: Boolean) {
+    userSettingsStore.updateData { currentSettings ->
+      currentSettings.toBuilder().setIsExchangeTipDismissed(value).build()
+    }
+  }
+
   override suspend fun saveSettings(userSettings: UserSettings) {
     userSettingsStore.updateData { it.toBuilder().clear().mergeFrom(userSettings).build() }
   }

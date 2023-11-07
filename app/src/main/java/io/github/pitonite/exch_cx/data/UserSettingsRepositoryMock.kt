@@ -18,5 +18,7 @@ class UserSettingsRepositoryMock(
 
   override suspend fun updateDomainOption(newDomainType: PreferredDomainType) {}
 
+  override suspend fun updateExchangeTipDismissed(value: Boolean) {}
+
   override suspend fun saveSettings(userSettings: UserSettings) {}
 }

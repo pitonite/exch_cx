@@ -12,4 +12,5 @@ message UserSettings {
   bool first_init = 1;
   string api_key = 2;
   PreferredDomainType preferred_domain_type = 3;
+  bool is_exchange_tip_dismissed = 4;
 }

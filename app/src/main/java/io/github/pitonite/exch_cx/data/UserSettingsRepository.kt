@@ -10,10 +10,12 @@ interface UserSettingsRepository {
 
   suspend fun fetchSettings(): UserSettings
 
+  suspend fun saveSettings(userSettings: UserSettings)
+
   suspend fun updateApiKey(newKey: String)
 
   /** sets the preferred domain for accessing exch.cx website */
   suspend fun updateDomainOption(newDomainType: PreferredDomainType)
 
-  suspend fun saveSettings(userSettings: UserSettings)
+  suspend fun updateExchangeTipDismissed(value: Boolean)
 }
