@@ -46,35 +46,36 @@ object ExchParser {
   private val rateParser =
       """col-5 text-end text-muted.+?>\s*(\w+)\s*<[\s\S]+?start"\s*>\s*([\d.]+)""".toRegex()
 
+  private val homeErrorParser = """role="alert"[^>]*?>[^>]*?strong>([\w\s]+)<\/strong""".toRegex()
+
   fun parseOrder(pageContent: String): ParsedOrder? {
     runCatching {
       val result = orderParseRegex.find(pageContent)
       if (result != null) {
         val orderid = result.groups["orderid"]!!.value.trim()
-        val status = OrderState.valueOf(result.groups["status"]!!.value.replace(' ', '_').trim())
+        val status = OrderState.valueOf(result.groups["status"]!!.value.trim().replace(' ', '_'))
         val rateFeeMode =
             RateFeeMode.valueOf(
-                result.groups["rateMode"]!!.value.uppercase().replace(' ', '_').trim())
+                result.groups["rateMode"]!!.value.uppercase().trim().replace(' ', '_'))
         val rateParts = orderRateRegex.find(result.groups["rate"]!!.value.trim())!!
-        val fromCurrency = rateParts.groups["fromCurrency"]!!.value
-        val toCurrency = rateParts.groups["toCurrency"]!!.value
-        val rate = rateParts.groups["rateAmount"]!!.value.toBigDecimal()
+        val fromCurrency = rateParts.groups["fromCurrency"]!!.value.trim()
+        val toCurrency = rateParts.groups["toCurrency"]!!.value.trim()
+        val rate = rateParts.groups["rateAmount"]!!.value.trim().toBigDecimal()
 
         // optional parameters
         val networkFee =
             result.groups["fee"]
                 ?.value
-                .toString()
-                .let { amountRegex.find(it)?.groups?.get("amount")?.value }
+                ?.let { amountRegex.find(it.trim())?.groups?.get("amount")?.value?.trim() }
                 ?.toBigDecimalOrNull()
 
         val calculatedFromAmount =
             result.groups["fromAmount"]?.value.toString().let {
-              amountRegex.find(it)?.groups?.get("amount")?.value?.toBigDecimalOrNull()
+              amountRegex.find(it)?.groups?.get("amount")?.value?.trim()?.toBigDecimalOrNull()
             }
         val calculatedToAmount =
-            result.groups["toAmount"]?.value.toString().let {
-              amountRegex.find(it)?.groups?.get("amount")?.value?.toBigDecimalOrNull()
+            result.groups["toAmount"]?.value?.trim()?.let {
+              amountRegex.find(it)?.groups?.get("amount")?.value?.trim()?.toBigDecimalOrNull()
             }
 
         val fromAddress = result.groups["fromAddress"]?.value
@@ -113,5 +114,9 @@ object ExchParser {
     }
 
     return rates.toPersistentList()
+  }
+
+  fun parseError(homePageHtml: String): String? {
+    return homeErrorParser.find(homePageHtml)?.groups?.get(1)?.value?.trim()
   }
 }
