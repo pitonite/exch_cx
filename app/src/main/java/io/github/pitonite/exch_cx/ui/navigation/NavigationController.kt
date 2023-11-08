@@ -54,7 +54,9 @@ class ExchNavController(
   fun navigateToOrderDetail(orderId: String, from: NavBackStackEntry) {
     // In order to discard duplicated navigation events, we check the Lifecycle
     if (from.lifecycleIsResumed()) {
-      navController.navigate("${SecondaryDestinations.ORDER_DETAIL_ROUTE}/$orderId")
+      this.navigateTo(
+          "${SecondaryDestinations.ORDER_DETAIL_ROUTE}/$orderId",
+      )
     }
   }
 }

@@ -35,6 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.SavedStateHandle
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
@@ -53,7 +54,6 @@ import io.github.pitonite.exch_cx.utils.WorkState
 fun Orders(
     viewModel: OrdersViewModel,
     onOrderSelected: (String) -> Unit,
-    onNavigateToRoute: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
   val orderPagingItems = viewModel.orderPagingDataFlow.collectAsLazyPagingItems()
@@ -103,7 +103,8 @@ fun Orders(
     )
     Box(
         modifier =
-            Modifier.padding(padding)
+            modifier
+                .padding(padding)
                 .padding(horizontal = dimensionResource(R.dimen.page_padding))
                 .fillMaxSize(),
     ) {
@@ -178,7 +179,7 @@ fun Orders(
                 if (order != null) {
                   OrderItem(
                       order,
-                      onClick = {},
+                      onClick = { onOrderSelected(order.id) },
                   )
                 }
               }
@@ -200,8 +201,8 @@ fun Orders(
 fun OrdersPreview() {
   ExchTheme {
     Orders(
-        viewModel = OrdersViewModel(OrderRepositoryMock()),
+        viewModel = OrdersViewModel(SavedStateHandle(), OrderRepositoryMock()),
         onOrderSelected = {},
-        onNavigateToRoute = {})
+    )
   }
 }

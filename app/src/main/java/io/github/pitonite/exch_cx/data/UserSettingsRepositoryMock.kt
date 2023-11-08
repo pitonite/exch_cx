@@ -14,11 +14,17 @@ class UserSettingsRepositoryMock(
 
   override suspend fun fetchSettings() = userSettingsFlow.first()
 
-  override suspend fun updateApiKey(newKey: String) {}
+  override suspend fun setApiKey(newKey: String) {}
 
-  override suspend fun updateDomainOption(newDomainType: PreferredDomainType) {}
+  override suspend fun setDomainOption(newDomainType: PreferredDomainType) {}
 
-  override suspend fun updateExchangeTipDismissed(value: Boolean) {}
+  override suspend fun setExchangeTipDismissed(value: Boolean) {}
+
+  override suspend fun setIsOrderAutoUpdateEnabled(value: Boolean) {}
+
+  override suspend fun setHasShownOrderBackgroundUpdateNotice(value: Boolean) {}
+
+  override suspend fun setOrderAutoUpdatePeriodMinutes(value: Long) {}
 
   override suspend fun saveSettings(userSettings: UserSettings) {}
 }

@@ -5,6 +5,7 @@ import io.github.pitonite.exch_cx.utils.BigDecimalSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.math.BigDecimal
+import java.util.Locale
 
 enum class OrderState {
   CREATED,
@@ -19,7 +20,15 @@ enum class OrderState {
   CONFIRMING_REFUND,
   REFUNDED,
   BRIDGING, // experimental
-  FUNDED, // experimental
+  FUNDED; // experimental
+
+  fun toReadableString(): String {
+    return this.name.lowercase().split('_').joinToString(" ") { w ->
+      w.replaceFirstChar {
+        if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
+      }
+    }
+  }
 }
 
 @Serializable

@@ -2,16 +2,23 @@ package io.github.pitonite.exch_cx.ui.screens.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -98,12 +105,54 @@ fun Settings(viewModel: SettingsViewModel, upPress: () -> Unit, modifier: Modifi
                   label = {
                     Text(
                         when (it) {
-                          PreferredDomainType.NORMAL -> stringResource(R.string.label_domain_type_normal)
+                          PreferredDomainType.NORMAL ->
+                              stringResource(R.string.label_domain_type_normal)
                           PreferredDomainType.ONION ->
                               stringResource(R.string.label_domain_type_onion)
                           else -> stringResource(R.string.Unknown)
                         })
                   })
+
+              HorizontalDivider(Modifier.weight(1f))
+              Spacer(Modifier.padding(bottom = 10.dp))
+
+              Text(text = stringResource(R.string.title_background_update), fontSize = 20.sp)
+
+              Row(
+                  verticalAlignment = Alignment.CenterVertically,
+                  horizontalArrangement =
+                      Arrangement.spacedBy(dimensionResource(R.dimen.padding_md)),
+              ) {
+                Text(stringResource(R.string.label_is_order_auto_update_enabled))
+
+                Switch(
+                    checked = viewModel.isOrderAutoUpdateEnabledDraft,
+                    onCheckedChange = { viewModel.updateIsOrderAutoUpdateEnabledDraft(it) },
+                    thumbContent =
+                        if (viewModel.isOrderAutoUpdateEnabledDraft) {
+                          {
+                            Icon(
+                                imageVector = Icons.Filled.Check,
+                                contentDescription = null,
+                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                            )
+                          }
+                        } else {
+                          null
+                        })
+              }
+
+              val currentPeriod =
+                  if (viewModel.orderAutoUpdatePeriodMinutesDraft <= 15) 15
+                  else viewModel.orderAutoUpdatePeriodMinutesDraft
+
+              PeriodSelectionInput(
+                  value = currentPeriod.toString() + " " + stringResource(R.string.minutes),
+                  onPeriodSelected = { viewModel.updateOrderAutoUpdatePeriodMinutesDraft(it) },
+                  enabled = viewModel.isOrderAutoUpdateEnabledDraft,
+              )
+
+              Spacer(Modifier.padding(bottom = 10.dp))
 
               Button(onClick = { viewModel.saveChanges() }) {
                 Text(stringResource(R.string.label_save))

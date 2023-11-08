@@ -1,9 +1,12 @@
 package io.github.pitonite.exch_cx.ui.screens.home.exchange
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -12,6 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.SwapVert
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -20,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedIconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -34,20 +39,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.pitonite.exch_cx.R
+import io.github.pitonite.exch_cx.data.OrderRepositoryMock
 import io.github.pitonite.exch_cx.data.RateFeeRepositoryMock
+import io.github.pitonite.exch_cx.data.UserSettingsRepositoryMock
 import io.github.pitonite.exch_cx.model.api.NetworkFeeChoice
 import io.github.pitonite.exch_cx.model.api.RateFeeMode
 import io.github.pitonite.exch_cx.ui.components.Card
 import io.github.pitonite.exch_cx.ui.components.CurrencyInput
 import io.github.pitonite.exch_cx.ui.components.RefreshButton
 import io.github.pitonite.exch_cx.ui.components.SnackbarManager
+import io.github.pitonite.exch_cx.ui.components.Tip
 import io.github.pitonite.exch_cx.ui.navigation.SecondaryDestinations
 import io.github.pitonite.exch_cx.ui.screens.home.exchange.currencyselect.CurrencySelection
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
@@ -67,10 +80,11 @@ val FeeStringResourceMap =
 fun Exchange(
     modifier: Modifier = Modifier,
     viewModel: ExchangeViewModel,
-    onOrderCreated: (String) -> Unit,
+    onOrderSelected: (String) -> Unit,
     onNavigateToRoute: (String) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  val userSettings by viewModel.userSettings.collectAsStateWithLifecycle()
   val focusManager = LocalFocusManager.current
 
   Scaffold(
@@ -94,7 +108,8 @@ fun Exchange(
                   enabled = !uiState.refreshing,
                   refreshing = uiState.refreshing,
               )
-            })
+            },
+        )
       }) { padding ->
         Column(
             modifier =
@@ -106,6 +121,9 @@ fun Exchange(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_md)),
         ) {
+          AnimatedVisibility(visible = !userSettings.isExchangeTipDismissed) {
+            Tip(stringResource(R.string.tip_exchange)) { viewModel.setIsExchangeTipDismissed(true) }
+          }
 
           // Conversion Card
           Card {
@@ -277,6 +295,60 @@ fun Exchange(
               }
             }
           }
+
+          // start of address card
+          Card {
+            Column(
+                modifier =
+                    Modifier.padding(horizontal = dimensionResource(R.dimen.padding_xl))
+                        .padding(
+                            vertical = dimensionResource(R.dimen.padding_xl),
+                        ),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_xl)),
+            ) {
+              OutlinedTextField(
+                  modifier = Modifier.fillMaxWidth(),
+                  value = viewModel.toAddress,
+                  label = { Text(stringResource(R.string.label_to_address)) },
+                  onValueChange = viewModel::updateToAddress,
+                  supportingText = { Text(stringResource(R.string.hint_to_address_input)) })
+
+              OutlinedTextField(
+                  modifier = Modifier.fillMaxWidth(),
+                  value = viewModel.refundAddress,
+                  label = { Text(stringResource(R.string.label_refund_address)) },
+                  onValueChange = viewModel::updateRefundAddress,
+                  supportingText = {
+                    val importHintText = buildAnnotatedString {
+                      append(stringResource(R.string.hint_refund_address_input_p1))
+                      append(" ")
+                      val p2 = stringResource(R.string.hint_refund_address_input_p2)
+                      withStyle(
+                          style =
+                              SpanStyle(
+                                  textDecoration = TextDecoration.Underline,
+                                  fontWeight = FontWeight.Bold)) {
+                            append(p2)
+                          }
+                    }
+                    Text(importHintText)
+                  })
+            }
+          }
+          // end of address card
+
+          Button(
+              onClick = {
+                viewModel.createOrder(
+                    onOrderCreated = onOrderSelected,
+                )
+              },
+              enabled = uiState.enabled) {
+                Text(stringResource(R.string.label_create_order), fontSize = 18.sp)
+              }
+
+          Spacer(Modifier)
         }
       }
 }
@@ -285,9 +357,19 @@ fun Exchange(
 @Preview("large font", fontScale = 2f)
 @Composable
 fun ExchangePreview() {
-  val viewModel = ExchangeViewModel(SavedStateHandle(), RateFeeRepositoryMock())
+  val viewModel =
+      ExchangeViewModel(
+          SavedStateHandle(),
+          RateFeeRepositoryMock(),
+          UserSettingsRepositoryMock(),
+          OrderRepositoryMock(),
+      )
   viewModel.updateWorking(false)
   ExchTheme(darkTheme = true) {
-    Exchange(viewModel = viewModel, onNavigateToRoute = {}, onOrderCreated = {})
+    Exchange(
+        viewModel = viewModel,
+        onNavigateToRoute = {},
+        onOrderSelected = {},
+    )
   }
 }

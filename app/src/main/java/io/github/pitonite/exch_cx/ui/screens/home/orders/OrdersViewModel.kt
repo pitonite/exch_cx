@@ -4,7 +4,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -17,20 +17,18 @@ import io.github.pitonite.exch_cx.model.SnackbarMessage
 import io.github.pitonite.exch_cx.model.UserMessage
 import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import io.github.pitonite.exch_cx.utils.WorkState
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 @Stable
-class OrdersViewModel @Inject constructor(private val orderRepository: OrderRepository) :
-    ViewModel() {
-
-  var filterArchived by mutableStateOf(false)
-    private set
+class OrdersViewModel
+@Inject
+constructor(
+    private val savedStateHandle: SavedStateHandle,
+    private val orderRepository: OrderRepository
+) : ViewModel() {
 
   var refreshing by mutableStateOf<WorkState>(WorkState.NotWorking)
     private set
@@ -41,16 +39,8 @@ class OrdersViewModel @Inject constructor(private val orderRepository: OrderRepo
   var showImportDialog by mutableStateOf(false)
     private set
 
-  @OptIn(ExperimentalCoroutinesApi::class)
   val orderPagingDataFlow: Flow<PagingData<Order>> =
-      snapshotFlow { filterArchived }
-          .distinctUntilChanged()
-          .flatMapLatest { orderRepository.getOrderList(it) }
-          .cachedIn(viewModelScope)
-
-  fun updateFilterArchived(value: Boolean) {
-    filterArchived = value
-  }
+      orderRepository.getOrderList(false).cachedIn(viewModelScope)
 
   fun updateOrders() {
     // todo

@@ -3,13 +3,14 @@ package io.github.pitonite.exch_cx.di
 import io.github.pitonite.exch_cx.BuildConfig
 import io.github.pitonite.exch_cx.PreferredDomainType
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
-import io.github.pitonite.exch_cx.model.api.RateFeesObjectTransformer
+import io.github.pitonite.exch_cx.utils.jsonFormat
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
 import io.ktor.client.plugins.BrowserUserAgent
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.cookies.HttpCookies
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.LogLevel
@@ -29,15 +30,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.contextual
 import nl.adaptivity.xmlutil.serialization.XML
 import javax.inject.Inject
 import javax.inject.Singleton
 
 private const val NORMAL_HOST = "exch.cx"
 private const val ONION_HOST = "hszyoqwrcp7cxlxnqmovp6vjvmnwj33g4wviuxqzq47emieaxjaperyd.onion"
+
+fun getExchDomain(preferredDomainType: PreferredDomainType) =
+    if (preferredDomainType == PreferredDomainType.ONION) ONION_HOST else NORMAL_HOST
 
 @OptIn(ExperimentalSerializationApi::class)
 @Singleton
@@ -86,20 +87,15 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
             }
           }
 
+          install(HttpCookies)
+
           install(HttpRequestRetry) {
-            retryOnServerErrors(maxRetries = 3)
+            retryOnServerErrors(maxRetries = 2)
             exponentialDelay()
           }
 
           install(ContentNegotiation) {
-            json(
-                Json {
-                  isLenient = true
-                  ignoreUnknownKeys = true
-                  decodeEnumsCaseInsensitive = true
-                  explicitNulls = false
-                  serializersModule = SerializersModule { contextual(RateFeesObjectTransformer) }
-                })
+            json(jsonFormat)
 
             xml(
                 format =
@@ -121,7 +117,7 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
   fun HttpRequestBuilder.applyDefaultConfigurations() {
     url {
       protocol = URLProtocol.HTTPS
-      host = if (preferredDomainType == PreferredDomainType.ONION) ONION_HOST else NORMAL_HOST
+      host = getExchDomain(preferredDomainType)
       if (apiKey.isNotEmpty()) {
         parameters["api_key"] = apiKey
       }

@@ -25,6 +25,7 @@ import io.github.pitonite.exch_cx.ui.screens.home.history.HistoryViewModel
 import io.github.pitonite.exch_cx.ui.screens.home.orders.Orders
 import io.github.pitonite.exch_cx.ui.screens.home.orders.OrdersViewModel
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.OrderDetail
+import io.github.pitonite.exch_cx.ui.screens.orderdetail.OrderDetailViewModel
 import io.github.pitonite.exch_cx.ui.screens.settings.Settings
 import io.github.pitonite.exch_cx.ui.screens.settings.SettingsViewModel
 import io.github.pitonite.exch_cx.utils.enumByNameIgnoreCase
@@ -41,9 +42,7 @@ enum class PrimaryDestinations(
 }
 
 enum class ExchangeSections(@StringRes val title: Int, val route: String) {
-  AMOUNTS(R.string.exchange, "exchange/amounts"),
-  ADDRESS(R.string.details, "exchange/address"),
-  OVERVIEW(R.string.overview, "exchange/overview"),
+  MAIN(R.string.exchange, "exchange/main"),
   CURRENCY_SELECT(R.string.select_currency, "exchange/currency_select"),
 }
 
@@ -59,15 +58,18 @@ object NavArgs {
 
 fun NavGraphBuilder.exchNavGraph(
     exchNavController: ExchNavController,
-    onOrderSelected: (String, NavBackStackEntry) -> Unit,
     navigateTo: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
   addExchangeGraph(
-      exchNavController, onOrderSelected, navigateTo, exchNavController::upPress, modifier)
-  addOrders(onOrderSelected, navigateTo, modifier)
-  addHistory(onOrderSelected, navigateTo, modifier)
-  addOrderDetail(navigateTo, exchNavController::upPress, modifier)
+      exchNavController,
+      exchNavController::navigateToOrderDetail,
+      navigateTo,
+      exchNavController::upPress,
+      modifier)
+  addOrders(exchNavController::navigateToOrderDetail, modifier)
+  addHistory(exchNavController::navigateToOrderDetail, modifier)
+  addOrderDetail(exchNavController::upPress, modifier)
   addSettings(exchNavController::upPress, modifier)
 }
 
@@ -79,16 +81,15 @@ private fun NavGraphBuilder.addExchangeGraph(
     modifier: Modifier = Modifier
 ) {
   navigation(
-      route = PrimaryDestinations.EXCHANGE.route,
-      startDestination = ExchangeSections.AMOUNTS.route) {
-        composable(ExchangeSections.AMOUNTS.route) { backStackEntry ->
+      route = PrimaryDestinations.EXCHANGE.route, startDestination = ExchangeSections.MAIN.route) {
+        composable(ExchangeSections.MAIN.route) { backStackEntry ->
           val viewModel =
               backStackEntry.sharedViewModel<ExchangeViewModel>(exchNavController.navController)
 
           Exchange(
               viewModel = viewModel,
-              onOrderCreated = { id -> onOrderSelected(id, backStackEntry) },
               onNavigateToRoute = onNavigateToRoute,
+              onOrderSelected = { id -> onOrderSelected(id, backStackEntry) },
               modifier = modifier)
         }
 
@@ -125,7 +126,6 @@ private fun NavGraphBuilder.addExchangeGraph(
 
 private fun NavGraphBuilder.addOrders(
     onOrderSelected: (String, NavBackStackEntry) -> Unit,
-    onNavigateToRoute: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
 
@@ -134,7 +134,6 @@ private fun NavGraphBuilder.addOrders(
     Orders(
         viewModel = viewModel,
         onOrderSelected = { id -> onOrderSelected(id, from) },
-        onNavigateToRoute = onNavigateToRoute,
         modifier = modifier,
     )
   }
@@ -142,22 +141,16 @@ private fun NavGraphBuilder.addOrders(
 
 private fun NavGraphBuilder.addHistory(
     onOrderSelected: (String, NavBackStackEntry) -> Unit,
-    onNavigateToRoute: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
 
   composable(PrimaryDestinations.HISTORY.route) { from ->
     val viewModel = hiltViewModel<HistoryViewModel>()
-    History(
-        viewModel = viewModel,
-        onOrderSelected = { id -> onOrderSelected(id, from) },
-        onNavigateToRoute,
-        modifier)
+    History(viewModel = viewModel, onOrderSelected = { id -> onOrderSelected(id, from) }, modifier)
   }
 }
 
 private fun NavGraphBuilder.addOrderDetail(
-    onNavigateToRoute: (String) -> Unit,
     upPress: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -170,7 +163,12 @@ private fun NavGraphBuilder.addOrderDetail(
         if (orderId.isNullOrEmpty()) {
           upPress()
         } else {
-          OrderDetail(orderId, onNavigateToRoute, modifier)
+          val viewModel = hiltViewModel<OrderDetailViewModel>()
+          OrderDetail(
+              viewModel = viewModel,
+              upPress = upPress,
+              modifier = modifier,
+          )
         }
       }
 }

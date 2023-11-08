@@ -26,14 +26,18 @@ import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.utils.WorkState
 
 @Composable
-inline fun getImportError(workState: WorkState.Error): String {
-  if (workState.error.message == null) {
+fun getImportError(workState: WorkState.Error): String {
+  val message = workState.error.message
+  if (message == null) {
     return stringResource(R.string.unknown_error)
-  }
-  else if (workState.error.message!!.contains("timeout", true)) {
+  } else if (message.contains("Unable to resolve host", true)) {
+    return stringResource(R.string.error_unable_to_resolve_host)
+  } else if (message.contains("timeout", true)) {
     return stringResource(R.string.error_network_timedout)
+  } else if (message.contains("network", true) || message.contains("connect", true)) {
+    return stringResource(R.string.error_check_connection)
   } else {
-    return stringResource(R.string.error_invalid_orderid)
+    return stringResource(R.string.error_order_not_found)
   }
 }
 

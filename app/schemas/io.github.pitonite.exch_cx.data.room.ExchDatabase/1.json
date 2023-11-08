@@ -1,0 +1,221 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "ed14933b2352d3cd611fb0e0acab9d57",
+    "entities": [
+      {
+        "tableName": "Order",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`modifiedAt` INTEGER NOT NULL DEFAULT (cast((julianday('now') - 2440587.5) * 86400 * 1000 as integer)), `archived` INTEGER NOT NULL DEFAULT 0, `id` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `fromAddr` TEXT NOT NULL DEFAULT '_GENERATING_', `fromCurrency` TEXT NOT NULL, `fromAmountReceived` TEXT DEFAULT null, `maxInput` TEXT DEFAULT null, `minInput` TEXT DEFAULT null, `networkFee` TEXT DEFAULT null, `rate` TEXT NOT NULL, `rateMode` TEXT NOT NULL, `state` TEXT NOT NULL, `stateError` TEXT DEFAULT null, `svcFee` TEXT NOT NULL, `toAmount` TEXT DEFAULT null, `toAddress` TEXT NOT NULL, `toCurrency` TEXT NOT NULL, `transactionIdReceived` TEXT DEFAULT null, `transactionIdSent` TEXT DEFAULT null, `calculatedFromAmount` TEXT DEFAULT null, `calculatedToAmount` TEXT DEFAULT null, `referrerId` TEXT DEFAULT null, `aggregationOption` TEXT DEFAULT null, `feeOption` TEXT DEFAULT null, `refundAddress` TEXT DEFAULT null, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "modifiedAt",
+            "columnName": "modifiedAt",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "(cast((julianday('now') - 2440587.5) * 86400 * 1000 as integer))"
+          },
+          {
+            "fieldPath": "archived",
+            "columnName": "archived",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fromAddr",
+            "columnName": "fromAddr",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'_GENERATING_'"
+          },
+          {
+            "fieldPath": "fromCurrency",
+            "columnName": "fromCurrency",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fromAmountReceived",
+            "columnName": "fromAmountReceived",
+            "affinity": "TEXT",
+            "notNull": false,
+            "defaultValue": "null"
+          },
+          {
+            "fieldPath": "maxInput",
+            "columnName": "maxInput",
+            "affinity": "TEXT",
+            "notNull": false,
+            "defaultValue": "null"
+          },
+          {
+            "fieldPath": "minInput",
+            "columnName": "minInput",
+            "affinity": "TEXT",
+            "notNull": false,
+            "defaultValue": "null"
+          },
+          {
+            "fieldPath": "networkFee",
+            "columnName": "networkFee",
+            "affinity": "TEXT",
+            "notNull": false,
+            "defaultValue": "null"
+          },
+          {
+            "fieldPath": "rate",
+            "columnName": "rate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rateMode",
+            "columnName": "rateMode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "state",
+            "columnName": "state",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "stateError",
+            "columnName": "stateError",
+            "affinity": "TEXT",
+            "notNull": false,
+            "defaultValue": "null"
+          },
+          {
+            "fieldPath": "svcFee",
+            "columnName": "svcFee",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "toAmount",
+            "columnName": "toAmount",
+            "affinity": "TEXT",
+            "notNull": false,
+            "defaultValue": "null"
+          },
+          {
+            "fieldPath": "toAddress",
+            "columnName": "toAddress",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "toCurrency",
+            "columnName": "toCurrency",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "transactionIdReceived",
+            "columnName": "transactionIdReceived",
+            "affinity": "TEXT",
+            "notNull": false,
+            "defaultValue": "null"
+          },
+          {
+            "fieldPath": "transactionIdSent",
+            "columnName": "transactionIdSent",
+            "affinity": "TEXT",
+            "notNull": false,
+            "defaultValue": "null"
+          },
+          {
+            "fieldPath": "calculatedFromAmount",
+            "columnName": "calculatedFromAmount",
+            "affinity": "TEXT",
+            "notNull": false,
+            "defaultValue": "null"
+          },
+          {
+            "fieldPath": "calculatedToAmount",
+            "columnName": "calculatedToAmount",
+            "affinity": "TEXT",
+            "notNull": false,
+            "defaultValue": "null"
+          },
+          {
+            "fieldPath": "referrerId",
+            "columnName": "referrerId",
+            "affinity": "TEXT",
+            "notNull": false,
+            "defaultValue": "null"
+          },
+          {
+            "fieldPath": "aggregationOption",
+            "columnName": "aggregationOption",
+            "affinity": "TEXT",
+            "notNull": false,
+            "defaultValue": "null"
+          },
+          {
+            "fieldPath": "feeOption",
+            "columnName": "feeOption",
+            "affinity": "TEXT",
+            "notNull": false,
+            "defaultValue": "null"
+          },
+          {
+            "fieldPath": "refundAddress",
+            "columnName": "refundAddress",
+            "affinity": "TEXT",
+            "notNull": false,
+            "defaultValue": "null"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_Order_createdAt",
+            "unique": false,
+            "columnNames": [
+              "createdAt"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Order_createdAt` ON `${TABLE_NAME}` (`createdAt`)"
+          },
+          {
+            "name": "index_Order_archived_createdAt",
+            "unique": false,
+            "columnNames": [
+              "archived",
+              "createdAt"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Order_archived_createdAt` ON `${TABLE_NAME}` (`archived`, `createdAt`)"
+          }
+        ],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ed14933b2352d3cd611fb0e0acab9d57')"
+    ]
+  }
+}

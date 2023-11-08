@@ -14,6 +14,7 @@ import java.math.BigDecimal
 
 // for /api/rates
 
+@Serializable
 enum class NetworkFeeChoice {
   @SerialName("f") QUICK,
   @SerialName("m") MEDIUM,
@@ -21,8 +22,8 @@ enum class NetworkFeeChoice {
 }
 
 enum class RateFeeMode {
-  FLAT,
-  DYNAMIC
+  @SerialName("flat") FLAT,
+  @SerialName("dynamic") DYNAMIC
 }
 
 @Serializable

@@ -91,7 +91,7 @@ fun OrderItem(order: Order, modifier: Modifier = Modifier, onClick: () -> Unit) 
       Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         Text(stringResource(R.string.label_status))
         Text(
-            order.state.name.uppercase(),
+            order.state.toReadableString(),
             modifier = Modifier.padding(start = dimensionResource(R.dimen.padding_md)))
       }
     }

@@ -30,3 +30,8 @@ sealed class WorkState() {
     }
   }
 }
+
+@Immutable
+sealed class ExchangeWorkState() : WorkState() {
+  data object Refreshing : ExchangeWorkState()
+}

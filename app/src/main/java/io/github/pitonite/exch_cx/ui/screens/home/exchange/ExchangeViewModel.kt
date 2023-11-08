@@ -1,5 +1,7 @@
 package io.github.pitonite.exch_cx.ui.screens.home.exchange
 
+import android.util.Log
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Immutable
@@ -12,10 +14,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.pitonite.exch_cx.R
+import io.github.pitonite.exch_cx.UserSettings
+import io.github.pitonite.exch_cx.copy
+import io.github.pitonite.exch_cx.data.OrderRepository
 import io.github.pitonite.exch_cx.data.RateFeeRepository
+import io.github.pitonite.exch_cx.data.UserSettingsRepository
 import io.github.pitonite.exch_cx.model.SnackbarMessage
 import io.github.pitonite.exch_cx.model.UserMessage
 import io.github.pitonite.exch_cx.model.api.NetworkFeeChoice
+import io.github.pitonite.exch_cx.model.api.OrderCreateRequest
 import io.github.pitonite.exch_cx.model.api.RateFee
 import io.github.pitonite.exch_cx.model.api.RateFeeMode
 import io.github.pitonite.exch_cx.ui.components.SnackbarManager
@@ -46,16 +53,29 @@ data class ExchangeUiState(
 
 @HiltViewModel
 @Stable
+@OptIn(ExperimentalMaterial3Api::class)
 class ExchangeViewModel
 @Inject
 constructor(
     private val savedStateHandle: SavedStateHandle,
     private val rateFeeRepository: RateFeeRepository,
+    private val userSettingsRepository: UserSettingsRepository,
+    private val orderRepository: OrderRepository,
 ) : ViewModel() {
+
+  companion object {
+    const val TAG = "ExchangeViewModel"
+  }
+
+  val userSettings =
+      userSettingsRepository.userSettingsFlow.stateIn(
+          scope = viewModelScope,
+          started = SharingStarted.WhileSubscribed(5_000),
+          initialValue = UserSettings.getDefaultInstance().copy { isExchangeTipDismissed = true })
 
   private val _fromCurrency: MutableStateFlow<String> = MutableStateFlow("btc")
   private val _networkFeeChoice: MutableStateFlow<NetworkFeeChoice?> =
-      MutableStateFlow(NetworkFeeChoice.MEDIUM)
+      MutableStateFlow(NetworkFeeChoice.QUICK)
   private val _toCurrency: MutableStateFlow<String> = MutableStateFlow("eth")
   private val _rateFeeMode: MutableStateFlow<RateFeeMode> = MutableStateFlow(RateFeeMode.DYNAMIC)
   private val _rateFee =
@@ -157,12 +177,26 @@ constructor(
   var toAmount by mutableStateOf("")
     private set
 
+  var toAddress by mutableStateOf("")
+    private set
+
+  var refundAddress by mutableStateOf("")
+    private set
+
   fun updateFromAmount(input: String) {
     fromAmount = input
   }
 
   fun updateToAmount(input: String) {
     toAmount = input
+  }
+
+  fun updateToAddress(input: String) {
+    toAddress = input
+  }
+
+  fun updateRefundAddress(input: String) {
+    refundAddress = input
   }
 
   fun updateFromCurrency(currency: String) {
@@ -188,12 +222,12 @@ constructor(
           if (it > BigDecimal.ZERO) { // we don't want infinity
             val newToAmount =
                 it.multiply(fee.rate, MathContext.DECIMAL64)
-                    .let {
+                    .let networkLet@{
                       if (!fee.networkFee.isNullOrEmpty()) {
                         val networkFee = fee.networkFee[_networkFeeChoice.value]!!
-                        return@let it.minus(networkFee)
+                        return@networkLet it.minus(networkFee)
                       }
-                      return@let it
+                      return@networkLet it
                     }
                     .setScale(18, RoundingMode.CEILING)
             updateToAmount(newToAmount.stripTrailingZeros().toString())
@@ -206,12 +240,12 @@ constructor(
         toAmount.toBigDecimalOrNull()?.let {
           if (it > BigDecimal.ZERO) {
             val newFromAmount =
-                it.let {
+                it.let networkLet@{
                       if (!fee.networkFee.isNullOrEmpty()) {
                         val networkFee = fee.networkFee[_networkFeeChoice.value]!!
-                        return@let it.plus(networkFee)
+                        return@networkLet it.plus(networkFee)
                       }
-                      return@let it
+                      return@networkLet it
                     }
                     .divide(fee.rate, MathContext.DECIMAL64)
                     .setScale(18, RoundingMode.CEILING)
@@ -255,5 +289,58 @@ constructor(
   fun updateNetworkFeeChoice(networkFeeChoice: NetworkFeeChoice?) {
     _networkFeeChoice.value = networkFeeChoice
     updateConversionAmounts(CurrencySelection.FROM)
+  }
+
+  fun setIsExchangeTipDismissed(value: Boolean) {
+    viewModelScope.launch { userSettingsRepository.setExchangeTipDismissed(value) }
+  }
+
+  fun createOrder(onOrderCreated: (String) -> Unit) {
+    if (_rateFee.value == null) return
+    val rate = _rateFee.value!!
+    viewModelScope.launch {
+      if (_rateFee.value == null) return@launch
+      try {
+        _enabled.value = false
+        val orderid =
+            orderRepository.createOrder(
+                OrderCreateRequest(
+                    fromCurrency = _fromCurrency.value,
+                    toCurrency = _toCurrency.value,
+                    toAddress = toAddress,
+                    refundAddress = if (refundAddress.isNullOrEmpty()) null else refundAddress,
+                    feeOption = _networkFeeChoice.value,
+                    calculatedFromAmount = fromAmount.toBigDecimalOrNull(),
+                    calculatedToAmount = toAmount.toBigDecimalOrNull(),
+                    rateMode = _rateFeeMode.value,
+                    referrerId = null, // TODO
+                    aggregation = null, // TODO
+                ),
+                rate)
+
+        onOrderCreated(orderid)
+      } catch (e: Exception) {
+        Log.d(TAG, e.message ?: e.toString())
+        SnackbarManager.showMessage(
+            SnackbarMessage.from(
+                message = UserMessage.from(e.message ?: e.toString()),
+                withDismissAction = true,
+                duration = SnackbarDuration.Long,
+            ))
+      } finally {
+        reset()
+        _enabled.value = true
+      }
+    }
+  }
+
+  private fun reset() {
+    val defaultState = ExchangeUiState()
+    _fromCurrency.value = defaultState.fromCurrency
+    _toCurrency.value = defaultState.toCurrency
+    fromAmount = ""
+    toAmount = ""
+    toAddress = ""
+    refundAddress = ""
   }
 }

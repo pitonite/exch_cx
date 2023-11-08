@@ -2,6 +2,7 @@ package io.github.pitonite.exch_cx.ui.screens.settings
 
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
@@ -30,6 +31,12 @@ constructor(
   var preferredDomainTypeDraft by mutableStateOf(PreferredDomainType.NORMAL)
     private set
 
+  var isOrderAutoUpdateEnabledDraft by mutableStateOf(false)
+    private set
+
+  var orderAutoUpdatePeriodMinutesDraft by mutableLongStateOf(0)
+    private set
+
   fun updateApiKeyDraft(value: String) {
     apiKeyDraft = value
   }
@@ -38,11 +45,21 @@ constructor(
     preferredDomainTypeDraft = value
   }
 
+  fun updateIsOrderAutoUpdateEnabledDraft(value: Boolean) {
+    isOrderAutoUpdateEnabledDraft = value
+  }
+
+  fun updateOrderAutoUpdatePeriodMinutesDraft(value: Long) {
+    orderAutoUpdatePeriodMinutesDraft = value
+  }
+
   fun reloadSettings() {
     viewModelScope.launch {
       userSettingsRepository.userSettingsFlow.firstOrNull()?.let {
         apiKeyDraft = it.apiKey
         preferredDomainTypeDraft = it.preferredDomainType
+        isOrderAutoUpdateEnabledDraft = it.isOrderAutoUpdateEnabled
+        orderAutoUpdatePeriodMinutesDraft = it.orderAutoUpdatePeriodMinutes
       }
     }
   }
@@ -53,6 +70,8 @@ constructor(
           userSettingsRepository.fetchSettings().copy {
             apiKey = apiKeyDraft
             preferredDomainType = preferredDomainTypeDraft
+            isOrderAutoUpdateEnabled = isOrderAutoUpdateEnabledDraft
+            orderAutoUpdatePeriodMinutes = orderAutoUpdatePeriodMinutesDraft
           })
     }
   }

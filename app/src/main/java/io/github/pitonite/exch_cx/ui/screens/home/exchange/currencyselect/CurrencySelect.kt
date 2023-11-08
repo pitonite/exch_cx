@@ -26,7 +26,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.pitonite.exch_cx.R
+import io.github.pitonite.exch_cx.data.OrderRepositoryMock
 import io.github.pitonite.exch_cx.data.RateFeeRepositoryMock
+import io.github.pitonite.exch_cx.data.UserSettingsRepositoryMock
 import io.github.pitonite.exch_cx.ui.components.UpBtn
 import io.github.pitonite.exch_cx.ui.screens.home.exchange.ExchangeViewModel
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
@@ -111,6 +113,8 @@ fun CurrencySelectPreview() {
             ExchangeViewModel(
                 SavedStateHandle(),
                 RateFeeRepositoryMock(),
+                UserSettingsRepositoryMock(),
+                OrderRepositoryMock(),
             ))
   }
 }
