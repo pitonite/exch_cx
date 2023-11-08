@@ -5,6 +5,7 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
@@ -21,6 +22,10 @@ class MainActivity : AppCompatActivity() {
 
   @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
   override fun onCreate(savedInstanceState: Bundle?) {
+    // Handle the splash screen transition.
+    // must be called before super.onCreate()
+    val splashScreen = installSplashScreen()
+
     super.onCreate(savedInstanceState)
 
     // to preload settings asynchronously, to runBlocking later in di/HttpClientModule

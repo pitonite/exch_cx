@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.Exch" parent="Theme.AppCompat.DayNight.NoActionBar" />
+  <style name="Theme.Exch" parent="Theme.AppCompat.DayNight.NoActionBar" />
+
+  <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+    <item name="windowSplashScreenBackground">@color/exch_black</item>
+
+    <!-- Use windowSplashScreenAnimatedIcon to add a drawable or an animated
+         drawable. One of these is required. -->
+    <item name="windowSplashScreenAnimatedIcon">@drawable/exch_splash_path</item>
+    <!-- Required for animated icons. -->
+    <item name="windowSplashScreenAnimationDuration">100</item>
+
+    <!-- Set the theme of the Activity that directly follows your splash
+    screen. This is required. -->
+    <item name="postSplashScreenTheme">@style/Theme.Exch</item>
+  </style>
 </resources>
