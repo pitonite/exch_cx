@@ -1,7 +1,7 @@
 package io.github.pitonite.exch_cx.data
 
 import io.github.pitonite.exch_cx.model.CurrencyDetail
-import io.github.pitonite.exch_cx.model.api.NetworkFeeChoice
+import io.github.pitonite.exch_cx.model.api.NetworkFeeOption
 import io.github.pitonite.exch_cx.model.api.RateFee
 import io.github.pitonite.exch_cx.model.api.RateFeeMode
 import kotlinx.coroutines.flow.Flow
@@ -24,8 +24,8 @@ class RateFeeRepositoryMock() : RateFeeRepository {
                 svcFee = "0.500000000000000000".toBigDecimalOrNull()!!,
                 networkFee =
                     mutableMapOf(
-                        NetworkFeeChoice.QUICK to "0.00031116".toBigDecimalOrNull()!!,
-                        NetworkFeeChoice.MEDIUM to "0.00010116".toBigDecimalOrNull()!!,
+                        NetworkFeeOption.QUICK to "0.00031116".toBigDecimalOrNull()!!,
+                        NetworkFeeOption.MEDIUM to "0.00010116".toBigDecimalOrNull()!!,
                     ),
             ),
             RateFee(
@@ -37,8 +37,8 @@ class RateFeeRepositoryMock() : RateFeeRepository {
                 svcFee = "0.500000000000000000".toBigDecimalOrNull()!!,
                 networkFee =
                     mutableMapOf(
-                        NetworkFeeChoice.QUICK to "0.00004521".toBigDecimalOrNull()!!,
-                        NetworkFeeChoice.MEDIUM to "0.00000000".toBigDecimalOrNull()!!,
+                        NetworkFeeOption.QUICK to "0.00004521".toBigDecimalOrNull()!!,
+                        NetworkFeeOption.MEDIUM to "0.00000000".toBigDecimalOrNull()!!,
                     ),
             ),
         )

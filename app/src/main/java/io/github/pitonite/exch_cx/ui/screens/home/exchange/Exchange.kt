@@ -54,7 +54,7 @@ import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock
 import io.github.pitonite.exch_cx.data.RateFeeRepositoryMock
 import io.github.pitonite.exch_cx.data.UserSettingsRepositoryMock
-import io.github.pitonite.exch_cx.model.api.NetworkFeeChoice
+import io.github.pitonite.exch_cx.model.api.NetworkFeeOption
 import io.github.pitonite.exch_cx.model.api.RateFeeMode
 import io.github.pitonite.exch_cx.ui.components.Card
 import io.github.pitonite.exch_cx.ui.components.CurrencyInput
@@ -69,10 +69,10 @@ import io.github.pitonite.exch_cx.utils.nonScaledSp
 import java.math.BigDecimal
 
 val FeeStringResourceMap =
-    mutableMapOf<NetworkFeeChoice, Int>(
-        NetworkFeeChoice.QUICK to R.string.QUICK,
-        NetworkFeeChoice.MEDIUM to R.string.MEDIUM,
-        NetworkFeeChoice.SLOW to R.string.SLOW,
+    mutableMapOf<NetworkFeeOption, Int>(
+        NetworkFeeOption.QUICK to R.string.QUICK,
+        NetworkFeeOption.MEDIUM to R.string.MEDIUM,
+        NetworkFeeOption.SLOW to R.string.SLOW,
     )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -266,8 +266,8 @@ fun Exchange(
                               fontSize = 20.sp.nonScaledSp,
                           )
                         },
-                        onClick = { viewModel.updateNetworkFeeChoice(el) },
-                        selected = uiState.networkFeeChoice == el,
+                        onClick = { viewModel.updateNetworkFeeOption(el) },
+                        selected = uiState.networkFeeOption == el,
                         shape =
                             SegmentedButtonDefaults.itemShape(
                                 index = i,
@@ -284,7 +284,7 @@ fun Exchange(
                 val chosenAmount =
                     uiState.rateFee!!
                         .networkFee!!
-                        .getOrDefault(uiState.networkFeeChoice, BigDecimal.ZERO)
+                        .getOrDefault(uiState.networkFeeOption, BigDecimal.ZERO)
                 Text(
                     stringResource(R.string.label_amount) +
                         " " +

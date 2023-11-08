@@ -22,7 +22,7 @@ data class OrderCreateRequest(
     @SerialName("to_currency") val toCurrency: String,
     @SerialName("to_address") val toAddress: String,
     @SerialName("refund_address") val refundAddress: String? = null,
-    @SerialName("fee_option") val feeOption: NetworkFeeChoice? = null,
+    @SerialName("fee_option") val feeOption: NetworkFeeOption? = null,
     @Serializable(with = BigDecimalSerializer::class)
     @SerialName("from_amount")
     val calculatedFromAmount: BigDecimal? = null,

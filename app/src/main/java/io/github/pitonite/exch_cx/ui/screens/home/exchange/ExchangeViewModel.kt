@@ -21,7 +21,7 @@ import io.github.pitonite.exch_cx.data.RateFeeRepository
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
 import io.github.pitonite.exch_cx.model.SnackbarMessage
 import io.github.pitonite.exch_cx.model.UserMessage
-import io.github.pitonite.exch_cx.model.api.NetworkFeeChoice
+import io.github.pitonite.exch_cx.model.api.NetworkFeeOption
 import io.github.pitonite.exch_cx.model.api.OrderCreateRequest
 import io.github.pitonite.exch_cx.model.api.RateFee
 import io.github.pitonite.exch_cx.model.api.RateFeeMode
@@ -46,7 +46,7 @@ data class ExchangeUiState(
     val rateFeeMode: RateFeeMode = RateFeeMode.DYNAMIC,
     val rateFee: RateFee? = null,
     val svcFee: BigDecimal? = null,
-    val networkFeeChoice: NetworkFeeChoice? = null,
+    val networkFeeOption: NetworkFeeOption? = null,
     val enabled: Boolean = false,
     val refreshing: Boolean = false,
 )
@@ -74,8 +74,8 @@ constructor(
           initialValue = UserSettings.getDefaultInstance().copy { isExchangeTipDismissed = true })
 
   private val _fromCurrency: MutableStateFlow<String> = MutableStateFlow("btc")
-  private val _networkFeeChoice: MutableStateFlow<NetworkFeeChoice?> =
-      MutableStateFlow(NetworkFeeChoice.QUICK)
+  private val _networkFeeOption: MutableStateFlow<NetworkFeeOption?> =
+      MutableStateFlow(NetworkFeeOption.QUICK)
   private val _toCurrency: MutableStateFlow<String> = MutableStateFlow("eth")
   private val _rateFeeMode: MutableStateFlow<RateFeeMode> = MutableStateFlow(RateFeeMode.DYNAMIC)
   private val _rateFee =
@@ -83,13 +83,13 @@ constructor(
           .findRateStream(_fromCurrency, _toCurrency)
           .onEach {
             if (it?.networkFee != null) {
-              if (it.networkFee[NetworkFeeChoice.QUICK] != null) {
-                _networkFeeChoice.value = NetworkFeeChoice.QUICK
+              if (it.networkFee[NetworkFeeOption.QUICK] != null) {
+                _networkFeeOption.value = NetworkFeeOption.QUICK
               } else {
-                _networkFeeChoice.value = it.networkFee.keys.first()
+                _networkFeeOption.value = it.networkFee.keys.first()
               }
             } else {
-              _networkFeeChoice.value = null
+              _networkFeeOption.value = null
             }
           }
           .stateIn(
@@ -146,14 +146,14 @@ constructor(
               _toCurrency,
               _rateFeeMode,
               _rateFee,
-              _networkFeeChoice,
+              _networkFeeOption,
               _enabled,
               _refreshing) {
                   fromCurrency,
                   toCurrency,
                   rateFeeMode,
                   rateFee,
-                  networkFeeChoice,
+                  networkFeeOption,
                   enabled,
                   refreshing ->
                 ExchangeUiState(
@@ -161,7 +161,7 @@ constructor(
                     toCurrency = toCurrency,
                     rateFeeMode = rateFeeMode,
                     rateFee = rateFee,
-                    networkFeeChoice = networkFeeChoice,
+                    networkFeeOption = networkFeeOption,
                     enabled = enabled,
                     refreshing = refreshing,
                 )
@@ -224,7 +224,7 @@ constructor(
                 it.multiply(fee.rate, MathContext.DECIMAL64)
                     .let networkLet@{
                       if (!fee.networkFee.isNullOrEmpty()) {
-                        val networkFee = fee.networkFee[_networkFeeChoice.value]!!
+                        val networkFee = fee.networkFee[_networkFeeOption.value]!!
                         return@networkLet it.minus(networkFee)
                       }
                       return@networkLet it
@@ -242,7 +242,7 @@ constructor(
             val newFromAmount =
                 it.let networkLet@{
                       if (!fee.networkFee.isNullOrEmpty()) {
-                        val networkFee = fee.networkFee[_networkFeeChoice.value]!!
+                        val networkFee = fee.networkFee[_networkFeeOption.value]!!
                         return@networkLet it.plus(networkFee)
                       }
                       return@networkLet it
@@ -286,8 +286,8 @@ constructor(
     updateConversionAmounts(CurrencySelection.FROM)
   }
 
-  fun updateNetworkFeeChoice(networkFeeChoice: NetworkFeeChoice?) {
-    _networkFeeChoice.value = networkFeeChoice
+  fun updateNetworkFeeOption(networkFeeOption: NetworkFeeOption?) {
+    _networkFeeOption.value = networkFeeOption
     updateConversionAmounts(CurrencySelection.FROM)
   }
 
@@ -309,7 +309,7 @@ constructor(
                     toCurrency = _toCurrency.value,
                     toAddress = toAddress,
                     refundAddress = if (refundAddress.isNullOrEmpty()) null else refundAddress,
-                    feeOption = _networkFeeChoice.value,
+                    feeOption = _networkFeeOption.value,
                     calculatedFromAmount = fromAmount.toBigDecimalOrNull(),
                     calculatedToAmount = toAmount.toBigDecimalOrNull(),
                     rateMode = _rateFeeMode.value,

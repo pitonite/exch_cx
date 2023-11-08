@@ -44,6 +44,9 @@ constructor(
 
   fun updateOrders() {
     // todo
+
+    // cancel and reschedule the periodic work
+    // then start a one time work and wait for it's result
   }
 
   fun showImportOrderDialog() {

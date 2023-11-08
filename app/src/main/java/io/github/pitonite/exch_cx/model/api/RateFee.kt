@@ -15,7 +15,7 @@ import java.math.BigDecimal
 // for /api/rates
 
 @Serializable
-enum class NetworkFeeChoice {
+enum class NetworkFeeOption {
   @SerialName("f") QUICK,
   @SerialName("m") MEDIUM,
   @SerialName("s") SLOW,
@@ -39,7 +39,7 @@ data class RateFee(
     @Serializable(with = BigDecimalSerializer::class) @SerialName("svc_fee") val svcFee: BigDecimal,
     @SerialName("network_fee")
     val networkFee:
-        Map<NetworkFeeChoice, @Serializable(with = BigDecimalSerializer::class) BigDecimal>? =
+        Map<NetworkFeeOption, @Serializable(with = BigDecimalSerializer::class) BigDecimal>? =
         null,
 )
 

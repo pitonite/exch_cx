@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import io.github.pitonite.exch_cx.model.api.AggregationOption
-import io.github.pitonite.exch_cx.model.api.NetworkFeeChoice
+import io.github.pitonite.exch_cx.model.api.NetworkFeeOption
 import io.github.pitonite.exch_cx.model.api.OrderState
 import io.github.pitonite.exch_cx.model.api.RateFeeMode
 import java.math.BigDecimal
@@ -47,7 +47,7 @@ data class Order(
     @ColumnInfo(defaultValue = "null") val calculatedToAmount: BigDecimal? = null,
     @ColumnInfo(defaultValue = "null") val referrerId: String? = null,
     @ColumnInfo(defaultValue = "null") val aggregationOption: AggregationOption? = null,
-    @ColumnInfo(defaultValue = "null") val feeOption: NetworkFeeChoice? = null,
+    @ColumnInfo(defaultValue = "null") val feeOption: NetworkFeeOption? = null,
     @ColumnInfo(defaultValue = "null") val refundAddress: String? = null,
 )
 
