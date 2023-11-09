@@ -2,13 +2,18 @@ package io.github.pitonite.exch_cx.utils
 
 import javax.annotation.concurrent.Immutable
 
+interface WorkingState
+
+interface ErrorState
+
 @Immutable
-sealed class WorkState() {
+sealed class WorkState {
+
   /** Indicates the work is currently done, and no error was observed. */
   data object NotWorking : WorkState()
 
-  /** work is in progress. */
-  data object Working : WorkState()
+  /** work is in progress. two working state are equal if their key are equal. */
+  data object Working : WorkState(), WorkingState
 
   /**
    * Work hit an error.
@@ -16,7 +21,7 @@ sealed class WorkState() {
    * @param error [Throwable] that caused the work operation to generate this error state.
    */
   @Immutable
-  class Error(public val error: Throwable) : WorkState() {
+  data class Error(val error: Throwable) : WorkState(), ErrorState {
     override fun equals(other: Any?): Boolean {
       return other is Error && error == other.error
     }
@@ -29,9 +34,18 @@ sealed class WorkState() {
       return error.toString()
     }
   }
+
+  companion object {
+    fun isWorking(state: WorkState): Boolean = state is WorkingState
+
+    fun isError(state: WorkState): Boolean = state is ErrorState
+  }
 }
 
 @Immutable
 sealed class ExchangeWorkState() : WorkState() {
-  data object Refreshing : ExchangeWorkState()
+
+  data object Refreshing : ExchangeWorkState(), WorkingState
+
+  data object CreatingOrder : ExchangeWorkState(), WorkingState
 }

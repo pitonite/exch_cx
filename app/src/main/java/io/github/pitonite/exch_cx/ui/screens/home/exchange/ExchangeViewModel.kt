@@ -28,6 +28,7 @@ import io.github.pitonite.exch_cx.model.api.RateFee
 import io.github.pitonite.exch_cx.model.api.RateFeeMode
 import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import io.github.pitonite.exch_cx.ui.screens.home.exchange.currencyselect.CurrencySelection
+import io.github.pitonite.exch_cx.utils.ExchangeWorkState
 import io.github.pitonite.exch_cx.utils.WorkState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -97,20 +98,13 @@ constructor(
               started = SharingStarted.WhileSubscribed(5_000),
               initialValue = null)
 
-  var refreshWorkState by mutableStateOf<WorkState>(WorkState.NotWorking)
+  var workState by mutableStateOf<WorkState>(WorkState.NotWorking)
     private set
 
-  var createOrderWorkState by mutableStateOf<WorkState>(WorkState.NotWorking)
-    private set
-
-  val busy =
-      snapshotFlow {
-            refreshWorkState == WorkState.Working || createOrderWorkState == WorkState.Working
-          }
-          .stateIn(
-              scope = viewModelScope,
-              started = SharingStarted.WhileSubscribed(5_000),
-              initialValue = true)
+  val busy = snapshotFlow { WorkState.isWorking(workState) }.stateIn(
+      scope = viewModelScope,
+      started = SharingStarted.WhileSubscribed(5_000),
+      initialValue = false)
 
   init {
     viewModelScope.launch {
@@ -124,14 +118,14 @@ constructor(
   }
 
   private suspend fun _updateFeeRates() {
-    if (refreshWorkState == WorkState.Working) return
-    refreshWorkState = WorkState.Working
+    if (workState == WorkState.Working) return
+    workState = ExchangeWorkState.Refreshing
     try {
       rateFeeRepository.updateRateFees(_rateFeeMode.value)
       updateConversionAmounts(CurrencySelection.FROM)
-      refreshWorkState = WorkState.NotWorking
+      workState = WorkState.NotWorking
     } catch (e: Exception) {
-      refreshWorkState = WorkState.Error(e)
+      workState = WorkState.Error(e)
       SnackbarManager.showMessage(
           SnackbarMessage.from(
               message = UserMessage.from(R.string.snack_network_error),
@@ -294,8 +288,8 @@ constructor(
 
   fun createOrder(onOrderCreated: (String) -> Unit) {
     if (_rateFee.value == null) return
-    if (createOrderWorkState == WorkState.Working) return
-    createOrderWorkState = WorkState.Working
+    if (workState == WorkState.Working) return
+    workState = ExchangeWorkState.CreatingOrder
 
     val rate = _rateFee.value!!
     viewModelScope.launch {
@@ -317,11 +311,11 @@ constructor(
                 ),
                 rate)
         onOrderCreated(orderid)
-        createOrderWorkState = WorkState.NotWorking
+        workState = WorkState.NotWorking
         reset()
       } catch (e: Exception) {
         Log.d(TAG, e.message ?: e.toString())
-        createOrderWorkState = WorkState.Error(e)
+        workState = WorkState.Error(e)
         SnackbarManager.showMessage(
             SnackbarMessage.from(
                 message = UserMessage.from(e.message ?: e.toString()),

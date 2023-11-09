@@ -64,7 +64,7 @@ import io.github.pitonite.exch_cx.ui.components.Tip
 import io.github.pitonite.exch_cx.ui.navigation.SecondaryDestinations
 import io.github.pitonite.exch_cx.ui.screens.home.exchange.currencyselect.CurrencySelection
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
-import io.github.pitonite.exch_cx.utils.WorkState
+import io.github.pitonite.exch_cx.utils.ExchangeWorkState
 import io.github.pitonite.exch_cx.utils.noRippleClickable
 import io.github.pitonite.exch_cx.utils.nonScaledSp
 import java.math.BigDecimal
@@ -108,7 +108,7 @@ fun Exchange(
               RefreshButton(
                   onClick = { viewModel.updateFeeRates() },
                   enabled = !busy,
-                  refreshing = viewModel.refreshWorkState == WorkState.Working,
+                  refreshing = viewModel.workState == ExchangeWorkState.Refreshing,
               )
             },
         )
