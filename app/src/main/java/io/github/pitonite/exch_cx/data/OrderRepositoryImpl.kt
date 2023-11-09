@@ -21,6 +21,9 @@ import io.github.pitonite.exch_cx.di.ExchHttpClient
 import io.github.pitonite.exch_cx.model.api.OrderCreateRequest
 import io.github.pitonite.exch_cx.model.api.OrderResponse
 import io.github.pitonite.exch_cx.model.api.RateFee
+import io.github.pitonite.exch_cx.model.api.exceptions.FailedToParseOrderException
+import io.github.pitonite.exch_cx.model.api.exceptions.ServiceUnavailableException
+import io.github.pitonite.exch_cx.model.api.exceptions.ToAddressRequiredException
 import io.github.pitonite.exch_cx.utils.ExchParser
 import io.github.pitonite.exch_cx.utils.toParameterMap
 import io.ktor.client.call.body
@@ -124,18 +127,19 @@ constructor(
         }
 
     if (resp.status != HttpStatusCode.OK) {
-      throw RuntimeException("service unavailable")
+      throw ServiceUnavailableException()
     }
 
     val htmlBody = resp.bodyAsText()
     val error = ExchParser.parseError(htmlBody)
     if (error != null) {
+      if (error.contains("address is required")) {
+        throw ToAddressRequiredException()
+      }
       throw RuntimeException(error)
     }
 
-    val createdOrder =
-        ExchParser.parseOrder(htmlBody)
-            ?: throw RuntimeException("Failed to retrieve created order.")
+    val createdOrder = ExchParser.parseOrder(htmlBody) ?: throw FailedToParseOrderException()
 
     val orderCreate =
         OrderCreate(

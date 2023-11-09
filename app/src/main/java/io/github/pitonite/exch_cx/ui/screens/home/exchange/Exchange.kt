@@ -316,6 +316,7 @@ fun Exchange(
                   onValueChange = viewModel::updateToAddress,
                   supportingText = { Text(stringResource(R.string.hint_to_address_input)) },
                   enabled = !busy,
+                  isError = viewModel.workState == ExchangeWorkState.ToAddressRequiredError,
               )
 
               OutlinedTextField(

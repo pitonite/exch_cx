@@ -20,16 +20,22 @@ import io.github.pitonite.exch_cx.copy
 import io.github.pitonite.exch_cx.data.OrderRepository
 import io.github.pitonite.exch_cx.data.RateFeeRepository
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
+import io.github.pitonite.exch_cx.exceptions.LocalizedException
 import io.github.pitonite.exch_cx.model.SnackbarMessage
 import io.github.pitonite.exch_cx.model.UserMessage
 import io.github.pitonite.exch_cx.model.api.NetworkFeeOption
 import io.github.pitonite.exch_cx.model.api.OrderCreateRequest
 import io.github.pitonite.exch_cx.model.api.RateFee
 import io.github.pitonite.exch_cx.model.api.RateFeeMode
+import io.github.pitonite.exch_cx.model.api.exceptions.ToAddressRequiredException
 import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import io.github.pitonite.exch_cx.ui.screens.home.exchange.currencyselect.CurrencySelection
 import io.github.pitonite.exch_cx.utils.ExchangeWorkState
 import io.github.pitonite.exch_cx.utils.WorkState
+import java.math.BigDecimal
+import java.math.MathContext
+import java.math.RoundingMode
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -37,10 +43,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
-import java.math.MathContext
-import java.math.RoundingMode
-import javax.inject.Inject
 
 @Immutable
 data class ExchangeUiState(
@@ -101,10 +103,12 @@ constructor(
   var workState by mutableStateOf<WorkState>(WorkState.NotWorking)
     private set
 
-  val busy = snapshotFlow { WorkState.isWorking(workState) }.stateIn(
-      scope = viewModelScope,
-      started = SharingStarted.WhileSubscribed(5_000),
-      initialValue = false)
+  val busy =
+      snapshotFlow { WorkState.isWorking(workState) }
+          .stateIn(
+              scope = viewModelScope,
+              started = SharingStarted.WhileSubscribed(5_000),
+              initialValue = false)
 
   init {
     viewModelScope.launch {
@@ -315,10 +319,18 @@ constructor(
         reset()
       } catch (e: Exception) {
         Log.d(TAG, e.message ?: e.toString())
-        workState = WorkState.Error(e)
+
+        if (e is ToAddressRequiredException) {
+          workState = ExchangeWorkState.ToAddressRequiredError
+        } else {
+          workState = WorkState.Error(e)
+        }
+
         SnackbarManager.showMessage(
             SnackbarMessage.from(
-                message = UserMessage.from(e.message ?: e.toString()),
+                message =
+                    if (e is LocalizedException) UserMessage.from(e.msgId)
+                    else UserMessage.from(e.message ?: e.toString()),
                 withDismissAction = true,
                 duration = SnackbarDuration.Long,
             ))

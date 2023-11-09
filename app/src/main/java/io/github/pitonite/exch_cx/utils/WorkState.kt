@@ -48,4 +48,6 @@ sealed class ExchangeWorkState() : WorkState() {
   data object Refreshing : ExchangeWorkState(), WorkingState
 
   data object CreatingOrder : ExchangeWorkState(), WorkingState
+
+  data object ToAddressRequiredError : ExchangeWorkState(), ErrorState
 }
