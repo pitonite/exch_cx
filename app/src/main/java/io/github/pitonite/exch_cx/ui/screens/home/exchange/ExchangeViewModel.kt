@@ -9,6 +9,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -27,10 +28,11 @@ import io.github.pitonite.exch_cx.model.api.RateFee
 import io.github.pitonite.exch_cx.model.api.RateFeeMode
 import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import io.github.pitonite.exch_cx.ui.screens.home.exchange.currencyselect.CurrencySelection
-import io.github.pitonite.exch_cx.utils.combine
+import io.github.pitonite.exch_cx.utils.WorkState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -47,8 +49,6 @@ data class ExchangeUiState(
     val rateFee: RateFee? = null,
     val svcFee: BigDecimal? = null,
     val networkFeeOption: NetworkFeeOption? = null,
-    val enabled: Boolean = false,
-    val refreshing: Boolean = false,
 )
 
 @HiltViewModel
@@ -96,8 +96,21 @@ constructor(
               scope = viewModelScope,
               started = SharingStarted.WhileSubscribed(5_000),
               initialValue = null)
-  private val _enabled: MutableStateFlow<Boolean> = MutableStateFlow(false)
-  private val _refreshing: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
+  var refreshWorkState by mutableStateOf<WorkState>(WorkState.NotWorking)
+    private set
+
+  var createOrderWorkState by mutableStateOf<WorkState>(WorkState.NotWorking)
+    private set
+
+  val busy =
+      snapshotFlow {
+            refreshWorkState == WorkState.Working || createOrderWorkState == WorkState.Working
+          }
+          .stateIn(
+              scope = viewModelScope,
+              started = SharingStarted.WhileSubscribed(5_000),
+              initialValue = true)
 
   init {
     viewModelScope.launch {
@@ -111,14 +124,14 @@ constructor(
   }
 
   private suspend fun _updateFeeRates() {
-    if (_refreshing.value) return
-    _enabled.value = false
-    _refreshing.value = true
+    if (refreshWorkState == WorkState.Working) return
+    refreshWorkState = WorkState.Working
     try {
       rateFeeRepository.updateRateFees(_rateFeeMode.value)
       updateConversionAmounts(CurrencySelection.FROM)
-      _enabled.value = true
+      refreshWorkState = WorkState.NotWorking
     } catch (e: Exception) {
+      refreshWorkState = WorkState.Error(e)
       SnackbarManager.showMessage(
           SnackbarMessage.from(
               message = UserMessage.from(R.string.snack_network_error),
@@ -131,8 +144,6 @@ constructor(
                 }
               },
           ))
-    } finally {
-      _refreshing.value = false
     }
   }
 
@@ -147,25 +158,15 @@ constructor(
               _rateFeeMode,
               _rateFee,
               _networkFeeOption,
-              _enabled,
-              _refreshing) {
-                  fromCurrency,
-                  toCurrency,
-                  rateFeeMode,
-                  rateFee,
-                  networkFeeOption,
-                  enabled,
-                  refreshing ->
-                ExchangeUiState(
-                    fromCurrency = fromCurrency,
-                    toCurrency = toCurrency,
-                    rateFeeMode = rateFeeMode,
-                    rateFee = rateFee,
-                    networkFeeOption = networkFeeOption,
-                    enabled = enabled,
-                    refreshing = refreshing,
-                )
-              }
+          ) { fromCurrency, toCurrency, rateFeeMode, rateFee, networkFeeOption ->
+            ExchangeUiState(
+                fromCurrency = fromCurrency,
+                toCurrency = toCurrency,
+                rateFeeMode = rateFeeMode,
+                rateFee = rateFee,
+                networkFeeOption = networkFeeOption,
+            )
+          }
           .stateIn(
               scope = viewModelScope,
               started = SharingStarted.WhileSubscribed(5_000),
@@ -272,10 +273,6 @@ constructor(
     }
   }
 
-  fun updateWorking(newState: Boolean) {
-    _enabled.value = newState
-  }
-
   fun swapCurrencies() {
     val tmpCurr = _fromCurrency.value
     _fromCurrency.value = _toCurrency.value
@@ -297,11 +294,13 @@ constructor(
 
   fun createOrder(onOrderCreated: (String) -> Unit) {
     if (_rateFee.value == null) return
+    if (createOrderWorkState == WorkState.Working) return
+    createOrderWorkState = WorkState.Working
+
     val rate = _rateFee.value!!
     viewModelScope.launch {
       if (_rateFee.value == null) return@launch
       try {
-        _enabled.value = false
         val orderid =
             orderRepository.createOrder(
                 OrderCreateRequest(
@@ -317,19 +316,18 @@ constructor(
                     aggregation = null, // TODO
                 ),
                 rate)
-
         onOrderCreated(orderid)
+        createOrderWorkState = WorkState.NotWorking
+        reset()
       } catch (e: Exception) {
         Log.d(TAG, e.message ?: e.toString())
+        createOrderWorkState = WorkState.Error(e)
         SnackbarManager.showMessage(
             SnackbarMessage.from(
                 message = UserMessage.from(e.message ?: e.toString()),
                 withDismissAction = true,
                 duration = SnackbarDuration.Long,
             ))
-      } finally {
-        reset()
-        _enabled.value = true
       }
     }
   }
