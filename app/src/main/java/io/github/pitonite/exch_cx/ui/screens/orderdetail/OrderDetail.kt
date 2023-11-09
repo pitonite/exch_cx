@@ -3,6 +3,7 @@ package io.github.pitonite.exch_cx.ui.screens.orderdetail
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -184,7 +185,23 @@ fun OrderDetail(
 @Composable
 fun OrderColumn(order: Order) {
   Column {
-    // TODO: Show order details
+    if (order.stateError != null) {
+      Card {
+        Column(
+            modifier =
+                Modifier.padding(horizontal = dimensionResource(R.dimen.padding_md))
+                    .padding(
+                        vertical = dimensionResource(R.dimen.padding_xl),
+                    ),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_sm)),
+        ) {
+
+            Text(order.stateError)
+          }
+
+      }
+    }
   }
 }
 
