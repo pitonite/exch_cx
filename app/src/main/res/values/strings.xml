@@ -80,4 +80,5 @@
   <string name="error_not_found">Not Found</string>
   <string name="notice_order_details_not_found">Order details not found locally. Try to import order first.</string>
   <string name="label_stop_order_update">Stop updating orders</string>
+  <string name="notice_updating_orders">Updating orders, please wait or stop the update.</string>
 </resources>

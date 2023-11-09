@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -13,13 +14,11 @@ import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PostAdd
-import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
@@ -53,6 +52,7 @@ import io.github.pitonite.exch_cx.model.UserMessage
 import io.github.pitonite.exch_cx.ui.components.Card
 import io.github.pitonite.exch_cx.ui.components.RefreshButton
 import io.github.pitonite.exch_cx.ui.components.SnackbarManager
+import io.github.pitonite.exch_cx.ui.components.StopProgress
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 import io.github.pitonite.exch_cx.utils.WorkState
 
@@ -91,19 +91,10 @@ fun Orders(
                     onClick = viewModel::updateOrders,
                 )
               } else {
-                Box(contentAlignment = Alignment.Center) {
-                  CircularProgressIndicator(
-                      modifier = Modifier.size(32.dp),
-                      color = MaterialTheme.colorScheme.surfaceVariant,
-                      trackColor = MaterialTheme.colorScheme.secondary,
-                  )
-
-                  IconButton(onClick = viewModel::stopUpdatingOrders) {
-                    Icon(
-                        imageVector = Icons.Default.Stop,
-                        contentDescription = stringResource(R.string.label_stop_order_update))
-                  }
-                }
+                StopProgress(
+                    onClick = viewModel::stopUpdatingOrders,
+                    stringResource(R.string.label_stop_order_update),
+                )
               }
 
               IconButton(onClick = viewModel::showImportOrderDialog) {
@@ -130,90 +121,113 @@ fun Orders(
                 .padding(horizontal = dimensionResource(R.dimen.page_padding))
                 .fillMaxSize(),
     ) {
-      when (orderPagingItems.loadState.refresh) {
-        is LoadState.Loading ->
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center).size(50.dp))
-        is LoadState.Error ->
-            Card {
-              Column(Modifier.padding(vertical = 70.dp, horizontal = 20.dp)) {
-                Text(stringResource(R.string.unknown_error))
-              }
-            }
-        else -> {
-          if (orderPagingItems.itemCount == 0) {
-            Column {
-              Card {
-                Column(
-                    Modifier.padding(
-                        horizontal = dimensionResource(R.dimen.padding_md),
-                        vertical = 70.dp,
-                    ),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                  Text(
-                      stringResource(R.string.notice_empty_orders),
-                      fontSize = 22.sp,
-                      textAlign = TextAlign.Center,
-                  )
-                  Spacer(Modifier.height(50.dp))
-                  val importHintText = buildAnnotatedString {
-                    append(stringResource(R.string.hint_import_order))
-                    append(" (")
-                    // Append a placeholder string "[icon]" and attach an annotation "inlineContent"
-                    // on it.
-                    appendInlineContent("icon", "([import icon])")
-                    append(")")
+      if (autoUpdateWorkState == WorkState.Working) {
+        Card {
+          Column(
+              Modifier.padding(vertical = 70.dp, horizontal = 20.dp),
+              horizontalAlignment = Alignment.CenterHorizontally,
+              verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_md)),
+          ) {
+            Text(
+                stringResource(R.string.notice_updating_orders),
+                fontSize = 22.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            StopProgress(
+                onClick = viewModel::stopUpdatingOrders,
+                stringResource(R.string.label_stop_order_update),
+                42.dp,
+            )
+          }
+        }
+      } else
+          when (orderPagingItems.loadState.refresh) {
+            is LoadState.Loading ->
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center).size(50.dp))
+            is LoadState.Error ->
+                Card {
+                  Column(Modifier.padding(vertical = 70.dp, horizontal = 20.dp)) {
+                    Text(stringResource(R.string.unknown_error))
                   }
-                  Text(
-                      text = importHintText,
-                      fontSize = 22.sp,
-                      textAlign = TextAlign.Center,
-                      inlineContent =
-                          mapOf(
-                              Pair(
-                                  "icon",
-                                  InlineTextContent(
-                                      Placeholder(
-                                          width = 22.sp,
-                                          height = 22.sp,
-                                          placeholderVerticalAlign =
-                                              PlaceholderVerticalAlign.Center)) {
-                                        Icon(
-                                            Icons.Default.PostAdd,
-                                            contentDescription =
-                                                stringResource(R.string.label_import_order))
-                                      })),
-                  )
                 }
-              }
-            }
-          } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.page_padding)),
-            ) {
-              items(
-                  count = orderPagingItems.itemCount,
-                  key = orderPagingItems.itemKey { it.id },
-              ) { index ->
-                val order = orderPagingItems[index]
-                if (order != null) {
-                  OrderItem(
-                      order,
-                      onClick = { onOrderSelected(order.id) },
-                  )
+            else -> {
+              if (orderPagingItems.itemCount == 0) {
+                Column {
+                  Card {
+                    Column(
+                        Modifier.padding(
+                            horizontal = dimensionResource(R.dimen.padding_md),
+                            vertical = 70.dp,
+                        ),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                      Text(
+                          stringResource(R.string.notice_empty_orders),
+                          fontSize = 22.sp,
+                          textAlign = TextAlign.Center,
+                      )
+                      Spacer(Modifier.height(50.dp))
+                      val importHintText = buildAnnotatedString {
+                        append(stringResource(R.string.hint_import_order))
+                        append(" (")
+                        // Append a placeholder string "[icon]" and attach an annotation
+                        // "inlineContent"
+                        // on it.
+                        appendInlineContent("icon", "([import icon])")
+                        append(")")
+                      }
+                      Text(
+                          text = importHintText,
+                          fontSize = 22.sp,
+                          textAlign = TextAlign.Center,
+                          inlineContent =
+                              mapOf(
+                                  Pair(
+                                      "icon",
+                                      InlineTextContent(
+                                          Placeholder(
+                                              width = 22.sp,
+                                              height = 22.sp,
+                                              placeholderVerticalAlign =
+                                                  PlaceholderVerticalAlign.Center)) {
+                                            Icon(
+                                                Icons.Default.PostAdd,
+                                                contentDescription =
+                                                    stringResource(R.string.label_import_order))
+                                          })),
+                      )
+                    }
+                  }
                 }
-              }
-              item {
-                if (orderPagingItems.loadState.append == LoadState.Loading) {
-                  CircularProgressIndicator(modifier = Modifier.padding(16.dp))
+              } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement =
+                        Arrangement.spacedBy(dimensionResource(R.dimen.page_padding)),
+                ) {
+                  items(
+                      count = orderPagingItems.itemCount,
+                      key = orderPagingItems.itemKey { it.id },
+                  ) { index ->
+                    val order = orderPagingItems[index]
+                    if (order != null) {
+                      OrderItem(
+                          order,
+                          onClick = { onOrderSelected(order.id) },
+                      )
+                    }
+                  }
+                  item {
+                    if (orderPagingItems.loadState.append == LoadState.Loading) {
+                      CircularProgressIndicator(modifier = Modifier.padding(16.dp))
+                    }
+                  }
                 }
               }
             }
           }
-        }
-      }
     }
   }
 }
