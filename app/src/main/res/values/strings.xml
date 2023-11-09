@@ -84,4 +84,5 @@
   <string name="exception_to_address_required">To address required</string>
   <string name="exception_service_unavailable">Service Unavailable</string>
   <string name="exception_failed_to_parse_order">Failed to parse order</string>
+  <string name="exception_order_not_found">Order not found</string>
 </resources>

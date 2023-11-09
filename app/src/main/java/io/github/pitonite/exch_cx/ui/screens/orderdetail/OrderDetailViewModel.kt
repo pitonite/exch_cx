@@ -14,6 +14,7 @@ import io.github.pitonite.exch_cx.copy
 import io.github.pitonite.exch_cx.data.OrderRepository
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
 import io.github.pitonite.exch_cx.data.room.Order
+import io.github.pitonite.exch_cx.exceptions.LocalizedException
 import io.github.pitonite.exch_cx.model.SnackbarMessage
 import io.github.pitonite.exch_cx.model.UserMessage
 import io.github.pitonite.exch_cx.model.api.OrderState
@@ -83,8 +84,16 @@ constructor(
       try {
         orderRepository.fetchAndUpdateOrder(id)
         refreshWorkState = WorkState.NotWorking
-      } catch (err: Throwable) {
-        refreshWorkState = WorkState.Error(err)
+      } catch (e: Throwable) {
+        refreshWorkState = WorkState.Error(e)
+        SnackbarManager.showMessage(
+            SnackbarMessage.from(
+                message =
+                    if (e is LocalizedException) UserMessage.from(e.msgId)
+                    else UserMessage.from(e.localizedMessage ?: e.message ?: e.toString()),
+                withDismissAction = true,
+                duration = SnackbarDuration.Long,
+            ))
       }
     }
   }

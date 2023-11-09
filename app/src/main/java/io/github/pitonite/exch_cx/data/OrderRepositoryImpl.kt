@@ -22,6 +22,7 @@ import io.github.pitonite.exch_cx.model.api.OrderCreateRequest
 import io.github.pitonite.exch_cx.model.api.OrderResponse
 import io.github.pitonite.exch_cx.model.api.RateFee
 import io.github.pitonite.exch_cx.model.api.exceptions.FailedToParseOrderException
+import io.github.pitonite.exch_cx.model.api.exceptions.OrderNotFoundException
 import io.github.pitonite.exch_cx.model.api.exceptions.ServiceUnavailableException
 import io.github.pitonite.exch_cx.model.api.exceptions.ToAddressRequiredException
 import io.github.pitonite.exch_cx.utils.ExchParser
@@ -71,11 +72,10 @@ constructor(
     // TODO: remove duplicate call when api is fixed
     val resp = exchHttpClient.get("/order/$orderId") { headers["X-Requested-With"] = "" }
     if (resp.status != HttpStatusCode.OK || resp.call.request.url.fullPath == "/") {
-      throw RuntimeException("orderid not found")
+      throw OrderNotFoundException()
     }
     val body = resp.bodyAsText()
-    val parsedOrder =
-        ExchParser.parseOrder(body) ?: throw RuntimeException("order parsing had a problem")
+    val parsedOrder = ExchParser.parseOrder(body) ?: throw FailedToParseOrderException()
 
     order =
         order
