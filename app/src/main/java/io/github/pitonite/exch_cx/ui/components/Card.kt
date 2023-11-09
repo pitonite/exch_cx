@@ -20,7 +20,7 @@ fun Card(
 ) {
   Surface(
       color =
-          if (isError) MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.15f)
+          if (isError) MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.30f)
           else MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
       shape = CardDefaults.shape,
       modifier = modifier.fillMaxWidth(),
@@ -36,7 +36,7 @@ fun Card(
 ) {
   Surface(
       color =
-          if (isError) MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.15f)
+          if (isError) MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.30f)
           else MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
       shape = CardDefaults.shape,
       modifier = modifier.fillMaxWidth(),

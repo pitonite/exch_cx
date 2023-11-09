@@ -186,7 +186,7 @@ fun OrderDetail(
 fun OrderColumn(order: Order) {
   Column {
     if (order.stateError != null) {
-      Card {
+      Card(isError = true) {
         Column(
             modifier =
                 Modifier.padding(horizontal = dimensionResource(R.dimen.padding_md))
@@ -196,16 +196,14 @@ fun OrderColumn(order: Order) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_sm)),
         ) {
-
-            Text(order.stateError)
-          }
-
+          Text(order.stateError)
+        }
       }
     }
   }
 }
 
-@Preview("detail column")
+@Preview("detail column", widthDp = 320)
 @Composable
 fun OrderColumnPreview() {
   ExchTheme { OrderColumn(OrderRepositoryMock.orders[0]) }

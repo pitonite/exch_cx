@@ -26,7 +26,9 @@ class OrderRepositoryMock : OrderRepository {
                 rateMode = RateFeeMode.DYNAMIC,
                 state = OrderState.CREATED,
                 svcFee = BigDecimal.valueOf(1),
-                toAddress = "foo_address"),
+                toAddress = "foo_address",
+                stateError = "TO_ADDRESS_INVALID",
+            ),
         )
   }
 
