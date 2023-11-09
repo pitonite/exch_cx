@@ -1,6 +1,7 @@
 package io.github.pitonite.exch_cx
 
 import android.content.Context
+import androidx.lifecycle.asFlow
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
@@ -8,10 +9,14 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.pitonite.exch_cx.worker.OrderAutoUpdateWorker
 import io.github.pitonite.exch_cx.worker.orderAutoUpdateWorkName
+import io.github.pitonite.exch_cx.worker.orderAutoUpdateWorkNameOneTime
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -22,6 +27,7 @@ class ExchWorkManager
 constructor(
     @ApplicationContext private val context: Context,
 ) {
+
   fun adjustAutoUpdater(
       userSettings: UserSettings,
       existingPeriodicWorkPolicy: ExistingPeriodicWorkPolicy = ExistingPeriodicWorkPolicy.UPDATE,
@@ -52,6 +58,34 @@ constructor(
     WorkManager.getInstance(context).cancelUniqueWork(orderAutoUpdateWorkName)
   }
 
+  fun startOneTimeOrderUpdate() {
+    val workRequest = OneTimeWorkRequestBuilder<OrderAutoUpdateWorker>().build()
+    WorkManager.getInstance(context)
+        .enqueueUniqueWork(
+            orderAutoUpdateWorkNameOneTime,
+            ExistingWorkPolicy.KEEP,
+            workRequest,
+        )
+  }
+
+  fun stopOneTimeOrderUpdate() {
+    WorkManager.getInstance(context).cancelUniqueWork(orderAutoUpdateWorkNameOneTime)
+  }
+
+  fun getAutoUpdateWorkState(): Flow<WorkInfo.State?> {
+    return WorkManager.getInstance(context)
+        .getWorkInfosForUniqueWorkLiveData(orderAutoUpdateWorkName)
+        .asFlow()
+        .map { workInfos -> workInfos.firstOrNull()?.state }
+  }
+
+  fun getOneTimeOrderUpdateWorkState(): Flow<WorkInfo.State?> {
+    return WorkManager.getInstance(context)
+        .getWorkInfosForUniqueWorkLiveData(orderAutoUpdateWorkNameOneTime)
+        .asFlow()
+        .map { workInfos -> workInfos.firstOrNull()?.state }
+  }
+
   companion object {
     fun runAutoUpdaterOnce(context: Context) {
       WorkManager.getInstance(context)
@@ -65,5 +99,3 @@ constructor(
     }
   }
 }
-
-

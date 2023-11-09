@@ -9,15 +9,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.WorkInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.pitonite.exch_cx.ExchWorkManager
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.OrderRepository
+import io.github.pitonite.exch_cx.data.UserSettingsRepository
 import io.github.pitonite.exch_cx.data.room.Order
 import io.github.pitonite.exch_cx.model.SnackbarMessage
 import io.github.pitonite.exch_cx.model.UserMessage
 import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import io.github.pitonite.exch_cx.utils.WorkState
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,11 +34,41 @@ class OrdersViewModel
 @Inject
 constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val orderRepository: OrderRepository
+    private val orderRepository: OrderRepository,
+    private val userSettingsRepository: UserSettingsRepository,
+    private val workManager: ExchWorkManager
 ) : ViewModel() {
 
-  var refreshing by mutableStateOf<WorkState>(WorkState.NotWorking)
-    private set
+  private val periodicWorkState =
+      workManager
+          .getAutoUpdateWorkState()
+          .stateIn(
+              scope = viewModelScope,
+              started = SharingStarted.WhileSubscribed(5_000),
+              initialValue = null)
+
+  private val oneTimeWorkState =
+      workManager
+          .getOneTimeOrderUpdateWorkState()
+          .stateIn(
+              scope = viewModelScope,
+              started = SharingStarted.WhileSubscribed(5_000),
+              initialValue = null)
+
+  val autoUpdateWorkState =
+      periodicWorkState
+          .combine(oneTimeWorkState) { periodicState, oneTimeState ->
+            if (periodicState == WorkInfo.State.RUNNING || oneTimeState == WorkInfo.State.RUNNING) {
+              WorkState.Working
+            } else {
+              WorkState.NotWorking
+            }
+          }
+          .stateIn(
+              scope = viewModelScope,
+              started = SharingStarted.WhileSubscribed(5_000),
+              initialValue = WorkState.NotWorking,
+          )
 
   var importOrderWork by mutableStateOf<WorkState>(WorkState.NotWorking)
     private set
@@ -42,11 +79,27 @@ constructor(
   val orderPagingDataFlow: Flow<PagingData<Order>> =
       orderRepository.getOrderList(false).cachedIn(viewModelScope)
 
-  fun updateOrders() {
-    // todo
+  private fun cancelAndReEnqueueAutoUpdater() {
+    viewModelScope.launch {
+      kotlin.runCatching {
+        workManager.adjustAutoUpdater(
+            userSettingsRepository.fetchSettings(), ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE)
+      }
+    }
+  }
 
-    // cancel and reschedule the periodic work
-    // then start a one time work and wait for it's result
+  fun updateOrders() {
+    if (autoUpdateWorkState.value == WorkState.Working) return
+    cancelAndReEnqueueAutoUpdater()
+    workManager.startOneTimeOrderUpdate()
+  }
+
+  fun stopUpdatingOrders() {
+    if (periodicWorkState.value == WorkInfo.State.RUNNING) {
+      cancelAndReEnqueueAutoUpdater()
+    } else {
+      workManager.stopOneTimeOrderUpdate()
+    }
   }
 
   fun showImportOrderDialog() {

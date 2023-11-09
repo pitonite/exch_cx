@@ -13,19 +13,23 @@ import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PostAdd
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.Placeholder
@@ -36,11 +40,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import io.github.pitonite.exch_cx.ExchWorkManager
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock
+import io.github.pitonite.exch_cx.data.UserSettingsRepositoryMock
 import io.github.pitonite.exch_cx.model.SnackbarMessage
 import io.github.pitonite.exch_cx.model.UserMessage
 import io.github.pitonite.exch_cx.ui.components.Card
@@ -57,6 +64,7 @@ fun Orders(
     modifier: Modifier = Modifier
 ) {
   val orderPagingItems = viewModel.orderPagingDataFlow.collectAsLazyPagingItems()
+  val autoUpdateWorkState by viewModel.autoUpdateWorkState.collectAsStateWithLifecycle()
 
   LaunchedEffect(key1 = orderPagingItems.loadState.refresh) {
     if (orderPagingItems.loadState.refresh is LoadState.Error) {
@@ -78,11 +86,25 @@ fun Orders(
             colors = TopAppBarDefaults.topAppBarColors(),
             title = { Text(stringResource(R.string.orders)) },
             actions = {
-              RefreshButton(
-                  onClick = { viewModel.updateOrders() },
-                  enabled = viewModel.refreshing != WorkState.Working,
-                  refreshing = viewModel.refreshing == WorkState.Working,
-              )
+              if (autoUpdateWorkState == WorkState.NotWorking) {
+                RefreshButton(
+                    onClick = viewModel::updateOrders,
+                )
+              } else {
+                Box(contentAlignment = Alignment.Center) {
+                  CircularProgressIndicator(
+                      modifier = Modifier.size(32.dp),
+                      color = MaterialTheme.colorScheme.surfaceVariant,
+                      trackColor = MaterialTheme.colorScheme.secondary,
+                  )
+
+                  IconButton(onClick = viewModel::stopUpdatingOrders) {
+                    Icon(
+                        imageVector = Icons.Default.Stop,
+                        contentDescription = stringResource(R.string.label_stop_order_update))
+                  }
+                }
+              }
 
               IconButton(onClick = viewModel::showImportOrderDialog) {
                 Icon(
@@ -201,7 +223,13 @@ fun Orders(
 fun OrdersPreview() {
   ExchTheme {
     Orders(
-        viewModel = OrdersViewModel(SavedStateHandle(), OrderRepositoryMock()),
+        viewModel =
+            OrdersViewModel(
+                SavedStateHandle(),
+                OrderRepositoryMock(),
+                UserSettingsRepositoryMock(),
+                ExchWorkManager(LocalContext.current),
+            ),
         onOrderSelected = {},
     )
   }

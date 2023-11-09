@@ -19,6 +19,7 @@ import io.github.pitonite.exch_cx.utils.isNotificationAllowed
 import java.util.Date
 
 const val orderAutoUpdateWorkName = "auto_update_orders"
+const val orderAutoUpdateWorkNameOneTime = "auto_update_orders_once"
 
 @HiltWorker
 class OrderAutoUpdateWorker
