@@ -3,16 +3,20 @@ package io.github.pitonite.exch_cx.di
 import io.github.pitonite.exch_cx.BuildConfig
 import io.github.pitonite.exch_cx.PreferredDomainType
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
+import io.github.pitonite.exch_cx.model.api.ErrorResponse
+import io.github.pitonite.exch_cx.model.api.exceptions.ApiException
 import io.github.pitonite.exch_cx.utils.jsonFormat
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.engine.android.Android
 import io.ktor.client.plugins.BrowserUserAgent
 import io.ktor.client.plugins.HttpRequestRetry
+import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.cookies.HttpCookies
 import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.plugins.logging.DEFAULT
+import io.ktor.client.plugins.logging.ANDROID
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
@@ -23,6 +27,7 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.URLProtocol
 import io.ktor.http.Url
+import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.serialization.kotlinx.xml.xml
 import kotlinx.coroutines.CoroutineScope
@@ -30,6 +35,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerializationException
 import nl.adaptivity.xmlutil.serialization.XML
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -105,10 +111,24 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
                     })
           }
 
+          HttpResponseValidator {
+            validateResponse { response ->
+              val contentType = response.contentType()
+              if (contentType?.match(ContentType.Application.Json) == true) {
+                try {
+                  val errorResponse: ErrorResponse = response.body()
+                  throw ApiException(errorResponse.error)
+                } catch (e: SerializationException) {
+                  // no need
+                }
+              }
+            }
+          }
+
           if (BuildConfig.DEBUG) {
             install(Logging) {
-              logger = Logger.DEFAULT
-              level = LogLevel.HEADERS
+              logger = Logger.ANDROID
+              level = LogLevel.ALL
             }
           }
         }
