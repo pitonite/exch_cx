@@ -63,14 +63,17 @@ constructor(
           dateCondition = order.createdAt
           try {
             val fetchedOrder = orderRepository.fetchOrder(order.id)
+
             val archived =
-                when (fetchedOrder.state) {
-                  // terminal states here:
-                  OrderState.COMPLETE,
-                  OrderState.REFUNDED,
-                  OrderState.CANCELLED -> true
-                  else -> false
-                }
+                if (settings.archiveOrdersAutomatically) {
+                  when (fetchedOrder.state) {
+                    // terminal states here:
+                    OrderState.COMPLETE,
+                    OrderState.REFUNDED,
+                    OrderState.CANCELLED -> true
+                    else -> false
+                  }
+                } else false
 
             val orderUpdate = fetchedOrder.toOrderUpdateWithArchiveEntity(archived)
             orderRepository.updateOrder(orderUpdate)
@@ -90,6 +93,10 @@ constructor(
             }
           } catch (e: Exception) {
             Log.e(TAG, e.message ?: e.toString())
+            if (e.message?.contains("not found") == true && settings.archiveOrdersAutomatically) {
+              // order needs to be archived
+              orderRepository.updateOrder(order.copy(archived = true))
+            }
           }
         }
       } while (order != null)

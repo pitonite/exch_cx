@@ -96,6 +96,12 @@ constructor(
     return order
   }
 
+  override suspend fun updateOrder(orderUpdate: Order): Boolean {
+    val existedBeforeUpsert = exchDatabase.ordersDao().exists(orderUpdate.id)
+    exchDatabase.ordersDao().upsert(orderUpdate)
+    return existedBeforeUpsert
+  }
+
   override suspend fun updateOrder(orderUpdate: OrderUpdate): Boolean {
     val existedBeforeUpsert = exchDatabase.ordersDao().exists(orderUpdate.id)
     exchDatabase.ordersDao().upsert(orderUpdate)

@@ -62,6 +62,10 @@ class OrderRepositoryMock : OrderRepository {
         toAddress = "foo_address")
   }
 
+  override suspend fun updateOrder(orderUpdate: Order): Boolean {
+    return false
+  }
+
   override suspend fun updateOrder(orderUpdate: OrderUpdate): Boolean {
     return false
   }

@@ -22,6 +22,9 @@ interface OrderRepository {
   suspend fun fetchOrder(orderId: String): Order
 
   /** Returns true if the orderId already existed in db. */
+  suspend fun updateOrder(orderUpdate: Order): Boolean
+
+  /** Returns true if the orderId already existed in db. */
   suspend fun updateOrder(orderUpdate: OrderUpdate): Boolean
 
   /** Returns true if the orderId already existed in db. */

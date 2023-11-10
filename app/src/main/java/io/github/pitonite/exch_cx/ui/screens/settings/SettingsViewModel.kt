@@ -88,6 +88,7 @@ constructor(
           userSettingsRepository.fetchSettings().copy {
             isOrderAutoUpdateEnabled = isOrderAutoUpdateEnabledDraft
             orderAutoUpdatePeriodMinutes = orderAutoUpdatePeriodMinutesDraft
+            archiveOrdersAutomatically = archiveOrdersAutomaticallyDraft
           })
     }
   }
