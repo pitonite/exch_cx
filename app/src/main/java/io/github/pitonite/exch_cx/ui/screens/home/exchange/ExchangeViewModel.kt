@@ -103,8 +103,8 @@ constructor(
   var workState by mutableStateOf<WorkState>(WorkState.NotWorking)
     private set
 
-  val busy =
-      snapshotFlow { WorkState.isWorking(workState) }
+  val usable =
+      snapshotFlow { !WorkState.isWorking(workState) && _rateFee.value != null  }
           .stateIn(
               scope = viewModelScope,
               started = SharingStarted.WhileSubscribed(5_000),

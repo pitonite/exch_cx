@@ -65,6 +65,7 @@ import io.github.pitonite.exch_cx.ui.navigation.SecondaryDestinations
 import io.github.pitonite.exch_cx.ui.screens.home.exchange.currencyselect.CurrencySelection
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 import io.github.pitonite.exch_cx.utils.ExchangeWorkState
+import io.github.pitonite.exch_cx.utils.WorkState
 import io.github.pitonite.exch_cx.utils.noRippleClickable
 import io.github.pitonite.exch_cx.utils.nonScaledSp
 import java.math.BigDecimal
@@ -85,7 +86,7 @@ fun Exchange(
     onNavigateToRoute: (String) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  val busy by viewModel.busy.collectAsStateWithLifecycle()
+  val usable by viewModel.usable.collectAsStateWithLifecycle()
   val userSettings by viewModel.userSettings.collectAsStateWithLifecycle()
   val focusManager = LocalFocusManager.current
 
@@ -107,7 +108,7 @@ fun Exchange(
             actions = {
               RefreshButton(
                   onClick = { viewModel.updateFeeRates() },
-                  enabled = !busy,
+                  enabled = !WorkState.isWorking(viewModel.workState),
                   refreshing = viewModel.workState == ExchangeWorkState.Refreshing,
               )
             },
@@ -149,7 +150,7 @@ fun Exchange(
                     onNavigateToRoute = onNavigateToRoute,
                     onValueChange = viewModel::updateFromAmount,
                     onFocusLost = { viewModel.updateConversionAmounts(CurrencySelection.FROM) },
-                    enabled = !busy,
+                    enabled = usable,
                     currencySelection = CurrencySelection.FROM,
                 )
               }
@@ -163,7 +164,7 @@ fun Exchange(
                     onClick = { viewModel.swapCurrencies() },
                     border =
                         BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)),
-                    enabled = !busy,
+                    enabled = usable,
                 ) {
                   Icon(
                       imageVector = Icons.Outlined.SwapVert,
@@ -183,7 +184,7 @@ fun Exchange(
                     onNavigateToRoute = onNavigateToRoute,
                     onValueChange = viewModel::updateToAmount,
                     onFocusLost = { viewModel.updateConversionAmounts(CurrencySelection.TO) },
-                    enabled = !busy,
+                    enabled = usable,
                     imeAction = ImeAction.Done,
                     currencySelection = CurrencySelection.TO,
                 )
@@ -209,7 +210,7 @@ fun Exchange(
                                       RoundedCornerShape(
                                           dimensionResource(R.dimen.rounded_sm),
                                       )),
-                          enabled = !busy,
+                          enabled = usable,
                       )
                       SegmentedButton(
                           label = {
@@ -227,10 +228,10 @@ fun Exchange(
                                   baseShape =
                                       RoundedCornerShape(dimensionResource(R.dimen.rounded_sm)),
                               ),
-                          enabled = !busy,
+                          enabled = usable,
                       )
                     }
-                if (!busy && uiState.rateFee != null) {
+                if (usable) {
                   Text(
                       stringResource(R.string.label_service_fee) +
                           " ${uiState.rateFee!!.svcFee.setScale(1)}%",
@@ -278,7 +279,7 @@ fun Exchange(
                                     RoundedCornerShape(
                                         dimensionResource(R.dimen.rounded_sm),
                                     )),
-                        enabled = !busy,
+                        enabled = usable,
                     )
                   }
                 }
@@ -315,7 +316,7 @@ fun Exchange(
                   label = { Text(stringResource(R.string.label_to_address)) },
                   onValueChange = viewModel::updateToAddress,
                   supportingText = { Text(stringResource(R.string.hint_to_address_input)) },
-                  enabled = !busy,
+                  enabled = usable,
                   isError = viewModel.workState == ExchangeWorkState.ToAddressRequiredError,
               )
 
@@ -339,7 +340,7 @@ fun Exchange(
                     }
                     Text(importHintText)
                   },
-                  enabled = !busy,
+                  enabled = usable,
               )
             }
           }
@@ -351,7 +352,7 @@ fun Exchange(
                     onOrderCreated = onOrderSelected,
                 )
               },
-              enabled = !busy,
+              enabled = usable,
           ) {
             Text(stringResource(R.string.label_create_order), fontSize = 18.sp)
           }
