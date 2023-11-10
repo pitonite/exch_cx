@@ -189,6 +189,8 @@ fun Settings(viewModel: SettingsViewModel, upPress: () -> Unit, modifier: Modifi
               }
             }
           }
+
+          Spacer(Modifier)
         }
       }
 }
