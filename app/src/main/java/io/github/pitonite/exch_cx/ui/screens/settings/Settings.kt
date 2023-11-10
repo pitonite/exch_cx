@@ -44,6 +44,7 @@ import io.github.pitonite.exch_cx.ui.components.RadioGroup
 import io.github.pitonite.exch_cx.ui.components.UpBtn
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 import io.github.pitonite.exch_cx.utils.noRippleClickable
+import io.github.pitonite.exch_cx.utils.verticalFadingEdge
 import kotlinx.collections.immutable.persistentListOf
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,6 +53,7 @@ fun Settings(viewModel: SettingsViewModel, upPress: () -> Unit, modifier: Modifi
   val focusManager = LocalFocusManager.current
   val lifecycleOwner = LocalLifecycleOwner.current
   val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsStateWithLifecycle()
+  val scrollState = rememberScrollState()
 
   LaunchedEffect(lifecycleState) {
     when (lifecycleState) {
@@ -77,7 +79,8 @@ fun Settings(viewModel: SettingsViewModel, upPress: () -> Unit, modifier: Modifi
                     .padding(
                         horizontal = dimensionResource(R.dimen.page_padding),
                     )
-                    .verticalScroll(rememberScrollState())
+                    .verticalFadingEdge(scrollState, dimensionResource(R.dimen.fading_edge))
+                    .verticalScroll(scrollState)
                     .noRippleClickable() { focusManager.clearFocus() },
             verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_md)),
             horizontalAlignment = Alignment.CenterHorizontally,

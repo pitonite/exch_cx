@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,6 +37,7 @@ import io.github.pitonite.exch_cx.ui.components.Card
 import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import io.github.pitonite.exch_cx.ui.screens.home.orders.OrderItem
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
+import io.github.pitonite.exch_cx.utils.verticalFadingEdge
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,6 +47,7 @@ fun History(
     modifier: Modifier = Modifier
 ) {
   val orderPagingItems = viewModel.orderPagingDataFlow.collectAsLazyPagingItems()
+  val listState = rememberLazyListState()
 
   LaunchedEffect(key1 = orderPagingItems.loadState.refresh) {
     if (orderPagingItems.loadState.refresh is LoadState.Error) {
@@ -105,7 +108,10 @@ fun History(
             }
           } else {
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
+                state = listState,
+                modifier =
+                    Modifier.fillMaxSize()
+                        .verticalFadingEdge(listState, dimensionResource(R.dimen.fading_edge)),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.page_padding)),
             ) {

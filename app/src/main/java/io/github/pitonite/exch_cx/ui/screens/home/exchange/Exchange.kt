@@ -68,6 +68,7 @@ import io.github.pitonite.exch_cx.utils.ExchangeWorkState
 import io.github.pitonite.exch_cx.utils.WorkState
 import io.github.pitonite.exch_cx.utils.noRippleClickable
 import io.github.pitonite.exch_cx.utils.nonScaledSp
+import io.github.pitonite.exch_cx.utils.verticalFadingEdge
 import java.math.BigDecimal
 
 val FeeStringResourceMap =
@@ -89,6 +90,7 @@ fun Exchange(
   val usable by viewModel.usable.collectAsStateWithLifecycle()
   val userSettings by viewModel.userSettings.collectAsStateWithLifecycle()
   val focusManager = LocalFocusManager.current
+  val scrollState = rememberScrollState()
 
   Scaffold(
       snackbarHost = { SnackbarHost(hostState = SnackbarManager.snackbarHostState) },
@@ -119,7 +121,8 @@ fun Exchange(
                 modifier
                     .padding(padding)
                     .padding(horizontal = dimensionResource(R.dimen.page_padding))
-                    .verticalScroll(rememberScrollState())
+                    .verticalFadingEdge(scrollState, dimensionResource(R.dimen.fading_edge))
+                    .verticalScroll(scrollState)
                     .noRippleClickable() { focusManager.clearFocus() },
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_md)),
