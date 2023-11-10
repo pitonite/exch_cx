@@ -28,6 +28,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.URLProtocol
 import io.ktor.http.Url
 import io.ktor.http.contentType
+import io.ktor.serialization.ContentConvertException
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.serialization.kotlinx.xml.xml
 import kotlinx.coroutines.CoroutineScope
@@ -35,7 +36,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.SerializationException
 import nl.adaptivity.xmlutil.serialization.XML
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -118,8 +118,8 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
                 try {
                   val errorResponse: ErrorResponse = response.body()
                   throw ApiException(errorResponse.error)
-                } catch (e: SerializationException) {
-                  // no need
+                } catch (e: ContentConvertException) {
+                  // no need to handle
                 }
               }
             }
@@ -128,7 +128,7 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
           if (BuildConfig.DEBUG) {
             install(Logging) {
               logger = Logger.ANDROID
-              level = LogLevel.ALL
+              level = LogLevel.HEADERS
             }
           }
         }
