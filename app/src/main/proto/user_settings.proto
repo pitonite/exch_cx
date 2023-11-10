@@ -9,11 +9,12 @@ enum PreferredDomainType {
 }
 
 message UserSettings {
-  bool first_init = 1;
+  bool first_init_done = 1;
   string api_key = 2;
   PreferredDomainType preferred_domain_type = 3;
   bool is_exchange_tip_dismissed = 4;
   bool is_order_auto_update_enabled = 5;
   bool has_shown_order_background_update_notice = 6;
   int64 order_auto_update_period_minutes = 7;
+  bool archive_orders_automatically = 8;
 }

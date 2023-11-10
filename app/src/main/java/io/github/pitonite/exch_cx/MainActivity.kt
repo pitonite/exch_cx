@@ -29,7 +29,18 @@ class MainActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
 
     // to preload settings asynchronously, to runBlocking later in di/HttpClientModule
-    lifecycleScope.launch { userSettingsRepository.fetchSettings() }
+    lifecycleScope.launch {
+      val settings = userSettingsRepository.fetchSettings()
+
+      // setup initial settings
+      if (!settings.firstInitDone) {
+        userSettingsRepository.saveSettings(
+            settings.copy {
+              firstInitDone = true
+              archiveOrdersAutomatically = true
+            })
+      }
+    }
 
     setContent {
       ExchTheme {

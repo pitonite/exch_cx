@@ -113,9 +113,17 @@ fun Settings(viewModel: SettingsViewModel, upPress: () -> Unit, modifier: Modifi
                         })
                   })
 
-              HorizontalDivider(Modifier.weight(1f))
-              Spacer(Modifier.padding(bottom = 10.dp))
+              Button(onClick = { viewModel.saveRequestSettings() }) {
+                Text(stringResource(R.string.label_save))
+              }
+            }
+          }
 
+          Card {
+            Column(
+                modifier = Modifier.padding(dimensionResource(R.dimen.padding_xl)),
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_md)),
+            ) {
               Text(text = stringResource(R.string.title_background_update), fontSize = 20.sp)
 
               Row(
@@ -152,9 +160,31 @@ fun Settings(viewModel: SettingsViewModel, upPress: () -> Unit, modifier: Modifi
                   enabled = viewModel.isOrderAutoUpdateEnabledDraft,
               )
 
-              Spacer(Modifier.padding(bottom = 10.dp))
+              Row(
+                  verticalAlignment = Alignment.CenterVertically,
+                  horizontalArrangement =
+                      Arrangement.spacedBy(dimensionResource(R.dimen.padding_md)),
+              ) {
+                Text(stringResource(R.string.label_archive_orders_automatically))
 
-              Button(onClick = { viewModel.saveChanges() }) {
+                Switch(
+                    checked = viewModel.archiveOrdersAutomaticallyDraft,
+                    onCheckedChange = { viewModel.updateArchiveOrdersAutomaticallyDraft(it) },
+                    thumbContent =
+                        if (viewModel.archiveOrdersAutomaticallyDraft) {
+                          {
+                            Icon(
+                                imageVector = Icons.Filled.Check,
+                                contentDescription = null,
+                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                            )
+                          }
+                        } else {
+                          null
+                        })
+              }
+
+              Button(onClick = { viewModel.saveAutoUpdateSettings() }) {
                 Text(stringResource(R.string.label_save))
               }
             }

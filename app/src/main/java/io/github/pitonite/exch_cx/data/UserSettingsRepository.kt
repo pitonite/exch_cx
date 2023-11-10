@@ -23,5 +23,9 @@ interface UserSettingsRepository {
 
   suspend fun setHasShownOrderBackgroundUpdateNotice(value: Boolean)
 
+  suspend fun setArchiveOrdersAutomatically(value: Boolean)
+
+  suspend fun setFirstInitDone(value: Boolean)
+
   suspend fun setOrderAutoUpdatePeriodMinutes(value: Long)
 }

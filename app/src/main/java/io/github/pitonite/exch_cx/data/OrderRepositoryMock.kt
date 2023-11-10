@@ -3,6 +3,7 @@ package io.github.pitonite.exch_cx.data
 import androidx.paging.PagingData
 import io.github.pitonite.exch_cx.data.room.Order
 import io.github.pitonite.exch_cx.data.room.OrderUpdate
+import io.github.pitonite.exch_cx.data.room.OrderUpdateWithArchive
 import io.github.pitonite.exch_cx.model.api.OrderCreateRequest
 import io.github.pitonite.exch_cx.model.api.OrderState
 import io.github.pitonite.exch_cx.model.api.RateFee
@@ -62,6 +63,10 @@ class OrderRepositoryMock : OrderRepository {
   }
 
   override suspend fun updateOrder(orderUpdate: OrderUpdate): Boolean {
+    return false
+  }
+
+  override suspend fun updateOrder(orderUpdate: OrderUpdateWithArchive): Boolean {
     return false
   }
 

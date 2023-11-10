@@ -3,6 +3,7 @@ package io.github.pitonite.exch_cx.data
 import androidx.paging.PagingData
 import io.github.pitonite.exch_cx.data.room.Order
 import io.github.pitonite.exch_cx.data.room.OrderUpdate
+import io.github.pitonite.exch_cx.data.room.OrderUpdateWithArchive
 import io.github.pitonite.exch_cx.model.api.OrderCreateRequest
 import io.github.pitonite.exch_cx.model.api.RateFee
 import kotlinx.coroutines.flow.Flow
@@ -22,6 +23,9 @@ interface OrderRepository {
 
   /** Returns true if the orderId already existed in db. */
   suspend fun updateOrder(orderUpdate: OrderUpdate): Boolean
+
+  /** Returns true if the orderId already existed in db. */
+  suspend fun updateOrder(orderUpdate: OrderUpdateWithArchive): Boolean
 
   /** Returns true if the orderId already existed in db. */
   suspend fun fetchAndUpdateOrder(orderId: String): Boolean

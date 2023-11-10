@@ -29,6 +29,8 @@ abstract class OrderDao : BaseDao<Order> {
 
   @Upsert(entity = Order::class) abstract suspend fun upsert(entity: OrderUpdate)
 
+  @Upsert(entity = Order::class) abstract suspend fun upsert(entity: OrderUpdateWithArchive)
+
   @Upsert(entity = Order::class) abstract suspend fun upsert(entity: OrderCreate)
 
   @Query("SELECT EXISTS(SELECT 1 FROM `order` WHERE id = :id LIMIT 1)")

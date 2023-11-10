@@ -77,6 +77,32 @@ data class OrderUpdate(
     val calculatedToAmount: BigDecimal? = null,
 )
 
+@Immutable
+data class OrderUpdateWithArchive(
+    val id: String,
+    val archived: Boolean,
+    val createdAt: Date = Date(),
+    val modifiedAt: Date = Date(),
+    val fromAddr: String = "_GENERATING_",
+    val fromCurrency: String,
+    val fromAmountReceived: BigDecimal? = null,
+    val maxInput: BigDecimal? = null,
+    val minInput: BigDecimal? = null,
+    val networkFee: BigDecimal? = null,
+    val rate: BigDecimal,
+    val rateMode: RateFeeMode,
+    val state: OrderState,
+    val stateError: String? = null, // todo, replace with error enum
+    val svcFee: BigDecimal,
+    val toAmount: BigDecimal? = null,
+    val toAddress: String,
+    val toCurrency: String,
+    val transactionIdReceived: String? = null,
+    val transactionIdSent: String? = null,
+    val calculatedFromAmount: BigDecimal? = null,
+    val calculatedToAmount: BigDecimal? = null,
+)
+
 /** for use when an order is initially created by sending a request to api */
 @Immutable
 data class OrderCreate(

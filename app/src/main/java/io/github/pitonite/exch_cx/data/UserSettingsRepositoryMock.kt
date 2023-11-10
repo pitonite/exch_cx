@@ -24,6 +24,10 @@ class UserSettingsRepositoryMock(
 
   override suspend fun setHasShownOrderBackgroundUpdateNotice(value: Boolean) {}
 
+  override suspend fun setArchiveOrdersAutomatically(value: Boolean) {}
+
+  override suspend fun setFirstInitDone(value: Boolean) {}
+
   override suspend fun setOrderAutoUpdatePeriodMinutes(value: Long) {}
 
   override suspend fun saveSettings(userSettings: UserSettings) {}

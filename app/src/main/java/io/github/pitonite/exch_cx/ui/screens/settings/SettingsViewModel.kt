@@ -37,6 +37,9 @@ constructor(
   var orderAutoUpdatePeriodMinutesDraft by mutableLongStateOf(0)
     private set
 
+  var archiveOrdersAutomaticallyDraft by mutableStateOf(true)
+    private set
+
   fun updateApiKeyDraft(value: String) {
     apiKeyDraft = value
   }
@@ -53,6 +56,10 @@ constructor(
     orderAutoUpdatePeriodMinutesDraft = value
   }
 
+  fun updateArchiveOrdersAutomaticallyDraft(value: Boolean) {
+    archiveOrdersAutomaticallyDraft = value
+  }
+
   fun reloadSettings() {
     viewModelScope.launch {
       userSettingsRepository.userSettingsFlow.firstOrNull()?.let {
@@ -60,16 +67,25 @@ constructor(
         preferredDomainTypeDraft = it.preferredDomainType
         isOrderAutoUpdateEnabledDraft = it.isOrderAutoUpdateEnabled
         orderAutoUpdatePeriodMinutesDraft = it.orderAutoUpdatePeriodMinutes
+        archiveOrdersAutomaticallyDraft = it.archiveOrdersAutomatically
       }
     }
   }
 
-  fun saveChanges() {
+  fun saveRequestSettings() {
     viewModelScope.launch {
       userSettingsRepository.saveSettings(
           userSettingsRepository.fetchSettings().copy {
             apiKey = apiKeyDraft
             preferredDomainType = preferredDomainTypeDraft
+          })
+    }
+  }
+
+  fun saveAutoUpdateSettings() {
+    viewModelScope.launch {
+      userSettingsRepository.saveSettings(
+          userSettingsRepository.fetchSettings().copy {
             isOrderAutoUpdateEnabled = isOrderAutoUpdateEnabledDraft
             orderAutoUpdatePeriodMinutes = orderAutoUpdatePeriodMinutesDraft
           })

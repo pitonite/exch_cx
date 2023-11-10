@@ -85,4 +85,5 @@
   <string name="exception_service_unavailable">Service Unavailable</string>
   <string name="exception_failed_to_parse_order">Failed to parse order</string>
   <string name="exception_order_not_found">Order not found</string>
+  <string name="label_archive_orders_automatically">Archive orders automatically?</string>
 </resources>

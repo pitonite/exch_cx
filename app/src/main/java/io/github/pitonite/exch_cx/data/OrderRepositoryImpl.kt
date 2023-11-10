@@ -17,6 +17,7 @@ import io.github.pitonite.exch_cx.data.room.Order
 import io.github.pitonite.exch_cx.data.room.OrderArchive
 import io.github.pitonite.exch_cx.data.room.OrderCreate
 import io.github.pitonite.exch_cx.data.room.OrderUpdate
+import io.github.pitonite.exch_cx.data.room.OrderUpdateWithArchive
 import io.github.pitonite.exch_cx.di.ExchHttpClient
 import io.github.pitonite.exch_cx.model.api.OrderCreateRequest
 import io.github.pitonite.exch_cx.model.api.OrderResponse
@@ -96,6 +97,12 @@ constructor(
   }
 
   override suspend fun updateOrder(orderUpdate: OrderUpdate): Boolean {
+    val existedBeforeUpsert = exchDatabase.ordersDao().exists(orderUpdate.id)
+    exchDatabase.ordersDao().upsert(orderUpdate)
+    return existedBeforeUpsert
+  }
+
+  override suspend fun updateOrder(orderUpdate: OrderUpdateWithArchive): Boolean {
     val existedBeforeUpsert = exchDatabase.ordersDao().exists(orderUpdate.id)
     exchDatabase.ordersDao().upsert(orderUpdate)
     return existedBeforeUpsert

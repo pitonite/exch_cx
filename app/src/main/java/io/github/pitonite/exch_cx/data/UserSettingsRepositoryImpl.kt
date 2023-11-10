@@ -73,6 +73,18 @@ constructor(
     }
   }
 
+  override suspend fun setArchiveOrdersAutomatically(value: Boolean) {
+    userSettingsStore.updateData { currentSettings ->
+      currentSettings.toBuilder().setArchiveOrdersAutomatically(value).build()
+    }
+  }
+
+  override suspend fun setFirstInitDone(value: Boolean) {
+    userSettingsStore.updateData { currentSettings ->
+      currentSettings.toBuilder().setFirstInitDone(value).build()
+    }
+  }
+
   override suspend fun setOrderAutoUpdatePeriodMinutes(value: Long) {
     userSettingsStore.updateData { currentSettings ->
       currentSettings.toBuilder().setOrderAutoUpdatePeriodMinutes(value).build()

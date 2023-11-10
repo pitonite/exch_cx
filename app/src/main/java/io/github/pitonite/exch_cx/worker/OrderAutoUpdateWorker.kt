@@ -13,7 +13,9 @@ import dagger.assisted.AssistedInject
 import io.github.pitonite.exch_cx.ExchWorkManager
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.OrderRepository
-import io.github.pitonite.exch_cx.data.mappers.toOrderUpdateEntity
+import io.github.pitonite.exch_cx.data.UserSettingsRepository
+import io.github.pitonite.exch_cx.data.mappers.toOrderUpdateWithArchiveEntity
+import io.github.pitonite.exch_cx.model.api.OrderState
 import io.github.pitonite.exch_cx.utils.createNotificationChannels
 import io.github.pitonite.exch_cx.utils.isNotificationAllowed
 import java.util.Date
@@ -28,6 +30,7 @@ constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
     private val orderRepository: OrderRepository,
+    private val userSettingsRepository: UserSettingsRepository,
     private val exchWorkManager: ExchWorkManager,
 ) : CoroutineWorker(context, workerParams) {
 
@@ -37,6 +40,7 @@ constructor(
 
   @SuppressLint("MissingPermission")
   override suspend fun doWork(): Result {
+    val settings = userSettingsRepository.fetchSettings()
     val context = this.applicationContext
 
     val notificationAllowed = isNotificationAllowed(context)
@@ -58,7 +62,17 @@ constructor(
         if (order != null) {
           dateCondition = order.createdAt
           try {
-            val orderUpdate = orderRepository.fetchOrder(order.id).toOrderUpdateEntity()
+            val fetchedOrder = orderRepository.fetchOrder(order.id)
+            val archived =
+                when (fetchedOrder.state) {
+                  // terminal states here:
+                  OrderState.COMPLETE,
+                  OrderState.REFUNDED,
+                  OrderState.CANCELLED -> true
+                  else -> false
+                }
+
+            val orderUpdate = fetchedOrder.toOrderUpdateWithArchiveEntity(archived)
             orderRepository.updateOrder(orderUpdate)
 
             if (notifManager != null && order.state != orderUpdate.state) {
