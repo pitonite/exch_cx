@@ -4,7 +4,6 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -34,7 +33,7 @@ fun Modifier.horizontalFadingEdge(
           name = "length"
           value = length
         }) {
-          val color = edgeColor ?: MaterialTheme.colorScheme.surface
+          val color = edgeColor ?: Color.Black.copy(alpha = 0.1f)
 
           drawWithContent {
             val lengthValue = length.toPx()
@@ -92,7 +91,7 @@ fun Modifier.verticalFadingEdge(
           name = "length"
           value = length
         }) {
-          val color = edgeColor ?: MaterialTheme.colorScheme.surface
+          val color = edgeColor ?: Color.Black.copy(alpha = 0.1f)
 
           drawWithContent {
             val lengthValue = length.toPx()
@@ -146,7 +145,7 @@ fun Modifier.verticalFadingEdge(
           name = "length"
           value = length
         }) {
-          val color = edgeColor ?: MaterialTheme.colorScheme.surface
+          val color = edgeColor ?: Color.Black.copy(alpha = 0.1f)
 
           drawWithContent {
             val topFadingEdgeStrength by derivedStateOf {

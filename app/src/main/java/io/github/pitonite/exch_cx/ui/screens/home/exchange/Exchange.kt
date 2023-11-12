@@ -32,10 +32,12 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -91,12 +93,17 @@ fun Exchange(
   val userSettings by viewModel.userSettings.collectAsStateWithLifecycle()
   val focusManager = LocalFocusManager.current
   val scrollState = rememberScrollState()
+  val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
   Scaffold(
+      modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
       snackbarHost = { SnackbarHost(hostState = SnackbarManager.snackbarHostState) },
       topBar = {
         CenterAlignedTopAppBar(
-            colors = TopAppBarDefaults.topAppBarColors(),
+            scrollBehavior = scrollBehavior,
+            colors =
+                TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    scrolledContainerColor = MaterialTheme.colorScheme.inverseOnSurface),
             title = { Text(stringResource(R.string.exchange)) },
             navigationIcon = {
               IconButton(onClick = { onNavigateToRoute(SecondaryDestinations.SETTINGS_ROUTE) }) {
@@ -120,8 +127,8 @@ fun Exchange(
             modifier =
                 modifier
                     .padding(padding)
-                    .padding(horizontal = dimensionResource(R.dimen.page_padding))
                     .verticalFadingEdge(scrollState, dimensionResource(R.dimen.fading_edge))
+                    .padding(horizontal = dimensionResource(R.dimen.page_padding))
                     .verticalScroll(scrollState)
                     .noRippleClickable() { focusManager.clearFocus() },
             horizontalAlignment = Alignment.CenterHorizontally,

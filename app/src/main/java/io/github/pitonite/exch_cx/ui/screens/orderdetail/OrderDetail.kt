@@ -24,8 +24,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.dimensionResource
@@ -66,6 +69,7 @@ fun OrderDetail(
   val uriHandler = LocalUriHandler.current
   val order by viewModel.order.collectAsStateWithLifecycle()
   val settings by viewModel.userSettings.collectAsStateWithLifecycle()
+  val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
   val launcher =
       rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
@@ -75,10 +79,14 @@ fun OrderDetail(
       }
 
   Scaffold(
+      modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
       snackbarHost = { SnackbarHost(hostState = SnackbarManager.snackbarHostState) },
       topBar = {
         CenterAlignedTopAppBar(
-            colors = TopAppBarDefaults.topAppBarColors(),
+            scrollBehavior = scrollBehavior,
+            colors =
+                TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    scrolledContainerColor = MaterialTheme.colorScheme.inverseOnSurface),
             title = {
               Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(stringResource(R.string.order))
@@ -196,17 +204,17 @@ fun OrderColumn(order: Order) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_sm)),
         ) {
-          Text(order.stateError)
+          Text(order.stateError, color = MaterialTheme.colorScheme.onErrorContainer)
         }
       }
     }
   }
 }
 
-@Preview("detail column", widthDp = 320)
+@Preview("detail column", widthDp = 360)
 @Composable
 fun OrderColumnPreview() {
-  ExchTheme { OrderColumn(OrderRepositoryMock.orders[0]) }
+  ExchTheme { Surface { OrderColumn(OrderRepositoryMock.orders[0]) } }
 }
 
 @Preview("default")

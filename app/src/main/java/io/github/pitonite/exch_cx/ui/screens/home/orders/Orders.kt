@@ -20,15 +20,18 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -68,6 +71,7 @@ fun Orders(
   val orderPagingItems = viewModel.orderPagingDataFlow.collectAsLazyPagingItems()
   val autoUpdateWorkState by viewModel.autoUpdateWorkState.collectAsStateWithLifecycle()
   val listState = rememberLazyListState()
+  val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
   LaunchedEffect(key1 = orderPagingItems.loadState.refresh) {
     if (orderPagingItems.loadState.refresh is LoadState.Error) {
@@ -83,10 +87,14 @@ fun Orders(
   }
 
   Scaffold(
+      modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
       snackbarHost = { SnackbarHost(hostState = SnackbarManager.snackbarHostState) },
       topBar = {
         CenterAlignedTopAppBar(
-            colors = TopAppBarDefaults.topAppBarColors(),
+            scrollBehavior = scrollBehavior,
+            colors =
+            TopAppBarDefaults.centerAlignedTopAppBarColors(
+                scrolledContainerColor = MaterialTheme.colorScheme.inverseOnSurface),
             title = { Text(stringResource(R.string.orders)) },
             actions = {
               if (autoUpdateWorkState == WorkState.NotWorking) {

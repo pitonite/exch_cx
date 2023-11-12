@@ -15,17 +15,21 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.dimensionResource
@@ -54,6 +58,7 @@ fun Settings(viewModel: SettingsViewModel, upPress: () -> Unit, modifier: Modifi
   val lifecycleOwner = LocalLifecycleOwner.current
   val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsStateWithLifecycle()
   val scrollState = rememberScrollState()
+  val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
   LaunchedEffect(lifecycleState) {
     when (lifecycleState) {
@@ -66,16 +71,21 @@ fun Settings(viewModel: SettingsViewModel, upPress: () -> Unit, modifier: Modifi
   }
 
   Scaffold(
-      modifier = modifier,
+      modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
       topBar = {
         TopAppBar(
+            scrollBehavior = scrollBehavior,
+            colors =
+                TopAppBarDefaults.topAppBarColors(
+                    scrolledContainerColor = MaterialTheme.colorScheme.inverseOnSurface),
             title = { Text(stringResource(R.string.settings)) },
             navigationIcon = { UpBtn(upPress) },
         )
       }) { padding ->
         Column(
             modifier =
-                Modifier.padding(padding)
+                modifier
+                    .padding(padding)
                     .padding(
                         horizontal = dimensionResource(R.dimen.page_padding),
                     )
