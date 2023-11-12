@@ -4,10 +4,12 @@ import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.luminance
@@ -103,10 +105,14 @@ fun ExchTheme(
     SideEffect {
       val window = (view.context as Activity).window
       val statusBarColor = colorScheme.inverseOnSurface
+      val navigationBarColor = colorScheme.surfaceColorAtElevation(NavigationBarDefaults.Elevation)
       window.statusBarColor = statusBarColor.toArgb()
+      window.navigationBarColor = navigationBarColor.toArgb()
       window.decorView.setBackgroundColor(colorScheme.background.toArgb())
       WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars =
           statusBarColor.luminance() > 0.5
+      WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars =
+          navigationBarColor.luminance() > 0.5
     }
   }
 
