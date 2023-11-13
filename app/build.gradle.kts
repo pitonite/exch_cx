@@ -119,6 +119,9 @@ dependencies {
 
   // for splash screen
   implementation("androidx.core:core-splashscreen:1.1.0-alpha02")
+
+  // for QRCode generation
+  implementation("com.google.zxing:core:3.5.2")
 }
 
 hilt { enableAggregatingTask = true }
