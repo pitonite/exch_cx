@@ -1,5 +1,5 @@
 <resources>
-  <string name="app_name">eXch.</string>
+  <string name="app_name" translatable="false">eXch.</string>
   <string name="navigation_drawer">Navigation Drawer</string>
   <string name="exchange">Exchange</string>
   <string name="orders">Orders</string>
@@ -86,4 +86,36 @@
   <string name="exception_failed_to_parse_order">Failed to parse order</string>
   <string name="exception_order_not_found">Order not found</string>
   <string name="label_archive_orders_automatically">Archive orders automatically?</string>
+  <string name="error_order_cancelled">Order expired</string>
+  <string name="notice">Notice</string>
+  <string name="label_mode">Mode:</string>
+  <string name="label_exchanged_amount_to_address">Exchanged amount will be sent to:</string>
+  <string name="label_copy_address">Copy address</string>
+  <string name="snack_address_copied">Address Copied!</string>
+  <string name="notice_etherium_based_coins">Send funds only on Ethereum Mainnet or they will be lost</string>
+  <string name="order_state_title_created">Waiting for you to send %1$s</string>
+  <string name="label_minimum">Minimum:</string>
+  <string name="label_maximum">Maximum:</string>
+  <string name="order_state_max_input_zero">Sorry, but we cannot accept %1$s right now.</string>
+  <string name="label_to_order_address">To the %1$s address:</string>
+  <string name="desc_send_qrcode_image">%1$s address QRCode</string>
+  <string name="address_generating">Generating...</string>
+  <string name="copied">Copied!</string>
+  <string name="order_state_created">Created</string>
+  <string name="order_state_cancelled">Cancelled</string>
+  <string name="order_state_awaiting_input">Awaiting Input</string>
+  <string name="order_state_confirming_input">Confirming Input</string>
+  <string name="order_state_exchanging">Exchanging</string>
+  <string name="order_state_confirming_send">Confirming Send</string>
+  <string name="order_state_complete">Complete</string>
+  <string name="order_state_refund_request">Refund Request</string>
+  <string name="order_state_refund_pending">Refund Pending</string>
+  <string name="order_state_confirming_refund">Confirming Refund</string>
+  <string name="order_state_refunded">Refunded</string>
+  <string name="order_state_bridging">Bridging</string>
+  <string name="order_state_funded">Funded</string>
+  <string name="order_error_no_balance_available_to_send">No Balance Available To Send</string>
+  <string name="order_error_instance_not_available">Instance Not Available</string>
+  <string name="order_error_error_generating_address">Error Generating Address</string>
+  <string name="order_error_to_address_invalid">To Address Invalid</string>
 </resources>
