@@ -79,9 +79,9 @@ constructor(
     private set
 
   fun refreshOrder() {
-    if (refreshWorkState == WorkState.Working || orderId.value == null) return
+    if (WorkState.isWorking(refreshWorkState) || orderId.value == null) return
 
-    refreshWorkState = WorkState.Working
+    refreshWorkState = WorkState.Working()
     val id = orderId.value!!
 
     viewModelScope.launch {

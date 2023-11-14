@@ -12,8 +12,8 @@ sealed class WorkState {
   /** Indicates the work is currently done, and no error was observed. */
   data object NotWorking : WorkState()
 
-  /** work is in progress. two working state are equal if their key are equal. */
-  data object Working : WorkState(), WorkingState
+  /** work is in progress. two working state are equal if their class are equal. */
+  data class Working(val currentWorkProgress: Int = 0, val totalWorkItems: Int = 0) : WorkState(), WorkingState
 
   /**
    * Work hit an error.

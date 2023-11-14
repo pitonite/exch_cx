@@ -139,8 +139,8 @@ fun OrderDetail(
               if (order != null) {
                 RefreshButton(
                     onClick = { viewModel.refreshOrder() },
-                    enabled = viewModel.refreshWorkState != WorkState.Working,
-                    refreshing = viewModel.refreshWorkState == WorkState.Working,
+                    enabled = !WorkState.isWorking( viewModel.refreshWorkState),
+                    refreshing =  WorkState.isWorking( viewModel.refreshWorkState),
                 )
 
                 var showMenu by remember { mutableStateOf(false) }

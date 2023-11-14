@@ -52,7 +52,7 @@ fun ImportOrderDialog(
 ) {
   if (show) {
     var orderId by remember { mutableStateOf("") }
-    val enabled = workState != WorkState.Working
+    val enabled = !WorkState.isWorking(workState)
     AlertDialog(
         onDismissRequest,
     ) {
@@ -82,7 +82,7 @@ fun ImportOrderDialog(
           )
 
           Button(onClick = { onImportPressed(orderId) }, enabled = enabled) {
-            if (workState == WorkState.Working) {
+            if (WorkState.isWorking(workState)) {
               CircularProgressIndicator()
             } else {
               Text(stringResource(R.string.label_import))

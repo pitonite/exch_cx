@@ -93,8 +93,8 @@ fun Orders(
         CenterAlignedTopAppBar(
             scrollBehavior = scrollBehavior,
             colors =
-            TopAppBarDefaults.centerAlignedTopAppBarColors(
-                scrolledContainerColor = MaterialTheme.colorScheme.inverseOnSurface),
+                TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    scrolledContainerColor = MaterialTheme.colorScheme.inverseOnSurface),
             title = { Text(stringResource(R.string.orders)) },
             actions = {
               if (autoUpdateWorkState == WorkState.NotWorking) {
@@ -132,7 +132,7 @@ fun Orders(
                 .padding(horizontal = dimensionResource(R.dimen.page_padding))
                 .fillMaxSize(),
     ) {
-      if (autoUpdateWorkState == WorkState.Working) {
+      if (WorkState.isWorking(autoUpdateWorkState)) {
         Card {
           Column(
               Modifier.padding(vertical = 70.dp, horizontal = 20.dp),
@@ -150,6 +150,11 @@ fun Orders(
                 stringResource(R.string.label_stop_order_update),
                 42.dp,
             )
+
+            if (autoUpdateWorkState is WorkState.Working) {
+              val state = autoUpdateWorkState as WorkState.Working
+              Text("${state.currentWorkProgress} / ${state.totalWorkItems}")
+            }
           }
         }
       } else
@@ -214,8 +219,9 @@ fun Orders(
               } else {
                 LazyColumn(
                     state = listState,
-                    modifier = Modifier.fillMaxSize()
-                        .verticalFadingEdge(listState, dimensionResource(R.dimen.fading_edge)),
+                    modifier =
+                        Modifier.fillMaxSize()
+                            .verticalFadingEdge(listState, dimensionResource(R.dimen.fading_edge)),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement =
                         Arrangement.spacedBy(dimensionResource(R.dimen.page_padding)),

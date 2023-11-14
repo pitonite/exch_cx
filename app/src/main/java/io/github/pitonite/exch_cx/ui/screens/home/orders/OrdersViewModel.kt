@@ -12,8 +12,10 @@ import androidx.paging.cachedIn
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.WorkInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.pitonite.exch_cx.CurrentWorkProgress
 import io.github.pitonite.exch_cx.ExchWorkManager
 import io.github.pitonite.exch_cx.R
+import io.github.pitonite.exch_cx.TotalWorkItems
 import io.github.pitonite.exch_cx.data.OrderRepository
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
 import io.github.pitonite.exch_cx.data.room.Order
@@ -39,28 +41,36 @@ constructor(
     private val workManager: ExchWorkManager
 ) : ViewModel() {
 
-  private val periodicWorkState =
+  private val periodicWorkInfo =
       workManager
-          .getAutoUpdateWorkState()
+          .getAutoUpdateWorkInfo()
           .stateIn(
               scope = viewModelScope,
               started = SharingStarted.WhileSubscribed(5_000),
               initialValue = null)
 
-  private val oneTimeWorkState =
+  private val oneTimeWorkInfo =
       workManager
-          .getOneTimeOrderUpdateWorkState()
+          .getOneTimeOrderUpdateWorkInfo()
           .stateIn(
               scope = viewModelScope,
               started = SharingStarted.WhileSubscribed(5_000),
               initialValue = null)
 
   val autoUpdateWorkState =
-      periodicWorkState
-          .combine(oneTimeWorkState) { periodicState, oneTimeState ->
-            if (periodicState == WorkInfo.State.RUNNING || oneTimeState == WorkInfo.State.RUNNING) {
-              WorkState.Working
-            } else {
+      periodicWorkInfo
+          .combine(oneTimeWorkInfo) { periodicInfo, oneTimeInfo ->
+            if (oneTimeInfo?.state == WorkInfo.State.RUNNING ) {
+              WorkState.Working(
+                  currentWorkProgress = oneTimeInfo?.progress?.getInt(CurrentWorkProgress, 0) ?: 0,
+                  totalWorkItems = oneTimeInfo?.progress?.getInt(TotalWorkItems, 0) ?: 0,
+                  )
+            } else if (periodicInfo?.state == WorkInfo.State.RUNNING) {
+              WorkState.Working(
+                  currentWorkProgress = periodicInfo?.progress?.getInt(CurrentWorkProgress, 0) ?: 0,
+                  totalWorkItems = periodicInfo?.progress?.getInt(TotalWorkItems, 0) ?: 0,
+              )
+            }  else {
               WorkState.NotWorking
             }
           }
@@ -89,13 +99,13 @@ constructor(
   }
 
   fun updateOrders() {
-    if (autoUpdateWorkState.value == WorkState.Working) return
+    if (WorkState.isWorking(autoUpdateWorkState.value)) return
     cancelAndReEnqueueAutoUpdater()
     workManager.startOneTimeOrderUpdate()
   }
 
   fun stopUpdatingOrders() {
-    if (periodicWorkState.value == WorkInfo.State.RUNNING) {
+    if (periodicWorkInfo.value?.state == WorkInfo.State.RUNNING) {
       cancelAndReEnqueueAutoUpdater()
     } else {
       workManager.stopOneTimeOrderUpdate()
@@ -107,9 +117,8 @@ constructor(
   }
 
   fun onImportOrderPressed(orderId: String) {
-    if (importOrderWork == WorkState.Working) return
-
-    importOrderWork = WorkState.Working
+    if (WorkState.isWorking(importOrderWork)) return
+    importOrderWork = WorkState.Working()
     viewModelScope.launch {
       try {
         if (orderRepository.fetchAndUpdateOrder(orderId)) {
@@ -126,7 +135,7 @@ constructor(
   }
 
   fun onDismissImportDialogRequest() {
-    if (importOrderWork == WorkState.Working) return
+    if (WorkState.isWorking(importOrderWork)) return
     importOrderWork = WorkState.NotWorking
     showImportDialog = false
   }

@@ -122,7 +122,7 @@ constructor(
   }
 
   private suspend fun _updateFeeRates() {
-    if (workState == WorkState.Working) return
+    if (WorkState.isWorking(workState)) return
     workState = ExchangeWorkState.Refreshing
     try {
       rateFeeRepository.updateRateFees(_rateFeeMode.value)
@@ -292,7 +292,7 @@ constructor(
 
   fun createOrder(onOrderCreated: (String) -> Unit) {
     if (_rateFee.value == null) return
-    if (workState == WorkState.Working) return
+    if (WorkState.isWorking(workState)) return
     workState = ExchangeWorkState.CreatingOrder
 
     val rateFee = _rateFee.value!!

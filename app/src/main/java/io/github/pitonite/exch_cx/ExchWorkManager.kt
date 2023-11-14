@@ -21,6 +21,9 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
+const val CurrentWorkProgress = "Progress"
+const val TotalWorkItems = "TotalItems"
+
 @Singleton
 class ExchWorkManager
 @Inject
@@ -72,18 +75,18 @@ constructor(
     WorkManager.getInstance(context).cancelUniqueWork(orderAutoUpdateWorkNameOneTime)
   }
 
-  fun getAutoUpdateWorkState(): Flow<WorkInfo.State?> {
+  fun getAutoUpdateWorkInfo(): Flow<WorkInfo?> {
     return WorkManager.getInstance(context)
         .getWorkInfosForUniqueWorkLiveData(orderAutoUpdateWorkName)
         .asFlow()
-        .map { workInfos -> workInfos.firstOrNull()?.state }
+        .map { workInfos -> workInfos.firstOrNull() }
   }
 
-  fun getOneTimeOrderUpdateWorkState(): Flow<WorkInfo.State?> {
+  fun getOneTimeOrderUpdateWorkInfo(): Flow<WorkInfo?> {
     return WorkManager.getInstance(context)
         .getWorkInfosForUniqueWorkLiveData(orderAutoUpdateWorkNameOneTime)
         .asFlow()
-        .map { workInfos -> workInfos.firstOrNull()?.state }
+        .map { workInfos -> workInfos.firstOrNull() }
   }
 
   companion object {

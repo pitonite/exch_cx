@@ -8,10 +8,13 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import androidx.work.workDataOf
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import io.github.pitonite.exch_cx.CurrentWorkProgress
 import io.github.pitonite.exch_cx.ExchWorkManager
 import io.github.pitonite.exch_cx.R
+import io.github.pitonite.exch_cx.TotalWorkItems
 import io.github.pitonite.exch_cx.data.OrderRepository
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
 import io.github.pitonite.exch_cx.data.mappers.toOrderUpdateWithArchiveEntity
@@ -38,6 +41,7 @@ constructor(
 
   companion object {
     const val TAG: String = "OrderUpdaterWorker"
+
   }
 
   @SuppressLint("MissingPermission")
@@ -56,13 +60,15 @@ constructor(
       notifManager = null
     }
 
-    if (orderRepository.count(false) == 0) {
+    val totalCount = orderRepository.count(false)
+    var progress = 0
+    if (totalCount == 0) {
       exchWorkManager.stopAutoUpdate()
     } else {
       var dateCondition = Date(0)
-
       do {
         val order = orderRepository.getOrderAfter(dateCondition, false)
+        setProgress(workDataOf(TotalWorkItems to totalCount, CurrentWorkProgress to ++progress))
         if (order != null) {
           dateCondition = order.createdAt
           Log.e(TAG, "Trying to update order #${order.id}")
