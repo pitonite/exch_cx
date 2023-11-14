@@ -1,6 +1,8 @@
 package io.github.pitonite.exch_cx.model.api
 
 import androidx.compose.runtime.Immutable
+import io.github.pitonite.exch_cx.R
+import io.github.pitonite.exch_cx.model.Translatable
 import io.github.pitonite.exch_cx.utils.BigDecimalSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -15,15 +17,16 @@ import java.math.BigDecimal
 // for /api/rates
 
 @Serializable
-enum class NetworkFeeOption {
-  @SerialName("f") QUICK,
-  @SerialName("m") MEDIUM,
-  @SerialName("s") SLOW,
+enum class NetworkFeeOption(override val translation: Int? = null) : Translatable {
+  @SerialName("f") QUICK(R.string.QUICK),
+  @SerialName("m") MEDIUM(R.string.MEDIUM),
+  @SerialName("s") SLOW(R.string.SLOW),
 }
 
-enum class RateFeeMode {
-  @SerialName("flat") FLAT,
-  @SerialName("dynamic") DYNAMIC
+@Serializable
+enum class RateFeeMode(override val translation: Int? = null) : Translatable {
+  @SerialName("flat") FLAT(R.string.FLAT),
+  @SerialName("dynamic") DYNAMIC(R.string.DYNAMIC),
 }
 
 @Serializable

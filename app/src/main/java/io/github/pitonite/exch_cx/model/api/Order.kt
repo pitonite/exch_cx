@@ -1,34 +1,48 @@
 package io.github.pitonite.exch_cx.model.api
 
 import androidx.compose.runtime.Immutable
+import io.github.pitonite.exch_cx.R
+import io.github.pitonite.exch_cx.model.Translatable
 import io.github.pitonite.exch_cx.utils.BigDecimalSerializer
+import io.github.pitonite.exch_cx.utils.codified.Codified
+import io.github.pitonite.exch_cx.utils.codified.enums.CodifiedEnum
+import io.github.pitonite.exch_cx.utils.codified.serializer.codifiedEnumSerializer
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.math.BigDecimal
-import java.util.Locale
 
-enum class OrderState {
-  CREATED,
-  CANCELLED,
-  AWAITING_INPUT,
-  CONFIRMING_INPUT,
-  EXCHANGING,
-  CONFIRMING_SEND,
-  COMPLETE,
-  REFUND_REQUEST,
-  REFUND_PENDING,
-  CONFIRMING_REFUND,
-  REFUNDED,
-  BRIDGING, // experimental
-  FUNDED; // experimental
+enum class OrderState(override val code: String, override val translation: Int? = null) :
+    Codified<String>, Translatable {
+  CREATED("CREATED", R.string.order_state_created),
+  CANCELLED("CANCELLED", R.string.order_state_cancelled),
+  AWAITING_INPUT("AWAITING_INPUT", R.string.order_state_awaiting_input),
+  CONFIRMING_INPUT("CONFIRMING_INPUT", R.string.order_state_confirming_input),
+  EXCHANGING("EXCHANGING", R.string.order_state_exchanging),
+  CONFIRMING_SEND("CONFIRMING_SEND", R.string.order_state_confirming_send),
+  COMPLETE("COMPLETE", R.string.order_state_complete),
+  REFUND_REQUEST("REFUND_REQUEST", R.string.order_state_refund_request),
+  REFUND_PENDING("REFUND_PENDING", R.string.order_state_refund_pending),
+  CONFIRMING_REFUND("CONFIRMING_REFUND", R.string.order_state_confirming_refund),
+  REFUNDED("REFUNDED", R.string.order_state_refunded),
+  BRIDGING("BRIDGING", R.string.order_state_bridging), // experimental
+  FUNDED("FUNDED", R.string.order_state_funded); // experimental
 
-  fun toReadableString(): String {
-    return this.name.lowercase().split('_').joinToString(" ") { w ->
-      w.replaceFirstChar {
-        if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
-      }
-    }
-  }
+  object CodifiedSerializer :
+      KSerializer<CodifiedEnum<OrderState, String>> by codifiedEnumSerializer()
+}
+
+enum class OrderStateError(override val code: String, override val translation: Int? = null) :
+    Codified<String>, Translatable {
+  NO_BALANCE_AVAILABLE_TO_SEND(
+      "NO_BALANCE_AVAILABLE_TO_SEND", R.string.order_error_no_balance_available_to_send),
+  INSTANCE_NOT_AVAILABLE("INSTANCE_NOT_AVAILABLE", R.string.order_error_instance_not_available),
+  ERROR_GENERATING_ADDRESS(
+      "ERROR_GENERATING_ADDRESS", R.string.order_error_error_generating_address),
+  TO_ADDRESS_INVALID("TO_ADDRESS_INVALID", R.string.order_error_to_address_invalid);
+
+  object CodifiedSerializer :
+      KSerializer<CodifiedEnum<OrderStateError, String>> by codifiedEnumSerializer()
 }
 
 @Serializable
@@ -55,11 +69,11 @@ data class OrderResponse(
     /** Maximum amount of from_currency to deposit */
     @Serializable(with = BigDecimalSerializer::class)
     @SerialName("max_input")
-    val maxInput: BigDecimal? = null,
+    val maxInput: BigDecimal,
     /** Minimum amount of from_currency to deposit */
     @Serializable(with = BigDecimalSerializer::class)
     @SerialName("min_input")
-    val minInput: BigDecimal? = null,
+    val minInput: BigDecimal,
 
     /** Network fee (included in the calculated amount of to_currency) */
     @Serializable(with = BigDecimalSerializer::class)
@@ -75,9 +89,13 @@ data class OrderResponse(
      * CONFIRMING_INPUT, EXCHANGING, CONFIRMING_SEND, COMPLETE, REFUND_REQUEST, REFUND_PENDING,
      * CONFIRMING_REFUND, REFUNDED
      */
-    @SerialName("state") val state: OrderState,
+    @Serializable(with = OrderState.CodifiedSerializer::class)
+    @SerialName("state")
+    val state: CodifiedEnum<OrderState, String>,
     /** Current error state, if any (only present on error). such as "TO_ADDRESS_INVALID" */
-    @SerialName("state_error") val stateError: String? = null, // todo, replace with error enum
+    @Serializable(with = OrderStateError.CodifiedSerializer::class)
+    @SerialName("state_error")
+    val stateError: CodifiedEnum<OrderStateError, String>? = null,
     /**
      * Service fee as a string representing a decimal number. (included in the calculated amount of
      * to_currency)

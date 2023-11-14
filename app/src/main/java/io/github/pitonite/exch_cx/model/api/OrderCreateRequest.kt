@@ -3,6 +3,7 @@ package io.github.pitonite.exch_cx.model.api
 import io.github.pitonite.exch_cx.utils.BigDecimalSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import java.math.BigDecimal
 import javax.annotation.concurrent.Immutable
 
@@ -23,14 +24,24 @@ data class OrderCreateRequest(
     @SerialName("to_address") val toAddress: String,
     @SerialName("refund_address") val refundAddress: String? = null,
     @SerialName("fee_option") val feeOption: NetworkFeeOption? = null,
-    @Serializable(with = BigDecimalSerializer::class)
-    @SerialName("from_amount")
-    val calculatedFromAmount: BigDecimal? = null,
-    @Serializable(with = BigDecimalSerializer::class)
-    @SerialName("to_amount")
-    val calculatedToAmount: BigDecimal? = null,
     @SerialName("rate_mode") val rateMode: RateFeeMode,
     /** Referrer ID */
     @SerialName("ref") val referrerId: String? = null,
     @SerialName("aggregation") val aggregation: AggregationOption? = null,
+    // remove transient and add to_amount if api supports later
+    @Serializable(with = BigDecimalSerializer::class)
+    @SerialName("from_amount")
+    @Transient
+    val fromAmount: BigDecimal? = null,
+
+    // don't remove transient from these anyway:
+    @Transient val rate: BigDecimal = BigDecimal.ZERO,
+    @Transient val networkFee: BigDecimal = BigDecimal.ZERO,
+    @Transient val svcFee: BigDecimal = BigDecimal.ZERO,
+)
+
+@Serializable
+@Immutable
+data class OrderCreateResponse(
+    @SerialName("orderid:") val orderid: String,
 )

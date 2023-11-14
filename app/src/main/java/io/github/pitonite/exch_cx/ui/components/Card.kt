@@ -8,19 +8,21 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 
 @Composable
 fun Card(
-    modifier: Modifier = Modifier,
-    isError: Boolean = false,
-    content: @Composable () -> Unit,
+  modifier: Modifier = Modifier,
+  isError: Boolean = false,
+  errorColor: Color =  MaterialTheme.colorScheme.errorContainer,
+  content: @Composable () -> Unit,
 ) {
   Surface(
       color =
-          if (isError) MaterialTheme.colorScheme.errorContainer
+          if (isError) errorColor
           else MaterialTheme.colorScheme.surfaceContainerHigh,
       shape = CardDefaults.shape,
       modifier = modifier.fillMaxWidth(),
@@ -32,11 +34,12 @@ fun Card(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     isError: Boolean = false,
+    errorColor: Color =  MaterialTheme.colorScheme.errorContainer,
     content: @Composable () -> Unit,
 ) {
   Surface(
       color =
-          if (isError) MaterialTheme.colorScheme.errorContainer
+          if (isError) errorColor
           else MaterialTheme.colorScheme.surfaceContainerHigh,
       shape = CardDefaults.shape,
       modifier = modifier.fillMaxWidth(),

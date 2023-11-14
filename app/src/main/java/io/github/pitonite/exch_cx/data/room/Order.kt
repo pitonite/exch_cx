@@ -7,10 +7,15 @@ import androidx.room.PrimaryKey
 import io.github.pitonite.exch_cx.model.api.AggregationOption
 import io.github.pitonite.exch_cx.model.api.NetworkFeeOption
 import io.github.pitonite.exch_cx.model.api.OrderState
+import io.github.pitonite.exch_cx.model.api.OrderStateError
 import io.github.pitonite.exch_cx.model.api.RateFeeMode
+import io.github.pitonite.exch_cx.utils.codified.enums.CodifiedEnum
+import io.github.pitonite.exch_cx.utils.codified.enums.codifiedEnum
 import java.math.BigDecimal
 import java.util.Date
 import javax.annotation.concurrent.Immutable
+
+const val GENERATING_FROM_ADDRESS = "_GENERATING_"
 
 @Entity(
     indices = [Index("createdAt"), Index("archived", "createdAt")],
@@ -23,17 +28,18 @@ data class Order(
     // order data (api/v1):
     @PrimaryKey val id: String,
     val createdAt: Date = Date(),
-    @ColumnInfo(defaultValue = "'_GENERATING_'") val fromAddr: String = "_GENERATING_",
+    @ColumnInfo(defaultValue = "'$GENERATING_FROM_ADDRESS'")
+    val fromAddr: String = GENERATING_FROM_ADDRESS,
     val fromCurrency: String,
     @ColumnInfo(defaultValue = "null") val fromAmountReceived: BigDecimal? = null,
-    @ColumnInfo(defaultValue = "null") val maxInput: BigDecimal? = null,
-    @ColumnInfo(defaultValue = "null") val minInput: BigDecimal? = null,
+    val maxInput: BigDecimal,
+    val minInput: BigDecimal,
     @ColumnInfo(defaultValue = "null") val networkFee: BigDecimal? = null,
     val rate: BigDecimal,
     val rateMode: RateFeeMode,
-    val state: OrderState,
+    val state: CodifiedEnum<OrderState, String>,
     @ColumnInfo(defaultValue = "null")
-    val stateError: String? = null, // todo, replace with error enum
+    val stateError: CodifiedEnum<OrderStateError, String>? = null,
     val svcFee: BigDecimal,
     @ColumnInfo(defaultValue = "null") val toAmount: BigDecimal? = null,
     val toAddress: String,
@@ -43,8 +49,7 @@ data class Order(
     //
     // custom added data:
     //
-    @ColumnInfo(defaultValue = "null") val calculatedFromAmount: BigDecimal? = null,
-    @ColumnInfo(defaultValue = "null") val calculatedToAmount: BigDecimal? = null,
+    @ColumnInfo(defaultValue = "null") val fromAmount: BigDecimal? = null,
     @ColumnInfo(defaultValue = "null") val referrerId: String? = null,
     @ColumnInfo(defaultValue = "null") val aggregationOption: AggregationOption? = null,
     @ColumnInfo(defaultValue = "null") val feeOption: NetworkFeeOption? = null,
@@ -60,21 +65,19 @@ data class OrderUpdate(
     val fromAddr: String = "_GENERATING_",
     val fromCurrency: String,
     val fromAmountReceived: BigDecimal? = null,
-    val maxInput: BigDecimal? = null,
-    val minInput: BigDecimal? = null,
+    val maxInput: BigDecimal,
+    val minInput: BigDecimal,
     val networkFee: BigDecimal? = null,
     val rate: BigDecimal,
     val rateMode: RateFeeMode,
-    val state: OrderState,
-    val stateError: String? = null, // todo, replace with error enum
+    val state: CodifiedEnum<OrderState, String>,
+    val stateError: CodifiedEnum<OrderStateError, String>? = null,
     val svcFee: BigDecimal,
     val toAmount: BigDecimal? = null,
     val toAddress: String,
     val toCurrency: String,
     val transactionIdReceived: String? = null,
     val transactionIdSent: String? = null,
-    val calculatedFromAmount: BigDecimal? = null,
-    val calculatedToAmount: BigDecimal? = null,
 )
 
 @Immutable
@@ -86,21 +89,19 @@ data class OrderUpdateWithArchive(
     val fromAddr: String = "_GENERATING_",
     val fromCurrency: String,
     val fromAmountReceived: BigDecimal? = null,
-    val maxInput: BigDecimal? = null,
-    val minInput: BigDecimal? = null,
+    val maxInput: BigDecimal,
+    val minInput: BigDecimal,
     val networkFee: BigDecimal? = null,
     val rate: BigDecimal,
     val rateMode: RateFeeMode,
-    val state: OrderState,
-    val stateError: String? = null, // todo, replace with error enum
+    val state: CodifiedEnum<OrderState, String>,
+    val stateError: CodifiedEnum<OrderStateError, String>? = null,
     val svcFee: BigDecimal,
     val toAmount: BigDecimal? = null,
     val toAddress: String,
     val toCurrency: String,
     val transactionIdReceived: String? = null,
     val transactionIdSent: String? = null,
-    val calculatedFromAmount: BigDecimal? = null,
-    val calculatedToAmount: BigDecimal? = null,
 )
 
 /** for use when an order is initially created by sending a request to api */
@@ -114,12 +115,13 @@ data class OrderCreate(
     val networkFee: BigDecimal? = null,
     val rate: BigDecimal,
     val rateMode: RateFeeMode,
-    val state: OrderState = OrderState.CREATED,
+    val state: CodifiedEnum<OrderState, String> = OrderState.CREATED.codifiedEnum(),
     val svcFee: BigDecimal,
     val toAddress: String,
     val refundAddress: String? = null,
-    val calculatedFromAmount: BigDecimal? = null,
-    val calculatedToAmount: BigDecimal? = null,
+    val fromAmount: BigDecimal? = null,
+    val maxInput: BigDecimal,
+    val minInput: BigDecimal,
 )
 
 @Immutable

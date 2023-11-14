@@ -14,7 +14,7 @@ import io.github.pitonite.exch_cx.copy
 import io.github.pitonite.exch_cx.data.OrderRepository
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
 import io.github.pitonite.exch_cx.data.room.Order
-import io.github.pitonite.exch_cx.exceptions.LocalizedException
+import io.github.pitonite.exch_cx.exceptions.toUserMessage
 import io.github.pitonite.exch_cx.model.SnackbarMessage
 import io.github.pitonite.exch_cx.model.UserMessage
 import io.github.pitonite.exch_cx.model.api.OrderState
@@ -22,6 +22,7 @@ import io.github.pitonite.exch_cx.model.api.RateFeeMode
 import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import io.github.pitonite.exch_cx.ui.navigation.NavArgs
 import io.github.pitonite.exch_cx.utils.WorkState
+import io.github.pitonite.exch_cx.utils.codified.enums.codifiedEnum
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapMerge
@@ -40,7 +41,10 @@ val InvalidOrder =
         rateMode = RateFeeMode.DYNAMIC,
         svcFee = BigDecimal.ZERO,
         toAddress = "",
-        state = OrderState.CREATED)
+        state = OrderState.CREATED.codifiedEnum(),
+        minInput = BigDecimal.ZERO,
+        maxInput = BigDecimal.ONE,
+    )
 
 @HiltViewModel
 @Stable
@@ -88,9 +92,7 @@ constructor(
         refreshWorkState = WorkState.Error(e)
         SnackbarManager.showMessage(
             SnackbarMessage.from(
-                message =
-                    if (e is LocalizedException) UserMessage.from(e.msgId)
-                    else UserMessage.from(e.localizedMessage ?: e.message ?: e.toString()),
+                message = e.toUserMessage(),
                 withDismissAction = true,
                 duration = SnackbarDuration.Long,
             ))

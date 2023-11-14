@@ -9,22 +9,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.pitonite.exch_cx.R
+import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orders
 import io.github.pitonite.exch_cx.data.room.Order
-import io.github.pitonite.exch_cx.model.api.OrderState
-import io.github.pitonite.exch_cx.model.api.RateFeeMode
 import io.github.pitonite.exch_cx.ui.components.Card
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
-import java.math.BigDecimal
-import java.util.Date
+import io.github.pitonite.exch_cx.utils.codified.enums.toLocalizedString
 
 @Composable
 fun OrderItem(order: Order, modifier: Modifier = Modifier, onClick: () -> Unit) {
@@ -59,9 +59,17 @@ fun OrderItem(order: Order, modifier: Modifier = Modifier, onClick: () -> Unit) 
 
       Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         Text(stringResource(R.string.label_status))
+
+        val statusText =
+            if (order.stateError != null) order.stateError.toLocalizedString()
+            else order.state.toLocalizedString()
         Text(
-            order.state.toReadableString(),
-            modifier = Modifier.padding(start = dimensionResource(R.dimen.padding_md)))
+            statusText,
+            modifier = Modifier.padding(start = dimensionResource(R.dimen.padding_md)),
+            color =
+                if (order.stateError != null) MaterialTheme.colorScheme.error
+                else Color.Unspecified,
+        )
       }
     }
   }
@@ -73,16 +81,7 @@ fun OrderItem(order: Order, modifier: Modifier = Modifier, onClick: () -> Unit) 
 fun OrderItemPreview() {
   ExchTheme(darkTheme = true) {
     OrderItem(
-        Order(
-            id = "ee902b8a5fe0844d41",
-            createdAt = Date(1698382396808),
-            fromCurrency = "BTC",
-            toCurrency = "ETH",
-            rate = BigDecimal.valueOf(18.867924528301927),
-            rateMode = RateFeeMode.DYNAMIC,
-            state = OrderState.CREATED,
-            svcFee = BigDecimal.valueOf(1),
-            toAddress = "foo_address"),
+        orders[0],
         onClick = {},
     )
   }

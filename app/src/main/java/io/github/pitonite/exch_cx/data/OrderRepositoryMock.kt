@@ -1,13 +1,15 @@
 package io.github.pitonite.exch_cx.data
 
 import androidx.paging.PagingData
+import io.github.pitonite.exch_cx.data.mappers.toOrderUpdateEntity
 import io.github.pitonite.exch_cx.data.room.Order
 import io.github.pitonite.exch_cx.data.room.OrderUpdate
 import io.github.pitonite.exch_cx.data.room.OrderUpdateWithArchive
 import io.github.pitonite.exch_cx.model.api.OrderCreateRequest
 import io.github.pitonite.exch_cx.model.api.OrderState
-import io.github.pitonite.exch_cx.model.api.RateFee
+import io.github.pitonite.exch_cx.model.api.OrderStateError
 import io.github.pitonite.exch_cx.model.api.RateFeeMode
+import io.github.pitonite.exch_cx.utils.codified.enums.codifiedEnum
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -21,14 +23,52 @@ class OrderRepositoryMock : OrderRepository {
         persistentListOf(
             Order(
                 id = "ee902b8a5fe0844d41",
+                fromCurrency = "eth",
+                toCurrency = "btc",
+                rate = BigDecimal.valueOf(18.867924528301927),
+                rateMode = RateFeeMode.DYNAMIC,
+                state = OrderState.CREATED.codifiedEnum(),
+                svcFee = BigDecimal.valueOf(0.5),
+                toAddress = "0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ",
+                minInput = BigDecimal.ZERO,
+                maxInput = BigDecimal.ONE,
+            ),
+            Order(
+                id = "ee902b8a5fe0844d41",
+                fromCurrency = "eth",
+                toCurrency = "btc",
+                rate = BigDecimal.valueOf(18.867924528301927),
+                rateMode = RateFeeMode.DYNAMIC,
+                state = OrderState.CREATED.codifiedEnum(),
+                svcFee = BigDecimal.valueOf(0.5),
+                toAddress = "0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ",
+                minInput = BigDecimal.ZERO,
+                maxInput = BigDecimal.ZERO,
+            ),
+            Order(
+                id = "ee902b8a5fe0844d41",
                 fromCurrency = "BTC",
                 toCurrency = "ETH",
                 rate = BigDecimal.valueOf(18.867924528301927),
                 rateMode = RateFeeMode.DYNAMIC,
-                state = OrderState.CREATED,
-                svcFee = BigDecimal.valueOf(1),
+                state = OrderState.CREATED.codifiedEnum(),
+                svcFee = BigDecimal.valueOf(0.5),
                 toAddress = "foo_address",
-                stateError = "TO_ADDRESS_INVALID",
+                stateError = OrderStateError.TO_ADDRESS_INVALID.codifiedEnum(),
+                minInput = BigDecimal.ZERO,
+                maxInput = BigDecimal.ONE,
+            ),
+            Order(
+                id = "ee902b8a5fe0844d41",
+                fromCurrency = "BTC",
+                toCurrency = "ETH",
+                rate = BigDecimal.valueOf(18.867924528301927),
+                rateMode = RateFeeMode.FLAT,
+                state = OrderState.CANCELLED.codifiedEnum(),
+                svcFee = BigDecimal.valueOf(1),
+                toAddress = "0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ",
+                minInput = BigDecimal.ZERO,
+                maxInput = BigDecimal.ONE,
             ),
         )
   }
@@ -49,17 +89,8 @@ class OrderRepositoryMock : OrderRepository {
     }
   }
 
-  override suspend fun fetchOrder(orderId: String): Order {
-    return Order(
-        id = "ee902b8a5fe0844d41",
-        fromAddr = "_GENERATING_",
-        fromCurrency = "BTC",
-        toCurrency = "ETH",
-        rate = BigDecimal.valueOf(18.867924528301927),
-        rateMode = RateFeeMode.DYNAMIC,
-        state = OrderState.CREATED,
-        svcFee = BigDecimal.valueOf(1),
-        toAddress = "foo_address")
+  override suspend fun fetchOrder(orderId: String): OrderUpdate {
+    return orders[0].toOrderUpdateEntity()
   }
 
   override suspend fun updateOrder(orderUpdate: Order): Boolean {
@@ -78,7 +109,7 @@ class OrderRepositoryMock : OrderRepository {
     return false
   }
 
-  override suspend fun createOrder(createRequest: OrderCreateRequest, rate: RateFee): String {
+  override suspend fun createOrder(createRequest: OrderCreateRequest): String {
     throw Error("Not implemented")
   }
 

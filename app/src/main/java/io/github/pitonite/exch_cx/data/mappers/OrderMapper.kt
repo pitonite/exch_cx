@@ -6,28 +6,6 @@ import io.github.pitonite.exch_cx.data.room.OrderUpdateWithArchive
 import io.github.pitonite.exch_cx.model.api.OrderResponse
 import java.util.Date
 
-fun OrderResponse.toOrderEntity() =
-    Order(
-        id = this.id,
-        createdAt = Date((this.created?.times(1000)) ?: System.currentTimeMillis()),
-        fromAddr = this.fromAddr,
-        fromCurrency = this.fromCurrency,
-        fromAmountReceived = this.fromAmountReceived,
-        maxInput = this.maxInput,
-        minInput = this.minInput,
-        networkFee = this.networkFee,
-        rate = this.rate,
-        rateMode = this.rateMode,
-        state = this.state,
-        stateError = this.stateError,
-        svcFee = this.svcFee,
-        toAmount = this.toAmount,
-        toAddress = this.toAddress,
-        toCurrency = this.toCurrency,
-        transactionIdReceived = this.transactionIdReceived,
-        transactionIdSent = this.transactionIdSent,
-    )
-
 fun Order.toOrderUpdateEntity() =
     OrderUpdate(
         id = this.id,
@@ -48,11 +26,31 @@ fun Order.toOrderUpdateEntity() =
         toCurrency = this.toCurrency,
         transactionIdReceived = this.transactionIdReceived,
         transactionIdSent = this.transactionIdSent,
-        calculatedFromAmount = this.calculatedFromAmount,
-        calculatedToAmount = this.calculatedToAmount,
     )
 
-fun Order.toOrderUpdateWithArchiveEntity(archived: Boolean) =
+fun OrderResponse.toOrderUpdateEntity() =
+    OrderUpdate(
+        id = this.id,
+        createdAt = Date((this.created?.times(1000)) ?: System.currentTimeMillis()),
+        fromAddr = this.fromAddr,
+        fromCurrency = this.fromCurrency,
+        fromAmountReceived = this.fromAmountReceived,
+        maxInput = this.maxInput,
+        minInput = this.minInput,
+        networkFee = this.networkFee,
+        rate = this.rate,
+        rateMode = this.rateMode,
+        state = this.state,
+        stateError = this.stateError,
+        svcFee = this.svcFee,
+        toAmount = this.toAmount,
+        toAddress = this.toAddress,
+        toCurrency = this.toCurrency,
+        transactionIdReceived = this.transactionIdReceived,
+        transactionIdSent = this.transactionIdSent,
+    )
+
+fun OrderUpdate.toOrderUpdateWithArchiveEntity(archived: Boolean) =
     OrderUpdateWithArchive(
         id = this.id,
         archived = archived,
@@ -73,6 +71,4 @@ fun Order.toOrderUpdateWithArchiveEntity(archived: Boolean) =
         toCurrency = this.toCurrency,
         transactionIdReceived = this.transactionIdReceived,
         transactionIdSent = this.transactionIdSent,
-        calculatedFromAmount = this.calculatedFromAmount,
-        calculatedToAmount = this.calculatedToAmount,
     )

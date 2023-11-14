@@ -16,6 +16,7 @@ import io.github.pitonite.exch_cx.data.OrderRepository
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
 import io.github.pitonite.exch_cx.data.mappers.toOrderUpdateWithArchiveEntity
 import io.github.pitonite.exch_cx.model.api.OrderState
+import io.github.pitonite.exch_cx.utils.codified.enums.toLocalizedString
 import io.github.pitonite.exch_cx.utils.createNotificationChannels
 import io.github.pitonite.exch_cx.utils.isNotificationAllowed
 import java.util.Date
@@ -40,6 +41,8 @@ constructor(
 
   @SuppressLint("MissingPermission")
   override suspend fun doWork(): Result {
+    Log.e(TAG, "Starting OrderUpdaterWorker at ${Date()}")
+
     val settings = userSettingsRepository.fetchSettings()
     val context = this.applicationContext
 
@@ -66,7 +69,7 @@ constructor(
 
             val archived =
                 if (settings.archiveOrdersAutomatically) {
-                  when (fetchedOrder.state) {
+                  when (fetchedOrder.state.knownOrNull()) {
                     // terminal states here:
                     OrderState.COMPLETE,
                     OrderState.REFUNDED,
@@ -75,19 +78,26 @@ constructor(
                   }
                 } else false
 
-            val orderUpdate = fetchedOrder.toOrderUpdateWithArchiveEntity(archived)
+            val orderUpdate = fetchedOrder.toOrderUpdateWithArchiveEntity(archived = archived)
             orderRepository.updateOrder(orderUpdate)
 
-            if (notifManager != null && order.state != orderUpdate.state) {
+            val stateHasChanged = order.state != orderUpdate.state
+            val stateErrorHasChanged =
+                order.stateError != orderUpdate.stateError && orderUpdate.stateError != null
+
+            if (notifManager != null && (stateHasChanged || stateErrorHasChanged)) {
               val notifTag = "order:${order.id}"
+              val stateTranslation =
+                  if (stateHasChanged) orderUpdate.state.toLocalizedString(context)
+                  else orderUpdate.stateError!!.toLocalizedString(context)
+
               val notifBuilder =
                   NotificationCompat.Builder(
                           context, context.getString(R.string.channel_id_order_state_change))
                       .setSmallIcon(R.drawable.ic_launcher_foreground)
                       .setContentTitle(context.getString(R.string.order) + " " + order.id)
                       .setContentText(
-                          context.getString(
-                              R.string.order_state_change, orderUpdate.state.toReadableString()))
+                          context.getString(R.string.order_state_change, stateTranslation))
 
               notifManager.notify(notifTag, R.id.notif_id_order_state_change, notifBuilder.build())
             }

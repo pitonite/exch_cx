@@ -10,7 +10,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.github.pitonite.exch_cx.ExchWorkManager
-import io.github.pitonite.exch_cx.data.mappers.toOrderEntity
 import io.github.pitonite.exch_cx.data.mappers.toOrderUpdateEntity
 import io.github.pitonite.exch_cx.data.room.ExchDatabase
 import io.github.pitonite.exch_cx.data.room.Order
@@ -20,19 +19,13 @@ import io.github.pitonite.exch_cx.data.room.OrderUpdate
 import io.github.pitonite.exch_cx.data.room.OrderUpdateWithArchive
 import io.github.pitonite.exch_cx.di.ExchHttpClient
 import io.github.pitonite.exch_cx.model.api.OrderCreateRequest
+import io.github.pitonite.exch_cx.model.api.OrderCreateResponse
 import io.github.pitonite.exch_cx.model.api.OrderResponse
-import io.github.pitonite.exch_cx.model.api.RateFee
-import io.github.pitonite.exch_cx.model.api.exceptions.FailedToParseOrderException
-import io.github.pitonite.exch_cx.model.api.exceptions.OrderNotFoundException
-import io.github.pitonite.exch_cx.model.api.exceptions.ServiceUnavailableException
 import io.github.pitonite.exch_cx.model.api.exceptions.ToAddressRequiredException
-import io.github.pitonite.exch_cx.utils.ExchParser
 import io.github.pitonite.exch_cx.utils.toParameterMap
 import io.ktor.client.call.body
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.fullPath
 import kotlinx.coroutines.flow.Flow
+import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -65,35 +58,11 @@ constructor(
         .flow
   }
 
-  override suspend fun fetchOrder(orderId: String): Order {
+  override suspend fun fetchOrder(orderId: String): OrderUpdate {
     val orderResp: OrderResponse =
         exchHttpClient.get("/api/order/") { url { parameters.append("orderid", orderId) } }.body()
-    var order = orderResp.toOrderEntity()
 
-    // TODO: remove duplicate call when api is fixed
-    val resp = exchHttpClient.get("/order/$orderId") { headers["X-Requested-With"] = "" }
-    if (resp.status != HttpStatusCode.OK || resp.call.request.url.fullPath == "/") {
-      throw OrderNotFoundException()
-    }
-    val body = resp.bodyAsText()
-    val parsedOrder = ExchParser.parseOrder(body) ?: throw FailedToParseOrderException()
-
-    order =
-        order
-            .copy(
-                rate = parsedOrder.rate,
-                calculatedFromAmount = parsedOrder.calculatedFromAmount,
-                calculatedToAmount = parsedOrder.calculatedToAmount,
-            )
-            .let {
-              if (parsedOrder.networkFee != null) {
-                return@let it.copy(networkFee = parsedOrder.networkFee)
-              }
-              return@let it
-            }
-    // end of duplicate call
-
-    return order
+    return orderResp.toOrderUpdateEntity()
   }
 
   override suspend fun updateOrder(orderUpdate: Order): Boolean {
@@ -115,67 +84,58 @@ constructor(
   }
 
   override suspend fun fetchAndUpdateOrder(orderId: String): Boolean {
-    val orderUpdate = this.fetchOrder(orderId).toOrderUpdateEntity()
+    val orderUpdate = this.fetchOrder(orderId)
     return this.updateOrder(orderUpdate)
   }
 
-  override suspend fun createOrder(createRequest: OrderCreateRequest, rate: RateFee): String {
+  override suspend fun createOrder(createRequest: OrderCreateRequest): String {
     val requestParams = createRequest.toParameterMap()
 
-    val resp =
-        exchHttpClient.get("/") {
-          url {
-            headers["X-Requested-With"] = ""
-            requestParams.forEach { (key, value) ->
-              parameters.append(
-                  key,
-                  if (key == "from_currency" || key == "to_currency") value.uppercase() else value)
-            }
-            parameters.append("create", "1")
+    try {
+      val resp: OrderCreateResponse =
+          exchHttpClient
+              .get("/api/create") {
+                url {
+                  requestParams.forEach { (key, value) ->
+                    parameters.append(
+                        key,
+                        if (key == "from_currency" || key == "to_currency") value.uppercase()
+                        else value)
+                  }
+                }
+              }
+              .body()
 
-            if (parameters["from_amount"].isNullOrEmpty()) {
-              parameters["from_amount"] = "1"
-            }
-          }
-        }
+      val orderCreate =
+          OrderCreate(
+              id = resp.orderid,
+              fromCurrency = createRequest.fromCurrency,
+              toCurrency = createRequest.toCurrency,
+              networkFee = createRequest.networkFee,
+              rate = createRequest.rate,
+              rateMode = createRequest.rateMode,
+              svcFee = createRequest.svcFee,
+              toAddress = createRequest.toAddress,
+              refundAddress = createRequest.refundAddress,
+              minInput = BigDecimal.ZERO,
+              maxInput = BigDecimal.ONE,
+              fromAmount = createRequest.fromAmount,
+          )
 
-    if (resp.status != HttpStatusCode.OK) {
-      throw ServiceUnavailableException()
-    }
+      exchDatabase.ordersDao().upsert(orderCreate)
 
-    val htmlBody = resp.bodyAsText()
-    val error = ExchParser.parseError(htmlBody)
-    if (error != null) {
+      val userSettings = userSettingsRepository.fetchSettings()
+      exchWorkManager.adjustAutoUpdater(
+          userSettings) // start the auto update again if user settings allows
+
+      return resp.orderid
+    } catch (e: Exception) {
+      val error = e.message ?: e.toString()
       if (error.contains("address is required")) {
         throw ToAddressRequiredException()
       }
       throw RuntimeException(error)
     }
-
-    val createdOrder = ExchParser.parseOrder(htmlBody) ?: throw FailedToParseOrderException()
-
-    val orderCreate =
-        OrderCreate(
-            id = createdOrder.orderid,
-            fromCurrency = createRequest.fromCurrency,
-            toCurrency = createRequest.toCurrency,
-            networkFee = createdOrder.networkFee,
-            rate = createdOrder.rate,
-            rateMode = createRequest.rateMode,
-            svcFee = rate.svcFee,
-            toAddress = createRequest.toAddress,
-            calculatedFromAmount = createdOrder.calculatedFromAmount,
-            calculatedToAmount = createdOrder.calculatedToAmount,
-            refundAddress = createRequest.refundAddress,
-        )
-
-    exchDatabase.ordersDao().upsert(orderCreate)
-
-    val userSettings = userSettingsRepository.fetchSettings()
-    exchWorkManager.adjustAutoUpdater(
-        userSettings) // start the auto update again if user settings allows
-
-    return createdOrder.orderid
   }
 
   override suspend fun setArchive(orderId: String, value: Boolean) {

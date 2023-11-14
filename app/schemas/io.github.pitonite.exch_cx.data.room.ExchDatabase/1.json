@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "ed14933b2352d3cd611fb0e0acab9d57",
+    "identityHash": "dc14a8ddef763fde39af5d6e4ccfddb5",
     "entities": [
       {
         "tableName": "Order",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`modifiedAt` INTEGER NOT NULL DEFAULT (cast((julianday('now') - 2440587.5) * 86400 * 1000 as integer)), `archived` INTEGER NOT NULL DEFAULT 0, `id` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `fromAddr` TEXT NOT NULL DEFAULT '_GENERATING_', `fromCurrency` TEXT NOT NULL, `fromAmountReceived` TEXT DEFAULT null, `maxInput` TEXT DEFAULT null, `minInput` TEXT DEFAULT null, `networkFee` TEXT DEFAULT null, `rate` TEXT NOT NULL, `rateMode` TEXT NOT NULL, `state` TEXT NOT NULL, `stateError` TEXT DEFAULT null, `svcFee` TEXT NOT NULL, `toAmount` TEXT DEFAULT null, `toAddress` TEXT NOT NULL, `toCurrency` TEXT NOT NULL, `transactionIdReceived` TEXT DEFAULT null, `transactionIdSent` TEXT DEFAULT null, `calculatedFromAmount` TEXT DEFAULT null, `calculatedToAmount` TEXT DEFAULT null, `referrerId` TEXT DEFAULT null, `aggregationOption` TEXT DEFAULT null, `feeOption` TEXT DEFAULT null, `refundAddress` TEXT DEFAULT null, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`modifiedAt` INTEGER NOT NULL DEFAULT (cast((julianday('now') - 2440587.5) * 86400 * 1000 as integer)), `archived` INTEGER NOT NULL DEFAULT 0, `id` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `fromAddr` TEXT NOT NULL DEFAULT '_GENERATING_', `fromCurrency` TEXT NOT NULL, `fromAmountReceived` TEXT DEFAULT null, `maxInput` TEXT NOT NULL, `minInput` TEXT NOT NULL, `networkFee` TEXT DEFAULT null, `rate` TEXT NOT NULL, `rateMode` TEXT NOT NULL, `state` TEXT NOT NULL, `stateError` TEXT DEFAULT null, `svcFee` TEXT NOT NULL, `toAmount` TEXT DEFAULT null, `toAddress` TEXT NOT NULL, `toCurrency` TEXT NOT NULL, `transactionIdReceived` TEXT DEFAULT null, `transactionIdSent` TEXT DEFAULT null, `fromAmount` TEXT DEFAULT null, `referrerId` TEXT DEFAULT null, `aggregationOption` TEXT DEFAULT null, `feeOption` TEXT DEFAULT null, `refundAddress` TEXT DEFAULT null, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "modifiedAt",
@@ -58,15 +58,13 @@
             "fieldPath": "maxInput",
             "columnName": "maxInput",
             "affinity": "TEXT",
-            "notNull": false,
-            "defaultValue": "null"
+            "notNull": true
           },
           {
             "fieldPath": "minInput",
             "columnName": "minInput",
             "affinity": "TEXT",
-            "notNull": false,
-            "defaultValue": "null"
+            "notNull": true
           },
           {
             "fieldPath": "networkFee",
@@ -140,15 +138,8 @@
             "defaultValue": "null"
           },
           {
-            "fieldPath": "calculatedFromAmount",
-            "columnName": "calculatedFromAmount",
-            "affinity": "TEXT",
-            "notNull": false,
-            "defaultValue": "null"
-          },
-          {
-            "fieldPath": "calculatedToAmount",
-            "columnName": "calculatedToAmount",
+            "fieldPath": "fromAmount",
+            "columnName": "fromAmount",
             "affinity": "TEXT",
             "notNull": false,
             "defaultValue": "null"
@@ -215,7 +206,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ed14933b2352d3cd611fb0e0acab9d57')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'dc14a8ddef763fde39af5d6e4ccfddb5')"
     ]
   }
 }

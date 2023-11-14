@@ -56,8 +56,8 @@ import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock
 import io.github.pitonite.exch_cx.data.RateFeeRepositoryMock
 import io.github.pitonite.exch_cx.data.UserSettingsRepositoryMock
-import io.github.pitonite.exch_cx.model.api.NetworkFeeOption
 import io.github.pitonite.exch_cx.model.api.RateFeeMode
+import io.github.pitonite.exch_cx.model.getTranslation
 import io.github.pitonite.exch_cx.ui.components.Card
 import io.github.pitonite.exch_cx.ui.components.CurrencyInput
 import io.github.pitonite.exch_cx.ui.components.RefreshButton
@@ -72,13 +72,6 @@ import io.github.pitonite.exch_cx.utils.noRippleClickable
 import io.github.pitonite.exch_cx.utils.nonScaledSp
 import io.github.pitonite.exch_cx.utils.verticalFadingEdge
 import java.math.BigDecimal
-
-val FeeStringResourceMap =
-    mutableMapOf<NetworkFeeOption, Int>(
-        NetworkFeeOption.QUICK to R.string.QUICK,
-        NetworkFeeOption.MEDIUM to R.string.MEDIUM,
-        NetworkFeeOption.SLOW to R.string.SLOW,
-    )
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -274,8 +267,7 @@ fun Exchange(
                     SegmentedButton(
                         label = {
                           Text(
-                              stringResource(
-                                  FeeStringResourceMap.getOrDefault(el, R.string.Unknown)),
+                              el.getTranslation(R.string.Unknown),
                               fontSize = 20.sp.nonScaledSp,
                           )
                         },

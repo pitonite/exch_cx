@@ -20,7 +20,7 @@ import io.github.pitonite.exch_cx.copy
 import io.github.pitonite.exch_cx.data.OrderRepository
 import io.github.pitonite.exch_cx.data.RateFeeRepository
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
-import io.github.pitonite.exch_cx.exceptions.LocalizedException
+import io.github.pitonite.exch_cx.exceptions.toUserMessage
 import io.github.pitonite.exch_cx.model.SnackbarMessage
 import io.github.pitonite.exch_cx.model.UserMessage
 import io.github.pitonite.exch_cx.model.api.NetworkFeeOption
@@ -32,10 +32,6 @@ import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import io.github.pitonite.exch_cx.ui.screens.home.exchange.currencyselect.CurrencySelection
 import io.github.pitonite.exch_cx.utils.ExchangeWorkState
 import io.github.pitonite.exch_cx.utils.WorkState
-import java.math.BigDecimal
-import java.math.MathContext
-import java.math.RoundingMode
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -43,6 +39,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
+import java.math.MathContext
+import java.math.RoundingMode
+import javax.inject.Inject
 
 @Immutable
 data class ExchangeUiState(
@@ -104,7 +104,7 @@ constructor(
     private set
 
   val usable =
-      snapshotFlow { !WorkState.isWorking(workState) && _rateFee.value != null  }
+      snapshotFlow { !WorkState.isWorking(workState) && _rateFee.value != null }
           .stateIn(
               scope = viewModelScope,
               started = SharingStarted.WhileSubscribed(5_000),
@@ -295,7 +295,8 @@ constructor(
     if (workState == WorkState.Working) return
     workState = ExchangeWorkState.CreatingOrder
 
-    val rate = _rateFee.value!!
+    val rateFee = _rateFee.value!!
+    val feeOption = _networkFeeOption.value
     viewModelScope.launch {
       if (_rateFee.value == null) return@launch
       try {
@@ -307,13 +308,14 @@ constructor(
                     toAddress = toAddress,
                     refundAddress = if (refundAddress.isNullOrEmpty()) null else refundAddress,
                     feeOption = _networkFeeOption.value,
-                    calculatedFromAmount = fromAmount.toBigDecimalOrNull(),
-                    calculatedToAmount = toAmount.toBigDecimalOrNull(),
                     rateMode = _rateFeeMode.value,
+                    fromAmount = fromAmount.toBigDecimalOrNull(),
                     referrerId = null, // TODO
-                    aggregation = null, // TODO
-                ),
-                rate)
+                    aggregation = null, // TODO,
+                    rate = rateFee.rate,
+                    networkFee = rateFee.networkFee?.let { it[feeOption] } ?: BigDecimal.ZERO,
+                    svcFee = rateFee.svcFee,
+                ))
         onOrderCreated(orderid)
         workState = WorkState.NotWorking
         reset()
@@ -328,9 +330,7 @@ constructor(
 
         SnackbarManager.showMessage(
             SnackbarMessage.from(
-                message =
-                    if (e is LocalizedException) UserMessage.from(e.msgId)
-                    else UserMessage.from(e.message ?: e.toString()),
+                message = e.toUserMessage(),
                 withDismissAction = true,
                 duration = SnackbarDuration.Long,
             ))
