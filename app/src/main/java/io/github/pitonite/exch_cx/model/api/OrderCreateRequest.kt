@@ -43,5 +43,5 @@ data class OrderCreateRequest(
 @Serializable
 @Immutable
 data class OrderCreateResponse(
-    @SerialName("orderid:") val orderid: String,
+    @SerialName("orderid") val orderid: String,
 )
