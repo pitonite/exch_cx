@@ -37,6 +37,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -81,6 +82,9 @@ import io.github.pitonite.exch_cx.utils.copyToClipboard
 import io.github.pitonite.exch_cx.utils.createNotificationChannels
 import io.github.pitonite.exch_cx.utils.rememberQrBitmapPainter
 import io.github.pitonite.exch_cx.utils.verticalFadingEdge
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -107,6 +111,16 @@ fun OrderDetail(
           createNotificationChannels(context)
         }
       }
+
+  LaunchedEffect(true) {
+    // You can replace this with lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) if needed
+    coroutineScope {
+      while (isActive) {
+        viewModel.refreshOrder()
+        delay(15000L)
+      }
+    }
+  }
 
   Scaffold(
       modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -139,8 +153,8 @@ fun OrderDetail(
               if (order != null) {
                 RefreshButton(
                     onClick = { viewModel.refreshOrder() },
-                    enabled = !WorkState.isWorking( viewModel.refreshWorkState),
-                    refreshing =  WorkState.isWorking( viewModel.refreshWorkState),
+                    enabled = !WorkState.isWorking(viewModel.refreshWorkState),
+                    refreshing = WorkState.isWorking(viewModel.refreshWorkState),
                 )
 
                 var showMenu by remember { mutableStateOf(false) }
