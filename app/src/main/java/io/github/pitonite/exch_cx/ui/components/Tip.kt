@@ -27,45 +27,46 @@ import io.github.pitonite.exch_cx.utils.currentSpAsDp
 @Composable
 fun Tip(
     text: String,
-    modifier: Modifier =
-        Modifier.padding(
-            top = dimensionResource(R.dimen.padding_xl),
-        ),
+    modifier: Modifier = Modifier,
     onDismiss: (() -> Unit)? = null,
 ) {
   Card {
-    Column(modifier) {
-      Row(
-          verticalAlignment = Alignment.CenterVertically,
-          modifier =
-              Modifier.padding(horizontal = dimensionResource(R.dimen.padding_lg))
-                  .padding(bottom = dimensionResource(R.dimen.padding_sm)),
-      ) {
-        Icon(
-            Icons.Default.Lightbulb,
-            contentDescription = stringResource(R.string.tip),
-            tint = MaterialTheme.colorScheme.tertiary,
-            modifier = Modifier.size(currentSpAsDp().times(1.4f)),
-        )
-        Text(stringResource(R.string.tip))
-      }
-      Text(
-          text,
-          modifier =
-              Modifier.fillMaxWidth().padding(horizontal = dimensionResource(R.dimen.padding_xl)))
-      if (onDismiss != null) {
-        Row {
-          Spacer(Modifier.weight(1f))
-          TextButton(
-              onClick = onDismiss,
+    Column(
+        modifier.padding(
+            top = dimensionResource(R.dimen.padding_xl),
+        )) {
+          Row(
+              verticalAlignment = Alignment.CenterVertically,
               modifier =
-                  Modifier.padding(bottom = dimensionResource(R.dimen.padding_sm))
-                      .padding(end = dimensionResource(R.dimen.padding_xl))) {
-                Text(stringResource(R.string.dismiss))
-              }
+                  Modifier.padding(horizontal = dimensionResource(R.dimen.padding_lg))
+                      .padding(bottom = dimensionResource(R.dimen.padding_sm)),
+          ) {
+            Icon(
+                Icons.Default.Lightbulb,
+                contentDescription = stringResource(R.string.tip),
+                tint = MaterialTheme.colorScheme.tertiary,
+                modifier = Modifier.size(currentSpAsDp().times(1.4f)),
+            )
+            Text(stringResource(R.string.tip))
+          }
+          Text(
+              text,
+              modifier =
+                  Modifier.fillMaxWidth()
+                      .padding(horizontal = dimensionResource(R.dimen.padding_xl)))
+          if (onDismiss != null) {
+            Row {
+              Spacer(Modifier.weight(1f))
+              TextButton(
+                  onClick = onDismiss,
+                  modifier =
+                      Modifier.padding(bottom = dimensionResource(R.dimen.padding_sm))
+                          .padding(end = dimensionResource(R.dimen.padding_xl))) {
+                    Text(stringResource(R.string.dismiss))
+                  }
+            }
+          }
         }
-      }
-    }
   }
 }
 
