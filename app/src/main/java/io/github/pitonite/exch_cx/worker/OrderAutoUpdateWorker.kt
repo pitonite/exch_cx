@@ -15,6 +15,7 @@ import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.OrderRepository
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
 import io.github.pitonite.exch_cx.data.mappers.toOrderUpdateWithArchiveEntity
+import io.github.pitonite.exch_cx.getOrderDeepLinkPendingIntent
 import io.github.pitonite.exch_cx.model.api.OrderState
 import io.github.pitonite.exch_cx.utils.codified.enums.toLocalizedString
 import io.github.pitonite.exch_cx.utils.createNotificationChannels
@@ -64,6 +65,7 @@ constructor(
         val order = orderRepository.getOrderAfter(dateCondition, false)
         if (order != null) {
           dateCondition = order.createdAt
+          Log.e(TAG, "Trying to update order #${order.id}")
           try {
             val fetchedOrder = orderRepository.fetchOrder(order.id)
 
@@ -98,6 +100,8 @@ constructor(
                       .setContentTitle(context.getString(R.string.order) + " " + order.id)
                       .setContentText(
                           context.getString(R.string.order_state_change, stateTranslation))
+                      .setContentIntent(getOrderDeepLinkPendingIntent(context, order.id))
+                      .setAutoCancel(true)
 
               notifManager.notify(notifTag, R.id.notif_id_order_state_change, notifBuilder.build())
             }

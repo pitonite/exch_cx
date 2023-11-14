@@ -1,5 +1,6 @@
 package io.github.pitonite.exch_cx.ui.navigation
 
+import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CurrencyExchange
@@ -7,6 +8,7 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.PendingActions
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
@@ -14,6 +16,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.ui.screens.home.exchange.Exchange
 import io.github.pitonite.exch_cx.ui.screens.home.exchange.ExchangeViewModel
@@ -30,6 +33,8 @@ import io.github.pitonite.exch_cx.ui.screens.settings.Settings
 import io.github.pitonite.exch_cx.ui.screens.settings.SettingsViewModel
 import io.github.pitonite.exch_cx.utils.enumByNameIgnoreCase
 import io.github.pitonite.exch_cx.utils.sharedViewModel
+
+const val EXCH_APP_SCHEME = "exchcx"
 
 enum class PrimaryDestinations(
     @StringRes val title: Int,
@@ -156,10 +161,15 @@ private fun NavGraphBuilder.addOrderDetail(
 ) {
   composable(
       "${SecondaryDestinations.ORDER_DETAIL_ROUTE}/{${NavArgs.ORDER_ID_KEY}}",
+      deepLinks =
+          listOf(
+              navDeepLink {
+                uriPattern =
+                    "$EXCH_APP_SCHEME://${SecondaryDestinations.ORDER_DETAIL_ROUTE}/{${NavArgs.ORDER_ID_KEY}}"
+              }),
       arguments = listOf(navArgument(NavArgs.ORDER_ID_KEY) { type = NavType.StringType })) {
           backStackEntry ->
-        val arguments = requireNotNull(backStackEntry.arguments)
-        val orderId = arguments.getString(NavArgs.ORDER_ID_KEY)
+        val orderId = backStackEntry.arguments?.getString(NavArgs.ORDER_ID_KEY)
         if (orderId.isNullOrEmpty()) {
           upPress()
         } else {
@@ -171,6 +181,10 @@ private fun NavGraphBuilder.addOrderDetail(
           )
         }
       }
+}
+
+fun getOrderDetailUri(orderid: String): Uri {
+  return "$EXCH_APP_SCHEME://${SecondaryDestinations.ORDER_DETAIL_ROUTE}/${orderid}".toUri()
 }
 
 private fun NavGraphBuilder.addSettings(

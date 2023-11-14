@@ -12,6 +12,7 @@ import io.github.pitonite.exch_cx.utils.ExchNavigationType
 @Composable
 fun MainCompose(
     windowSize: WindowSizeClass,
+    deepLinkHandler: DeepLinkHandler,
 ) {
   /** This will help us select type of navigation depending on window size state of the device. */
   val navigationType: ExchNavigationType
@@ -49,5 +50,5 @@ fun MainCompose(
         }
       }
 
-  ExchTheme { ExchNavHost(navigationType, navigationContentPosition) }
+  ExchTheme { ExchNavHost(navigationType, navigationContentPosition, deepLinkHandler) }
 }

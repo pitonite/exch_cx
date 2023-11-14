@@ -1,5 +1,6 @@
 package io.github.pitonite.exch_cx
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -20,6 +21,8 @@ class MainActivity : AppCompatActivity() {
 
   @Inject lateinit var userSettingsRepository: UserSettingsRepository
 
+  @Inject lateinit var deepLinkHandler: DeepLinkHandler
+
   @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
   override fun onCreate(savedInstanceState: Bundle?) {
     // Handle the splash screen transition.
@@ -38,7 +41,8 @@ class MainActivity : AppCompatActivity() {
             settings.copy {
               firstInitDone = true
               archiveOrdersAutomatically = true
-            })
+            },
+        )
       }
     }
 
@@ -48,8 +52,20 @@ class MainActivity : AppCompatActivity() {
 
         SnackbarMessageHandler()
 
-        ProvideSnackbarHostState() { MainCompose(windowSize) }
+        ProvideSnackbarHostState() { MainCompose(windowSize, deepLinkHandler) }
       }
     }
+  }
+
+  override fun onStart() {
+    super.onStart()
+    deepLinkHandler.handleDeepLink(intent)
+    // consume the deeplink
+    intent = null
+  }
+
+  override fun onNewIntent(intent: Intent?) {
+    super.onNewIntent(intent)
+    deepLinkHandler.handleDeepLink(intent)
   }
 }

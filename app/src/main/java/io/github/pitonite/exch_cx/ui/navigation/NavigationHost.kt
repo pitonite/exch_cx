@@ -8,12 +8,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.PermanentNavigationDrawer
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -21,15 +22,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
+import io.github.pitonite.exch_cx.DeepLinkHandler
+import io.github.pitonite.exch_cx.Event
 import io.github.pitonite.exch_cx.utils.ExchNavigationContentPosition
 import io.github.pitonite.exch_cx.utils.ExchNavigationType
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExchNavHost(
     navigationType: ExchNavigationType,
-    navigationContentPosition: ExchNavigationContentPosition
+    navigationContentPosition: ExchNavigationContentPosition,
+    deepLinkHandler: DeepLinkHandler,
 ) {
   val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
   val scope = rememberCoroutineScope()
@@ -40,6 +43,16 @@ fun ExchNavHost(
   val navBackStackEntry by navController.currentBackStackEntryAsState()
   val selectedDestination =
       navBackStackEntry?.destination?.route ?: PrimaryDestinations.EXCHANGE.route
+
+  val event by deepLinkHandler.event.collectAsState()
+
+  LaunchedEffect(event) {
+    when (val currentEvent = event) {
+      is Event.NavigateWithDeepLink -> navController.handleDeepLink(currentEvent.intent)
+      Event.None -> Unit
+    }
+    deepLinkHandler.consumeEvent()
+  }
 
   if (navigationType == ExchNavigationType.PERMANENT_NAVIGATION_DRAWER) {
     // TODO check on custom width of PermanentNavigationDrawer: b/232495216
