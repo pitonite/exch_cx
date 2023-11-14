@@ -41,7 +41,6 @@ constructor(
 
   companion object {
     const val TAG: String = "OrderUpdaterWorker"
-
   }
 
   @SuppressLint("MissingPermission")
@@ -102,7 +101,7 @@ constructor(
               val notifBuilder =
                   NotificationCompat.Builder(
                           context, context.getString(R.string.channel_id_order_state_change))
-                      .setSmallIcon(R.drawable.ic_launcher_foreground)
+                      .setSmallIcon(R.drawable.x_large)
                       .setContentTitle(context.getString(R.string.order) + " " + order.id)
                       .setContentText(
                           context.getString(R.string.order_state_change, stateTranslation))
