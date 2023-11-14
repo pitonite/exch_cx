@@ -1,6 +1,7 @@
 package io.github.pitonite.exch_cx.utils
 
 import io.github.pitonite.exch_cx.model.api.RateFeesObjectTransformer
+import io.github.pitonite.exch_cx.model.api.SupportMessagesArrayTransformer
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -22,7 +23,10 @@ val jsonFormat = Json {
   ignoreUnknownKeys = true
   decodeEnumsCaseInsensitive = true
   explicitNulls = false
-  serializersModule = SerializersModule { contextual(RateFeesObjectTransformer) }
+  serializersModule = SerializersModule {
+    contextual(RateFeesObjectTransformer)
+    contextual(SupportMessagesArrayTransformer)
+  }
 }
 
 object BigDecimalSerializer : KSerializer<BigDecimal> {
