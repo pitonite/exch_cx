@@ -118,4 +118,6 @@
   <string name="order_error_instance_not_available">Instance Not Available</string>
   <string name="order_error_error_generating_address">Error Generating Address</string>
   <string name="order_error_to_address_invalid">To Address Invalid</string>
+  <string name="sender_user">User</string>
+  <string name="sender_support">Support</string>
 </resources>
