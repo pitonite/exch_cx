@@ -1,6 +1,7 @@
 package io.github.pitonite.exch_cx.data
 
 import android.util.Log
+import androidx.compose.runtime.Stable
 import androidx.datastore.core.DataStore
 import androidx.work.ExistingPeriodicWorkPolicy
 import dagger.Binds
@@ -19,6 +20,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
+@Stable
 class UserSettingsRepositoryImpl
 @Inject
 constructor(

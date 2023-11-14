@@ -1,13 +1,14 @@
 package io.github.pitonite.exch_cx.model.api
 
+import androidx.compose.runtime.Stable
 import io.github.pitonite.exch_cx.utils.BigDecimalSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import java.math.BigDecimal
-import javax.annotation.concurrent.Immutable
 
 @Serializable
+@Stable
 enum class AggregationOption {
   @SerialName("yes") YES,
   @SerialName("no") NO,
@@ -15,7 +16,7 @@ enum class AggregationOption {
 }
 
 @Serializable
-@Immutable
+@Stable
 data class OrderCreateRequest(
     /** Should be all upper case */
     @SerialName("from_currency") val fromCurrency: String,
@@ -41,7 +42,7 @@ data class OrderCreateRequest(
 )
 
 @Serializable
-@Immutable
+@Stable
 data class OrderCreateResponse(
     @SerialName("orderid") val orderid: String,
 )

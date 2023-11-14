@@ -1,5 +1,6 @@
 package io.github.pitonite.exch_cx.data
 
+import androidx.compose.runtime.Stable
 import androidx.paging.PagingData
 import io.github.pitonite.exch_cx.data.mappers.toOrderUpdateEntity
 import io.github.pitonite.exch_cx.data.room.Order
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.flow
 import java.math.BigDecimal
 import java.util.Date
 
+@Stable
 class OrderRepositoryMock : OrderRepository {
 
   companion object {

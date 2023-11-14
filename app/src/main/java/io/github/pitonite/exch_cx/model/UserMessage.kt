@@ -5,15 +5,17 @@ package io.github.pitonite.exch_cx.model
 
 import android.content.Context
 import androidx.annotation.StringRes
+import androidx.compose.runtime.Stable
 
 /** A sealed interface for defining user messages that can be displayed in the UI. */
+@Stable
 sealed interface UserMessage {
   /**
    * A data class that represents a user message as a simple text string.
    *
    * @property value The text string value of the user message.
    */
-  data class Text(val value: String) : UserMessage
+  @Stable data class Text(val value: String) : UserMessage
 
   /**
    * A class that represents a user message as a string resource with optional format arguments.
@@ -21,7 +23,7 @@ sealed interface UserMessage {
    * @property resId The resource ID of the string resource for the user message.
    * @property formatArgs Optional format arguments for the string resource.
    */
-  class StringResource(@StringRes val resId: Int, vararg val formatArgs: Any) : UserMessage
+  @Stable class StringResource(@StringRes val resId: Int, vararg val formatArgs: Any) : UserMessage
 
   companion object {
     /**

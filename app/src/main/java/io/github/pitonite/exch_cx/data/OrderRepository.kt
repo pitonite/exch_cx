@@ -1,5 +1,6 @@
 package io.github.pitonite.exch_cx.data
 
+import androidx.compose.runtime.Stable
 import androidx.paging.PagingData
 import io.github.pitonite.exch_cx.data.room.Order
 import io.github.pitonite.exch_cx.data.room.OrderUpdate
@@ -8,6 +9,7 @@ import io.github.pitonite.exch_cx.model.api.OrderCreateRequest
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
+@Stable
 interface OrderRepository {
 
   /** Loads an order from database */

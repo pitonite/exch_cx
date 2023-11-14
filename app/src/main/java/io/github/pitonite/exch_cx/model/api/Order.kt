@@ -1,6 +1,6 @@
 package io.github.pitonite.exch_cx.model.api
 
-import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.model.Translatable
 import io.github.pitonite.exch_cx.utils.BigDecimalSerializer
@@ -12,6 +12,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.math.BigDecimal
 
+@Stable
 enum class OrderState(override val code: String, override val translation: Int? = null) :
     Codified<String>, Translatable {
   CREATED("CREATED", R.string.order_state_created),
@@ -32,6 +33,7 @@ enum class OrderState(override val code: String, override val translation: Int? 
       KSerializer<CodifiedEnum<OrderState, String>> by codifiedEnumSerializer()
 }
 
+@Stable
 enum class OrderStateError(override val code: String, override val translation: Int? = null) :
     Codified<String>, Translatable {
   NO_BALANCE_AVAILABLE_TO_SEND(
@@ -46,7 +48,7 @@ enum class OrderStateError(override val code: String, override val translation: 
 }
 
 @Serializable
-@Immutable
+@Stable
 data class OrderResponse(
     /** Exchange order ID */
     @SerialName("orderid") val id: String,

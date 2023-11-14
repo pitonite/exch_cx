@@ -32,7 +32,8 @@ class DeepLinkHandler @Inject constructor() {
 }
 
 sealed interface Event {
-  data class NavigateWithDeepLink(val intent: Intent) : Event
+
+  @Stable data class NavigateWithDeepLink(val intent: Intent) : Event
 
   object None : Event
 }

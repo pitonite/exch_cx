@@ -1,5 +1,6 @@
 package io.github.pitonite.exch_cx.data.room
 
+import androidx.compose.runtime.Stable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
@@ -13,14 +14,13 @@ import io.github.pitonite.exch_cx.utils.codified.enums.CodifiedEnum
 import io.github.pitonite.exch_cx.utils.codified.enums.codifiedEnum
 import java.math.BigDecimal
 import java.util.Date
-import javax.annotation.concurrent.Immutable
 
 const val GENERATING_FROM_ADDRESS = "_GENERATING_"
 
 @Entity(
     indices = [Index("createdAt"), Index("archived", "createdAt")],
 )
-@Immutable
+@Stable
 data class Order(
     // data for ui:
     @ColumnInfo(defaultValue = CURRENT_TIMESTAMP_EXPRESSION) val modifiedAt: Date = Date(),
@@ -57,7 +57,7 @@ data class Order(
 )
 
 // to not touch archive when updating order
-@Immutable
+@Stable
 data class OrderUpdate(
     val id: String,
     val createdAt: Date = Date(),
@@ -80,7 +80,7 @@ data class OrderUpdate(
     val transactionIdSent: String? = null,
 )
 
-@Immutable
+@Stable
 data class OrderUpdateWithArchive(
     val id: String,
     val archived: Boolean,
@@ -105,7 +105,7 @@ data class OrderUpdateWithArchive(
 )
 
 /** for use when an order is initially created by sending a request to api */
-@Immutable
+@Stable
 data class OrderCreate(
     val id: String,
     val createdAt: Date = Date(),
@@ -124,7 +124,7 @@ data class OrderCreate(
     val minInput: BigDecimal,
 )
 
-@Immutable
+@Stable
 data class OrderArchive(
     val id: String,
     val archived: Boolean,

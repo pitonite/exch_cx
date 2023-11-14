@@ -1,5 +1,6 @@
 package io.github.pitonite.exch_cx.data
 
+import androidx.compose.runtime.Stable
 import io.github.pitonite.exch_cx.model.CurrencyDetail
 import io.github.pitonite.exch_cx.model.api.NetworkFeeOption
 import io.github.pitonite.exch_cx.model.api.RateFee
@@ -10,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import java.math.BigDecimal
 
+@Stable
 class RateFeeRepositoryMock() : RateFeeRepository {
 
   companion object {

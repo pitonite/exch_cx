@@ -7,7 +7,7 @@ package io.github.pitonite.exch_cx.model
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.SnackbarVisuals
-import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import java.util.UUID
 
 /**
@@ -15,7 +15,7 @@ import java.util.UUID
  *
  * @property id a unique id for this snack message.
  */
-@Immutable
+@Stable
 sealed interface SnackbarMessage {
   val id: Long
   /**
@@ -30,7 +30,7 @@ sealed interface SnackbarMessage {
    * @property onSnackbarResult A callback for when the snackbar is dismissed or the action is
    *   performed.
    */
-  @Immutable
+  @Stable
   data class Text(
       override val id: Long,
       val message: UserMessage,
@@ -47,7 +47,7 @@ sealed interface SnackbarMessage {
    * @property onSnackbarResult A callback for when the snackbar is dismissed or the action is
    *   performed.
    */
-  @Immutable
+  @Stable
   data class Visuals(
       override val id: Long,
       val snackbarVisuals: SnackbarVisuals,

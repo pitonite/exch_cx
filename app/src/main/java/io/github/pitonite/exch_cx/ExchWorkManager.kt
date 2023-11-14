@@ -1,6 +1,7 @@
 package io.github.pitonite.exch_cx
 
 import android.content.Context
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.asFlow
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -24,6 +25,7 @@ import javax.inject.Singleton
 const val CurrentWorkProgress = "Progress"
 const val TotalWorkItems = "TotalItems"
 
+@Stable
 @Singleton
 class ExchWorkManager
 @Inject

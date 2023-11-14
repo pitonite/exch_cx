@@ -1,5 +1,6 @@
 package io.github.pitonite.exch_cx.di
 
+import androidx.compose.runtime.Stable
 import io.github.pitonite.exch_cx.BuildConfig
 import io.github.pitonite.exch_cx.PreferredDomainType
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
@@ -35,7 +36,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.ExperimentalSerializationApi
 import nl.adaptivity.xmlutil.serialization.XML
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -46,7 +46,7 @@ private const val ONION_HOST = "hszyoqwrcp7cxlxnqmovp6vjvmnwj33g4wviuxqzq47emiea
 fun getExchDomain(preferredDomainType: PreferredDomainType) =
     if (preferredDomainType == PreferredDomainType.ONION) ONION_HOST else NORMAL_HOST
 
-@OptIn(ExperimentalSerializationApi::class)
+@Stable
 @Singleton
 class ExchHttpClient
 @Inject

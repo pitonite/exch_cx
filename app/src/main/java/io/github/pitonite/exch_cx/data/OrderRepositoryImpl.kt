@@ -1,6 +1,7 @@
 package io.github.pitonite.exch_cx.data
 
 import android.content.Context
+import androidx.compose.runtime.Stable
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -31,6 +32,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
+@Stable
 class OrderRepositoryImpl
 @Inject
 constructor(

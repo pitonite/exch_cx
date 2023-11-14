@@ -1,5 +1,6 @@
 package io.github.pitonite.exch_cx.data
 
+import androidx.compose.runtime.Stable
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -23,6 +24,7 @@ import kotlin.collections.component2
 import kotlin.collections.set
 
 @Singleton
+@Stable
 class RateFeeRepositoryImpl @Inject constructor(private val httpClient: ExchHttpClient) :
     RateFeeRepository {
 

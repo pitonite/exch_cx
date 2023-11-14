@@ -1,9 +1,11 @@
 package io.github.pitonite.exch_cx.data
 
+import androidx.compose.runtime.Stable
 import io.github.pitonite.exch_cx.PreferredDomainType
 import io.github.pitonite.exch_cx.UserSettings
 import kotlinx.coroutines.flow.Flow
 
+@Stable
 interface UserSettingsRepository {
   /** exposed flow to the user settings datastore */
   val userSettingsFlow: Flow<UserSettings>

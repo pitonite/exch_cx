@@ -1,13 +1,13 @@
 package io.github.pitonite.exch_cx.utils
 
+import androidx.compose.runtime.Stable
 import io.github.pitonite.exch_cx.model.api.OrderState
 import io.github.pitonite.exch_cx.model.api.RateFeeMode
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 import java.math.BigDecimal
-import javax.annotation.concurrent.Immutable
 
-@Immutable
+@Stable
 data class ParsedOrder(
     val orderid: String,
     val status: OrderState,
@@ -22,13 +22,14 @@ data class ParsedOrder(
     val toAddress: String?,
 )
 
-@Immutable
+@Stable
 data class ParsedRate(
     val fromCurrency: String,
     val toCurrency: String,
     val rate: BigDecimal,
 )
 
+@Stable
 object ExchParser {
 
   private val orderParseRegex =

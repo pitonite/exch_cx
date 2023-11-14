@@ -1,11 +1,13 @@
 package io.github.pitonite.exch_cx.data
 
+import androidx.compose.runtime.Stable
 import io.github.pitonite.exch_cx.model.CurrencyDetail
 import io.github.pitonite.exch_cx.model.api.RateFee
 import io.github.pitonite.exch_cx.model.api.RateFeeMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
+@Stable
 interface RateFeeRepository {
 
   val rateFees: StateFlow<List<RateFee>>

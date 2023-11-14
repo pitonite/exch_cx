@@ -1,11 +1,13 @@
 package io.github.pitonite.exch_cx.data
 
+import androidx.compose.runtime.Stable
 import io.github.pitonite.exch_cx.PreferredDomainType
 import io.github.pitonite.exch_cx.UserSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 
+@Stable
 class UserSettingsRepositoryMock(
     private val userSettings: UserSettings = UserSettings.getDefaultInstance()
 ) : UserSettingsRepository {

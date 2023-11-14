@@ -17,11 +17,15 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /** Class responsible for managing Snackbar messages to show on the screen */
+@Stable
 object SnackbarManager {
 
   @Stable val snackbarHostState = SnackbarHostState()
 
+  @Stable
   private val _messages: MutableStateFlow<List<SnackbarMessage>> = MutableStateFlow(emptyList())
+
+  @Stable
   val messages: StateFlow<List<SnackbarMessage>>
     get() = _messages.asStateFlow()
 
