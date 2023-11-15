@@ -112,7 +112,7 @@ dependencies {
   implementation("androidx.room:room-paging:$roomVersion")
   val pagingVersion = "3.2.1"
   implementation("androidx.paging:paging-runtime-ktx:$pagingVersion")
-  implementation("androidx.paging:paging-compose:3.3.0-alpha02")
+  implementation("androidx.paging:paging-compose:$pagingVersion")
 
   // for immutable collections (stability fix for compose)
   implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.6")
