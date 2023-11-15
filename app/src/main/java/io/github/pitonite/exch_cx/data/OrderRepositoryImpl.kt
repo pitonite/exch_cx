@@ -19,17 +19,19 @@ import io.github.pitonite.exch_cx.data.room.OrderCreate
 import io.github.pitonite.exch_cx.data.room.OrderUpdate
 import io.github.pitonite.exch_cx.data.room.OrderUpdateWithArchive
 import io.github.pitonite.exch_cx.di.ExchHttpClient
+import io.github.pitonite.exch_cx.model.api.BooleanResult
 import io.github.pitonite.exch_cx.model.api.OrderCreateRequest
 import io.github.pitonite.exch_cx.model.api.OrderCreateResponse
 import io.github.pitonite.exch_cx.model.api.OrderResponse
+import io.github.pitonite.exch_cx.model.api.exceptions.FailedToDeleteOrderDataException
 import io.github.pitonite.exch_cx.model.api.exceptions.ToAddressRequiredException
 import io.github.pitonite.exch_cx.utils.toParameterMap
 import io.ktor.client.call.body
-import kotlinx.coroutines.flow.Flow
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.flow.Flow
 
 @Singleton
 @Stable
@@ -146,6 +148,19 @@ constructor(
 
   override suspend fun count(archived: Boolean): Int {
     return exchDatabase.ordersDao().count(archived)
+  }
+
+  override suspend fun deleteRemote(orderid: String) {
+    val resp: BooleanResult =
+        exchHttpClient
+            .get("/api/order/remove") { url { parameters.append("orderid", orderid) } }
+            .body()
+
+    if (!resp.result) throw FailedToDeleteOrderDataException()
+  }
+
+  override suspend fun deleteLocal(orderid: String) {
+    exchDatabase.ordersDao().delete(orderid)
   }
 }
 

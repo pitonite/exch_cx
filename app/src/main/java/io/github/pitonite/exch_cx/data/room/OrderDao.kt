@@ -2,6 +2,7 @@ package io.github.pitonite.exch_cx.data.room
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
@@ -37,4 +38,7 @@ abstract class OrderDao : BaseDao<Order> {
   abstract suspend fun exists(id: String): Boolean
 
   @Update(entity = Order::class) abstract suspend fun setArchive(entity: OrderArchive)
+
+  @Delete
+  abstract suspend fun delete(orderid: String)
 }

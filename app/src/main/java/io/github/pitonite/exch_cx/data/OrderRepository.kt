@@ -40,4 +40,10 @@ interface OrderRepository {
   suspend fun setArchive(orderId: String, value: Boolean)
 
   suspend fun count(archived: Boolean): Int
+
+  /** Requests to remove the order's data immediately (only when the order's state is COMPLETE) */
+  suspend fun deleteRemote(orderid: String)
+
+  /** deletes the user's local order data and support messages related to it */
+  suspend fun deleteLocal(orderid: String)
 }

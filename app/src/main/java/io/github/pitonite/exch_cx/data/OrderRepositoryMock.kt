@@ -11,11 +11,11 @@ import io.github.pitonite.exch_cx.model.api.OrderState
 import io.github.pitonite.exch_cx.model.api.OrderStateError
 import io.github.pitonite.exch_cx.model.api.RateFeeMode
 import io.github.pitonite.exch_cx.utils.codified.enums.codifiedEnum
+import java.math.BigDecimal
+import java.util.Date
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import java.math.BigDecimal
-import java.util.Date
 
 @Stable
 class OrderRepositoryMock : OrderRepository {
@@ -122,4 +122,8 @@ class OrderRepositoryMock : OrderRepository {
   override suspend fun count(archived: Boolean): Int {
     return orders.count()
   }
+
+  override suspend fun deleteRemote(orderid: String) {}
+
+  override suspend fun deleteLocal(orderid: String) {}
 }
