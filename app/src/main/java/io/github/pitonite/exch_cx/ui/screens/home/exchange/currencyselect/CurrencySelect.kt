@@ -32,6 +32,7 @@ import io.github.pitonite.exch_cx.data.UserSettingsRepositoryMock
 import io.github.pitonite.exch_cx.ui.components.UpBtn
 import io.github.pitonite.exch_cx.ui.screens.home.exchange.ExchangeViewModel
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
+import java.math.BigDecimal
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -82,6 +83,7 @@ fun CurrencySelect(
       items(items = currencyList, key = { i -> i.name }) { currency ->
         CurrencySelectItem(
             modifier = Modifier.animateItemPlacement(),
+            currencySelection = currencySelection,
             currency = currency,
             onClick = {
               if (currencySelection == CurrencySelection.FROM) {

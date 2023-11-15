@@ -28,20 +28,25 @@ import io.github.pitonite.exch_cx.model.CurrencyDetail
 import io.github.pitonite.exch_cx.ui.components.ExchDrawable
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 import io.github.pitonite.exch_cx.utils.nonScaledSp
+import java.math.BigDecimal
 import java.math.RoundingMode
 
 @Composable
 fun CurrencySelectItem(
     modifier: Modifier = Modifier,
     currency: CurrencyDetail,
-    enabled: Boolean = true,
     colors: ButtonColors =
         ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             contentColor = MaterialTheme.colorScheme.onSurface,
         ),
     onClick: () -> Unit = {},
+    currencySelection: CurrencySelection,
 ) {
+  val enabled =
+      if (currencySelection == CurrencySelection.TO)
+          currency.reserve.compareTo(BigDecimal.ZERO) == 1
+      else true
   Button(
       onClick = onClick,
       modifier = modifier,
@@ -75,18 +80,20 @@ fun CurrencySelectItem(
           fontSize = 23.sp.nonScaledSp,
       )
       Spacer(Modifier.weight(1f))
-      Column(
-          horizontalAlignment = Alignment.End,
-          verticalArrangement = Arrangement.Center,
-      ) {
-        Text(
-            text = stringResource(R.string.available_amount),
-            fontSize = 10.sp,
-        )
-        Text(
-            text = currency.reserve.setScale(4, RoundingMode.FLOOR).toString(),
-            fontSize = 16.sp,
-        )
+      if (currencySelection == CurrencySelection.TO) {
+        Column(
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.Center,
+        ) {
+          Text(
+              text = stringResource(R.string.available_amount),
+              fontSize = 10.sp,
+          )
+          Text(
+              text = currency.reserve.setScale(4, RoundingMode.FLOOR).toString(),
+              fontSize = 16.sp,
+          )
+        }
       }
     }
   }
@@ -103,6 +110,7 @@ fun CurrencySelectItemPreview() {
                 "BTC",
                 "0.000001231".toBigDecimalOrNull()!!,
             ),
+        currencySelection = CurrencySelection.TO,
     )
   }
 }
