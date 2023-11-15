@@ -25,4 +25,5 @@ import io.github.pitonite.exch_cx.data.room.typeconverters.DateTimeTypeConverter
 )
 abstract class ExchDatabase : RoomDatabase() {
   abstract fun ordersDao(): OrderDao
+  abstract fun supportMessagesDao(): SupportMessageDao
 }

@@ -120,4 +120,5 @@
   <string name="order_error_to_address_invalid">To Address Invalid</string>
   <string name="sender_user">User</string>
   <string name="sender_support">Support</string>
+    <string name="exception_failed_to_send_message">Failed to send message</string>
 </resources>

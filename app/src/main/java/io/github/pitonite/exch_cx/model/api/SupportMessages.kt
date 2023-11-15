@@ -1,6 +1,6 @@
 package io.github.pitonite.exch_cx.model.api
 
-import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.model.Translatable
 import kotlinx.serialization.SerialName
@@ -11,14 +11,15 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonArray
 
 @Serializable
+@Stable
 enum class SupportMessageSender(override val translation: Int? = null) : Translatable {
   @SerialName("user") USER(R.string.sender_user),
   @SerialName("support") SUPPORT(R.string.sender_support),
 }
 
 @Serializable
-@Immutable
-data class SupportMessage(
+@Stable
+data class SupportMessageResponse(
     @SerialName("message") val message: String,
     @SerialName("read_by_support") val readBySupport: Boolean = false,
     @SerialName("sender") val sender: SupportMessageSender,
@@ -26,9 +27,9 @@ data class SupportMessage(
 )
 
 @Serializable
-@Immutable
+@Stable
 data class SupportMessagesResponse(
-    val messages: List<SupportMessage>,
+  val messages: List<SupportMessageResponse>,
 )
 
 object SupportMessagesArrayTransformer :
@@ -39,3 +40,11 @@ object SupportMessagesArrayTransformer :
     return buildJsonObject { put("messages", element.jsonArray) }
   }
 }
+
+// for creation
+@Serializable
+@Stable
+data class CreateSupportMessageResponse(
+  @SerialName("result")
+  val result: Boolean,
+)
