@@ -12,8 +12,7 @@ import io.github.pitonite.exch_cx.data.mappers.toSupportMessages
 import io.github.pitonite.exch_cx.data.room.ExchDatabase
 import io.github.pitonite.exch_cx.data.room.SupportMessage
 import io.github.pitonite.exch_cx.di.ExchHttpClient
-import io.github.pitonite.exch_cx.model.api.CreateSupportMessageResponse
-import io.github.pitonite.exch_cx.model.api.OrderCreateResponse
+import io.github.pitonite.exch_cx.model.api.BooleanResult
 import io.github.pitonite.exch_cx.model.api.SupportMessagesResponse
 import io.github.pitonite.exch_cx.model.api.exceptions.FailedToSendSupportMessageException
 import io.ktor.client.call.body
@@ -40,7 +39,7 @@ constructor(
   }
 
   override suspend fun sendMessage(orderid: String, message: String) {
-    val resp: CreateSupportMessageResponse =
+    val resp: BooleanResult =
         exchHttpClient
             .get("/api/order/support_message") {
               url {

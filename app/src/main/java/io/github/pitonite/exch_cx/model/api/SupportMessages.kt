@@ -41,10 +41,3 @@ object SupportMessagesArrayTransformer :
   }
 }
 
-// for creation
-@Serializable
-@Stable
-data class CreateSupportMessageResponse(
-  @SerialName("result")
-  val result: Boolean,
-)
