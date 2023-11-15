@@ -13,6 +13,7 @@ import io.github.pitonite.exch_cx.data.room.typeconverters.DateTimeTypeConverter
     entities =
         [
             Order::class,
+            SupportMessage::class,
         ],
     version = 1,
     exportSchema = true,
