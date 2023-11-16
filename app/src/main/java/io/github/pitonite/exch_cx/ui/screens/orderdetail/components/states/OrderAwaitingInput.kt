@@ -62,16 +62,14 @@ fun OrderAwaitingInput(
           verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_lg)),
       ) {
         Text(
-            stringResource(R.string.order_state_title_created, order.fromCurrency.uppercase()),
+            stringResource(R.string.order_state_title_created, order.fromCurrency),
             style = MaterialTheme.typography.headlineSmall)
 
         Spacer(Modifier)
 
         if (order.fromAmount != null) {
           SelectionContainer {
-            Text(
-                stringResource(R.string.label_send) +
-                    " ${order.fromAmount} ${order.fromCurrency.uppercase()}")
+            Text(stringResource(R.string.label_send, order.fromAmount, order.fromCurrency))
           }
           SelectionContainer {
             val hundred = BigDecimal.valueOf(100)
@@ -85,27 +83,23 @@ fun OrderAwaitingInput(
                     .minus(order.networkFee ?: BigDecimal.ZERO)
                     .stripTrailingZeros()
             Text(
-                stringResource(R.string.label_receive) +
-                    " $receiveAmount ${order.toCurrency.uppercase()} (${stringResource(R.string.network_fee_included)})")
+                stringResource(R.string.label_receive, receiveAmount, order.toCurrency) +
+                    " (${stringResource(R.string.network_fee_included)})")
           }
         } else {
           SelectionContainer {
-            Text(
-                stringResource(R.string.label_minimum) +
-                    " ${order.minInput} ${order.fromCurrency.uppercase()}")
+            Text(stringResource(R.string.label_minimum, order.minInput, order.fromCurrency))
           }
 
           SelectionContainer {
-            Text(
-                stringResource(R.string.label_maximum) +
-                    " ${order.maxInput} ${order.fromCurrency.uppercase()}")
+            Text(stringResource(R.string.label_maximum, order.maxInput, order.fromCurrency))
           }
         }
 
         Spacer(Modifier)
 
         Column(verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_md))) {
-          Text(stringResource(R.string.label_to_order_address, order.fromCurrency.uppercase()))
+          Text(stringResource(R.string.label_to_order_address, order.fromCurrency))
 
           if (order.fromAddr != GENERATING_FROM_ADDRESS) {
             CopyableText(order.fromAddr, copyConfirmationMessage = R.string.snack_address_copied)
@@ -135,20 +129,16 @@ fun OrderAwaitingInput(
                     stringResource(
                         R.string.notice_order_different_amount,
                         order.fromAmount,
-                        order.fromCurrency.uppercase()),
+                        order.fromCurrency),
                     textAlign = TextAlign.Justify,
                 )
 
                 SelectionContainer {
-                  Text(
-                      stringResource(R.string.label_minimum) +
-                          " ${order.minInput} ${order.fromCurrency.uppercase()}")
+                  Text(stringResource(R.string.label_minimum, order.minInput, order.fromCurrency))
                 }
 
                 SelectionContainer {
-                  Text(
-                      stringResource(R.string.label_maximum) +
-                          " ${order.maxInput} ${order.fromCurrency.uppercase()}")
+                  Text(stringResource(R.string.label_maximum, order.maxInput, order.fromCurrency))
                 }
               }
             }

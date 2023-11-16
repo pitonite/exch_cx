@@ -2,6 +2,7 @@ package io.github.pitonite.exch_cx.ui.screens.orderdetail
 
 import android.Manifest
 import android.os.Build
+import android.text.format.DateFormat
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -18,6 +20,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.OpenInBrowser
+import androidx.compose.material.icons.filled.SupportAgent
 import androidx.compose.material.icons.filled.Unarchive
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
@@ -25,6 +28,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -46,6 +50,9 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -176,7 +183,8 @@ fun OrderDetail(
                       onClick = {
                         uriHandler.openUri(
                             "https://${getExchDomain(settings.preferredDomainType)}/order/${order!!.id}")
-                      })
+                      },
+                  )
 
                   DropdownMenuItem(
                       leadingIcon = {
@@ -193,7 +201,22 @@ fun OrderDetail(
                             if (order!!.archived) stringResource(R.string.label_unarchive)
                             else stringResource(R.string.label_archive))
                       },
-                      onClick = { viewModel.toggleArchive() })
+                      onClick = { viewModel.toggleArchive() },
+                  )
+
+                  DropdownMenuItem(
+                      leadingIcon = {
+                        Icon(
+                            modifier = Modifier.size(32.dp),
+                            imageVector = Icons.Default.SupportAgent,
+                            contentDescription = null,
+                        )
+                      },
+                      text = { Text(stringResource(R.string.support_chat)) },
+                      onClick = {
+                        // TODO: Open support chat
+                      },
+                  )
                 }
               }
             },
@@ -234,6 +257,7 @@ fun OrderDetail(
       }
 }
 
+@OptIn(ExperimentalTextApi::class)
 @Composable
 fun OrderColumn(
     viewModel: OrderDetailViewModel,
@@ -336,9 +360,47 @@ fun OrderColumn(
 
     OrderStateCard {
       Column(verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_sm))) {
-        Text(stringResource(R.string.label_exchanged_amount_to_address))
+        Text(stringResource(R.string.label_exchanged_to_address, order.toCurrency))
 
         CopyableText(order.toAddress, copyConfirmationMessage = R.string.snack_address_copied)
+      }
+
+      if (order.toAmount != null) {
+        Text(stringResource(R.string.order_sent_amount, order.toAmount, order.toCurrency))
+      }
+
+      if (!order.transactionIdSent.isNullOrEmpty()) {
+        // todo make transaction id clickable (open website) and copyable
+      }
+    }
+
+    Column(
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.page_padding)),
+        modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.padding_lg)),
+    ) {
+      Text(
+          stringResource(
+              R.string.order_created_at, DateFormat.format("MMM dd, yyyy HH:mm", order.createdAt)),
+          color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+      var getSupportText = buildAnnotatedString {
+        pushStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant))
+        append(stringResource(R.string.having_problem_question))
+        append(" ")
+        pop()
+        pushStyle(SpanStyle(color = MaterialTheme.colorScheme.tertiary))
+        append(stringResource(R.string.open))
+        append(" ")
+        pushStringAnnotation("clickable", "clickable")
+        append(stringResource(R.string.in_order_support_chat))
+      }
+      ClickableText(
+          getSupportText,
+          style = LocalTextStyle.current,
+      ) {
+        getSupportText.getStringAnnotations(it, it).firstOrNull()?.tag?.let {
+          // TODO: Open support chat
+        }
       }
     }
 
