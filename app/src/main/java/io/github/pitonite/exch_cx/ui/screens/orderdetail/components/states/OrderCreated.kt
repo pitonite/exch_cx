@@ -48,9 +48,7 @@ fun OrderCreated(
     if (order.stateError?.knownOrNull() == OrderStateError.TO_ADDRESS_INVALID) {
       Text(
           modifier = Modifier.fillMaxWidth(),
-          text =
-              stringResource(
-                  R.string.order_error_to_address_invalid_title, order.toCurrency.uppercase()),
+          text = stringResource(R.string.order_error_to_address_invalid_title, order.toCurrency),
           style = MaterialTheme.typography.headlineSmall,
           textAlign = TextAlign.Center)
 
@@ -59,9 +57,7 @@ fun OrderCreated(
           modifier = Modifier.fillMaxWidth(),
           value = newAddress,
           onValueChange = { newAddress = it },
-          label = {
-            Text(stringResource(R.string.label_new_to_address, order.toCurrency.uppercase()))
-          },
+          label = { Text(stringResource(R.string.label_new_to_address, order.toCurrency)) },
           keyboardActions =
               KeyboardActions(
                   onDone = { focusManager.clearFocus() },
@@ -69,7 +65,7 @@ fun OrderCreated(
           keyboardOptions =
               KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
       )
-      Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.Center) {
+      Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         Button(
             onClick = { onSubmitNewToAddress(newAddress) },
             enabled = newAddress.isNotEmpty() && !submitWorkState.isWorking()) {
