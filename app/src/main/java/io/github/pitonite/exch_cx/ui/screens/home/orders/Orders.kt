@@ -59,6 +59,7 @@ import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import io.github.pitonite.exch_cx.ui.components.StopProgress
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 import io.github.pitonite.exch_cx.utils.WorkState
+import io.github.pitonite.exch_cx.utils.isWorking
 import io.github.pitonite.exch_cx.utils.verticalFadingEdge
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -132,7 +133,7 @@ fun Orders(
                 .padding(horizontal = dimensionResource(R.dimen.page_padding))
                 .fillMaxSize(),
     ) {
-      if (WorkState.isWorking(autoUpdateWorkState)) {
+      if (autoUpdateWorkState.isWorking()) {
         Card {
           Column(
               Modifier.padding(vertical = 70.dp, horizontal = 20.dp),

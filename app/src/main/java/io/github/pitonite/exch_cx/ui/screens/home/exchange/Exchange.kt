@@ -68,6 +68,7 @@ import io.github.pitonite.exch_cx.ui.screens.home.exchange.currencyselect.Curren
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 import io.github.pitonite.exch_cx.utils.ExchangeWorkState
 import io.github.pitonite.exch_cx.utils.WorkState
+import io.github.pitonite.exch_cx.utils.isWorking
 import io.github.pitonite.exch_cx.utils.noRippleClickable
 import io.github.pitonite.exch_cx.utils.nonScaledSp
 import io.github.pitonite.exch_cx.utils.verticalFadingEdge
@@ -110,7 +111,7 @@ fun Exchange(
             actions = {
               RefreshButton(
                   onClick = { viewModel.updateFeeRates() },
-                  enabled = !WorkState.isWorking(viewModel.workState),
+                  enabled = !viewModel.workState.isWorking(),
                   refreshing = viewModel.workState == ExchangeWorkState.Refreshing,
               )
             },

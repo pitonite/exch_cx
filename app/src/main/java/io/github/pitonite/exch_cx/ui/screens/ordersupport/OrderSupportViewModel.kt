@@ -17,6 +17,7 @@ import io.github.pitonite.exch_cx.model.SnackbarMessage
 import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import io.github.pitonite.exch_cx.ui.navigation.NavArgs
 import io.github.pitonite.exch_cx.utils.WorkState
+import io.github.pitonite.exch_cx.utils.isWorking
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.emptyFlow
@@ -64,7 +65,7 @@ constructor(
   }
 
   fun sendMessage() {
-    if (WorkState.isWorking(sendingWorkState) || orderId.value == null) return
+    if (sendingWorkState.isWorking() || orderId.value == null) return
 
     sendingWorkState = WorkState.Working()
     val orderId = orderId.value!!

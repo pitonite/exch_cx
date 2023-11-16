@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.utils.WorkState
+import io.github.pitonite.exch_cx.utils.isWorking
 
 @Composable
 fun getImportError(workState: WorkState.Error): String {
@@ -52,7 +53,7 @@ fun ImportOrderDialog(
 ) {
   if (show) {
     var orderId by remember { mutableStateOf("") }
-    val enabled = !WorkState.isWorking(workState)
+    val enabled = !workState.isWorking()
     AlertDialog(
         onDismissRequest,
     ) {
@@ -82,7 +83,7 @@ fun ImportOrderDialog(
           )
 
           Button(onClick = { onImportPressed(orderId) }, enabled = enabled) {
-            if (WorkState.isWorking(workState)) {
+            if (workState.isWorking()) {
               CircularProgressIndicator()
             } else {
               Text(stringResource(R.string.label_import))

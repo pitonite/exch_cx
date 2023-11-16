@@ -23,6 +23,7 @@ import io.github.pitonite.exch_cx.model.SnackbarMessage
 import io.github.pitonite.exch_cx.model.UserMessage
 import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import io.github.pitonite.exch_cx.utils.WorkState
+import io.github.pitonite.exch_cx.utils.isWorking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -99,7 +100,7 @@ constructor(
   }
 
   fun updateOrders() {
-    if (WorkState.isWorking(autoUpdateWorkState.value)) return
+    if (autoUpdateWorkState.value.isWorking()) return
     cancelAndReEnqueueAutoUpdater()
     workManager.startOneTimeOrderUpdate()
   }
@@ -117,7 +118,7 @@ constructor(
   }
 
   fun onImportOrderPressed(orderId: String) {
-    if (WorkState.isWorking(importOrderWork)) return
+    if (importOrderWork.isWorking()) return
     importOrderWork = WorkState.Working()
     viewModelScope.launch {
       try {
@@ -135,7 +136,7 @@ constructor(
   }
 
   fun onDismissImportDialogRequest() {
-    if (WorkState.isWorking(importOrderWork)) return
+    if (importOrderWork.isWorking()) return
     importOrderWork = WorkState.NotWorking
     showImportDialog = false
   }

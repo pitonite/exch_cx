@@ -37,12 +37,14 @@ sealed class WorkState {
       return error.toString()
     }
   }
+}
 
-  companion object {
-    fun isWorking(state: WorkState): Boolean = state is WorkingState
+fun WorkState.isWorking(): Boolean {
+    return this is WorkingState
+}
 
-    fun isError(state: WorkState): Boolean = state is ErrorState
-  }
+fun WorkState.isError(): Boolean {
+    return this is ErrorState
 }
 
 @Stable

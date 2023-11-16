@@ -32,6 +32,7 @@ import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import io.github.pitonite.exch_cx.ui.screens.home.exchange.currencyselect.CurrencySelection
 import io.github.pitonite.exch_cx.utils.ExchangeWorkState
 import io.github.pitonite.exch_cx.utils.WorkState
+import io.github.pitonite.exch_cx.utils.isWorking
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -104,7 +105,7 @@ constructor(
     private set
 
   val usable =
-      snapshotFlow { !WorkState.isWorking(workState) && _rateFee.value != null }
+      snapshotFlow { !workState.isWorking() && _rateFee.value != null }
           .stateIn(
               scope = viewModelScope,
               started = SharingStarted.WhileSubscribed(5_000),
@@ -122,7 +123,7 @@ constructor(
   }
 
   private suspend fun _updateFeeRates() {
-    if (WorkState.isWorking(workState)) return
+    if (workState.isWorking()) return
     workState = ExchangeWorkState.Refreshing
     try {
       rateFeeRepository.updateRateFees(_rateFeeMode.value)
@@ -292,7 +293,7 @@ constructor(
 
   fun createOrder(onOrderCreated: (String) -> Unit) {
     if (_rateFee.value == null) return
-    if (WorkState.isWorking(workState)) return
+    if (workState.isWorking()) return
     workState = ExchangeWorkState.CreatingOrder
 
     val rateFee = _rateFee.value!!
