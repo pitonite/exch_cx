@@ -54,6 +54,8 @@ data class Order(
     @ColumnInfo(defaultValue = "null") val aggregationOption: AggregationOption? = null,
     @ColumnInfo(defaultValue = "null") val feeOption: NetworkFeeOption? = null,
     @ColumnInfo(defaultValue = "null") val refundAddress: String? = null,
+    // fetched using an api later by user:
+    @ColumnInfo(defaultValue = "null") val letterOfGuarantee: String? = null,
 )
 
 // to not touch archive when updating order
@@ -128,4 +130,10 @@ data class OrderCreate(
 data class OrderArchive(
     val id: String,
     val archived: Boolean,
+)
+
+@Stable
+data class OrderLetterOfGuarantee(
+  val id: String,
+  val letterOfGuarantee: String?,
 )
