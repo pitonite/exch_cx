@@ -72,7 +72,7 @@ fun OrderCreated(
       Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.Center) {
         Button(
             onClick = { onSubmitNewToAddress(newAddress) },
-            enabled = !submitWorkState.isWorking()) {
+            enabled = newAddress.isNotEmpty() && !submitWorkState.isWorking()) {
               if (submitWorkState.isWorking()) {
                 CircularProgressIndicator()
               } else {
