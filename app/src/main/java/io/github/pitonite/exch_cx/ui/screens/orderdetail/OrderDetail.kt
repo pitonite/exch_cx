@@ -72,6 +72,7 @@ import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import io.github.pitonite.exch_cx.ui.navigation.NavArgs
 import io.github.pitonite.exch_cx.ui.screens.home.orders.ExchangePairRow
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.AutomaticOrderUpdateDialog
+import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.LetterOfGuaranteeDialog
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.OrderStateCard
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderAwaitingInput
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderCancelled
@@ -401,6 +402,25 @@ fun OrderColumn(
         getSupportText.getStringAnnotations(it, it).firstOrNull()?.tag?.let {
           // TODO: Open support chat
         }
+      }
+
+      if (!order.letterOfGuarantee.isNullOrEmpty()) {
+        var showLetter by remember { mutableStateOf(false) }
+        var showLetterText = buildAnnotatedString {
+          pushStyle(SpanStyle(color = MaterialTheme.colorScheme.tertiary))
+          append(stringResource(R.string.show_letter_of_guarantee))
+        }
+        ClickableText(
+            showLetterText,
+            style = LocalTextStyle.current,
+        ) {
+          showLetter = true
+        }
+
+        LetterOfGuaranteeDialog(
+            show = showLetter,
+            letterOfGuarantee = order.letterOfGuarantee,
+            onDismissRequest = { showLetter = false })
       }
     }
 

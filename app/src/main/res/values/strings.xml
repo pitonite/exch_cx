@@ -143,4 +143,7 @@
   <string name="in_order_support_chat">in-order support chat</string>
   <string name="order_sent_amount">Sent amount: %1$s %2$S</string>
   <string name="support_chat">Support Chat</string>
+  <string name="close">Close</string>
+  <string name="title_letter_of_guarantee">Letter of Guarantee</string>
+  <string name="show_letter_of_guarantee">Show Letter of Guarantee</string>
 </resources>

@@ -90,6 +90,7 @@ constructor(
     return existedBeforeUpsert
   }
 
+  /** Returns true if the orderId already existed in db. */
   override suspend fun fetchAndUpdateOrder(orderId: String): Boolean {
     val orderUpdate = this.fetchOrder(orderId)
     return this.updateOrder(orderUpdate)

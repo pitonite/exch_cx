@@ -71,6 +71,9 @@ constructor(
         if (order != null) {
           dateCondition = order.createdAt
           Log.e(TAG, "Trying to update order #${order.id}")
+
+          val hasLetterOfGuarantee = !order.letterOfGuarantee.isNullOrEmpty()
+          val hasLetterOfGuaranteeConditions = order.stateError == null && order.state.knownOrNull() != OrderState.CREATED
           try {
             val fetchedOrder = orderRepository.fetchOrder(order.id)
 
@@ -87,6 +90,14 @@ constructor(
 
             val orderUpdate = fetchedOrder.toOrderUpdateWithArchiveEntity(archived = archived)
             orderRepository.updateOrder(orderUpdate)
+
+            if (!hasLetterOfGuarantee && hasLetterOfGuaranteeConditions) {
+              try {
+                orderRepository.fetchAndUpdateLetterOfGuarantee(order.id)
+              } catch (e: Exception) {
+                // no need
+              }
+            }
 
             val stateHasChanged = order.state != orderUpdate.state
             val stateErrorHasChanged =

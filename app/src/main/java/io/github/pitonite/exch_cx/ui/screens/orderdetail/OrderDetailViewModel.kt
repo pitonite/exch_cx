@@ -87,10 +87,19 @@ constructor(
 
     refreshWorkState = WorkState.Working()
     val id = orderid.value!!
+    val hasLetterOfGuarantee = !order.value?.letterOfGuarantee.isNullOrEmpty()
+    val hasLetterOfGuaranteeConditions = order.value?.stateError == null && order.value?.state?.knownOrNull() != OrderState.CREATED
 
     viewModelScope.launch {
       try {
         orderRepository.fetchAndUpdateOrder(id)
+        if (!hasLetterOfGuarantee && hasLetterOfGuaranteeConditions) {
+            try {
+              orderRepository.fetchAndUpdateLetterOfGuarantee(id)
+            } catch (e: Exception) {
+              // no need
+            }
+        }
         refreshWorkState = WorkState.NotWorking
       } catch (e: Throwable) {
         refreshWorkState = WorkState.Error(e)

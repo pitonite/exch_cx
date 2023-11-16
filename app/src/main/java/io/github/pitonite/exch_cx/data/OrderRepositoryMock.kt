@@ -21,6 +21,15 @@ import kotlinx.coroutines.flow.flow
 class OrderRepositoryMock : OrderRepository {
 
   companion object {
+    val letterOfGuaranteeExample = // this is an invalid letter of guarantee, just for preview purpose
+        """
+        -----BEGIN BITCOIN SIGNED MESSAGE-----
+        This is a proof of the exchange order ee902b8a5fe0844d41 created at eXch (https://exch.cx) on Thu Nov 10 12:00:00 2023 to receive user's XMR at 8ALMe88qDeM91pnxtarFj6eqVwTLj5GRkjJ4xsS1MyXH3Kjb15gVgEK3drrkRP6ndrTYuygvXRR3aEToshyviJGNS2DqS3N and send ETH to 0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ. This message was generated on Thu Nov 10 12:00:00 2023
+        -----BEGIN SIGNATURE-----
+        1P59vP5TNXAFRnQJvZSkwhYXejYW3teXch
+        HNM+up+wYiVL/MnZqTPFzOjS8EjhFyAUPy86ULLgI8E+LkyE9yNsthv2dAJ6ROoE8JWJozI7liLFT2Faw/Y+5gg=
+        -----END BITCOIN SIGNED MESSAGE-----
+      """.trimIndent()
     val orderCancelled = Order(
         id = "ee902b8a5fe0844d41",
         fromCurrency = "BTC",
@@ -32,6 +41,7 @@ class OrderRepositoryMock : OrderRepository {
         toAddress = "0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ",
         minInput = BigDecimal.ZERO,
         maxInput = BigDecimal.ONE,
+        letterOfGuarantee = letterOfGuaranteeExample,
     )
 
     val orderCreated = Order(
@@ -45,6 +55,7 @@ class OrderRepositoryMock : OrderRepository {
         toAddress = "0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ",
         minInput = BigDecimal.ZERO,
         maxInput = BigDecimal.ONE,
+        letterOfGuarantee = letterOfGuaranteeExample,
     )
 
     val orderCreatedToAddressInvalid = Order(
@@ -59,6 +70,7 @@ class OrderRepositoryMock : OrderRepository {
         stateError = OrderStateError.TO_ADDRESS_INVALID.codifiedEnum(),
         minInput = BigDecimal.ZERO,
         maxInput = BigDecimal.ONE,
+        letterOfGuarantee = letterOfGuaranteeExample,
     )
 
     val orderAwaitingInput = Order(
@@ -72,6 +84,7 @@ class OrderRepositoryMock : OrderRepository {
         toAddress = "0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ",
         minInput = BigDecimal.ZERO,
         maxInput = BigDecimal.ONE,
+        letterOfGuarantee = letterOfGuaranteeExample,
     )
 
 
@@ -89,6 +102,7 @@ class OrderRepositoryMock : OrderRepository {
         minInput = BigDecimal.ZERO,
         maxInput = BigDecimal.ONE,
         fromAmount = BigDecimal.ONE,
+        letterOfGuarantee = letterOfGuaranteeExample,
     )
 
     val orderAwaitingInputMaxInputZero = Order(
@@ -103,6 +117,7 @@ class OrderRepositoryMock : OrderRepository {
         toAddress = "0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ",
         minInput = BigDecimal.ZERO,
         maxInput = BigDecimal.ZERO,
+        letterOfGuarantee = letterOfGuaranteeExample,
     )
 
     val orders =
