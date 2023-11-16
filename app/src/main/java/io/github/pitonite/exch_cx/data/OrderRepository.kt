@@ -41,6 +41,16 @@ interface OrderRepository {
 
   suspend fun count(archived: Boolean): Int
 
+  suspend fun revalidateAddress(orderid: String, newToAddress: String)
+
+  /**  Request a refund for an order if available */
+  suspend fun requestRefund(orderid: String)
+
+  /** Confirm a refund and provide a refund address if required (only when the order's state is REFUND_REQUEST) */
+  suspend fun requestRefundConfirm(orderid: String, refundAddress: String)
+
+  suspend fun fetchAndUpdateLetterOfGuarantee(orderid: String)
+
   /** Requests to remove the order's data immediately (only when the order's state is COMPLETE) */
   suspend fun deleteRemote(orderid: String)
 

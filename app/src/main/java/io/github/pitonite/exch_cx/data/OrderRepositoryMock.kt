@@ -21,57 +21,65 @@ import kotlinx.coroutines.flow.flow
 class OrderRepositoryMock : OrderRepository {
 
   companion object {
+    val orderCancelled = Order(
+        id = "ee902b8a5fe0844d41",
+        fromCurrency = "BTC",
+        toCurrency = "ETH",
+        rate = BigDecimal.valueOf(18.867924528301927),
+        rateMode = RateFeeMode.FLAT,
+        state = OrderState.CANCELLED.codifiedEnum(),
+        svcFee = BigDecimal.valueOf(1),
+        toAddress = "0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ",
+        minInput = BigDecimal.ZERO,
+        maxInput = BigDecimal.ONE,
+    )
+
+    val orderCreated = Order(
+        id = "ee902b8a5fe0844d41",
+        fromCurrency = "eth",
+        toCurrency = "btc",
+        rate = BigDecimal.valueOf(18.867924528301927),
+        rateMode = RateFeeMode.DYNAMIC,
+        state = OrderState.CREATED.codifiedEnum(),
+        svcFee = BigDecimal.valueOf(0.5),
+        toAddress = "0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ",
+        minInput = BigDecimal.ZERO,
+        maxInput = BigDecimal.ONE,
+    )
+
+    private val orderCreatedMaxInputZero = Order(
+        id = "ee902b8a5fe0844d41",
+        fromCurrency = "eth",
+        toCurrency = "btc",
+        rate = BigDecimal.valueOf(18.867924528301927),
+        rateMode = RateFeeMode.DYNAMIC,
+        state = OrderState.CREATED.codifiedEnum(),
+        svcFee = BigDecimal.valueOf(0.5),
+        toAddress = "0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ",
+        minInput = BigDecimal.ZERO,
+        maxInput = BigDecimal.ZERO,
+    )
+
+    val orderCreatedToAddressInvalid = Order(
+        id = "ee902b8a5fe0844d41",
+        fromCurrency = "BTC",
+        toCurrency = "ETH",
+        rate = BigDecimal.valueOf(18.867924528301927),
+        rateMode = RateFeeMode.DYNAMIC,
+        state = OrderState.CREATED.codifiedEnum(),
+        svcFee = BigDecimal.valueOf(0.5),
+        toAddress = "foo_address",
+        stateError = OrderStateError.TO_ADDRESS_INVALID.codifiedEnum(),
+        minInput = BigDecimal.ZERO,
+        maxInput = BigDecimal.ONE,
+    )
+
     val orders =
         persistentListOf(
-            Order(
-                id = "ee902b8a5fe0844d41",
-                fromCurrency = "eth",
-                toCurrency = "btc",
-                rate = BigDecimal.valueOf(18.867924528301927),
-                rateMode = RateFeeMode.DYNAMIC,
-                state = OrderState.CREATED.codifiedEnum(),
-                svcFee = BigDecimal.valueOf(0.5),
-                toAddress = "0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ",
-                minInput = BigDecimal.ZERO,
-                maxInput = BigDecimal.ONE,
-            ),
-            Order(
-                id = "ee902b8a5fe0844d41",
-                fromCurrency = "eth",
-                toCurrency = "btc",
-                rate = BigDecimal.valueOf(18.867924528301927),
-                rateMode = RateFeeMode.DYNAMIC,
-                state = OrderState.CREATED.codifiedEnum(),
-                svcFee = BigDecimal.valueOf(0.5),
-                toAddress = "0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ",
-                minInput = BigDecimal.ZERO,
-                maxInput = BigDecimal.ZERO,
-            ),
-            Order(
-                id = "ee902b8a5fe0844d41",
-                fromCurrency = "BTC",
-                toCurrency = "ETH",
-                rate = BigDecimal.valueOf(18.867924528301927),
-                rateMode = RateFeeMode.DYNAMIC,
-                state = OrderState.CREATED.codifiedEnum(),
-                svcFee = BigDecimal.valueOf(0.5),
-                toAddress = "foo_address",
-                stateError = OrderStateError.TO_ADDRESS_INVALID.codifiedEnum(),
-                minInput = BigDecimal.ZERO,
-                maxInput = BigDecimal.ONE,
-            ),
-            Order(
-                id = "ee902b8a5fe0844d41",
-                fromCurrency = "BTC",
-                toCurrency = "ETH",
-                rate = BigDecimal.valueOf(18.867924528301927),
-                rateMode = RateFeeMode.FLAT,
-                state = OrderState.CANCELLED.codifiedEnum(),
-                svcFee = BigDecimal.valueOf(1),
-                toAddress = "0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ",
-                minInput = BigDecimal.ZERO,
-                maxInput = BigDecimal.ONE,
-            ),
+            orderCreated,
+            orderCreatedMaxInputZero,
+            orderCreatedToAddressInvalid,
+            orderCancelled,
         )
   }
 
@@ -121,6 +129,18 @@ class OrderRepositoryMock : OrderRepository {
 
   override suspend fun count(archived: Boolean): Int {
     return orders.count()
+  }
+
+  override suspend fun revalidateAddress(orderid: String, newToAddress: String) {
+  }
+
+  override suspend fun requestRefund(orderid: String) {
+  }
+
+  override suspend fun requestRefundConfirm(orderid: String, refundAddress: String) {
+  }
+
+  override suspend fun fetchAndUpdateLetterOfGuarantee(orderid: String) {
   }
 
   override suspend fun deleteRemote(orderid: String) {}

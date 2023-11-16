@@ -89,7 +89,7 @@
   <string name="error_order_cancelled">Order expired</string>
   <string name="notice">Notice</string>
   <string name="label_mode">Mode:</string>
-  <string name="label_exchanged_amount_to_address">Exchanged amount will be sent to:</string>
+  <string name="label_exchanged_amount_to_address">Exchanged amount is sent to:</string>
   <string name="label_copy_address">Copy address</string>
   <string name="snack_address_copied">Address Copied!</string>
   <string name="notice_etherium_based_coins">Send funds only on Ethereum Mainnet or they will be lost</string>
@@ -122,4 +122,15 @@
   <string name="sender_support">Support</string>
     <string name="exception_failed_to_send_message">Failed to send message</string>
     <string name="exception_failed_to_delete_order_data">Failed to delete order data</string>
+  <string name="order_state_created_title">We are preparing your order, please wait</string>
+  <string name="order_error_to_address_invalid_title">Please enter a new %1$s address</string>
+  <string name="label_new_to_address">New %1$s Address</string>
+  <string name="submit">Submit</string>
+  <string name="accessibility_label_copy_icon">Copy Icon</string>
+  <string name="accessibility_label_copy">Copy</string>
+  <string name="snack_copied">Copied</string>
+  <string name="exception_failed_to_revalidate_to_address">Failed to validate the new address</string>
+  <string name="exception_failed_to_request_refund">Refund request failed</string>
+  <string name="exception_failed_to_confirm_refund_request">Cannot confirm refund request</string>
+  <string name="exception_failed_to_fetch_letter_of_guarantee">Could not download letter of guarantee</string>
 </resources>

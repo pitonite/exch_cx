@@ -23,6 +23,7 @@ import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import io.github.pitonite.exch_cx.ui.navigation.NavArgs
 import io.github.pitonite.exch_cx.utils.WorkState
 import io.github.pitonite.exch_cx.utils.codified.enums.codifiedEnum
+import io.github.pitonite.exch_cx.utils.isWorking
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapMerge
@@ -56,11 +57,11 @@ constructor(
     private val userSettingsRepository: UserSettingsRepository
 ) : ViewModel() {
 
-  val orderId = savedStateHandle.getStateFlow<String?>(NavArgs.ORDER_ID_KEY, null)
+  val orderid = savedStateHandle.getStateFlow<String?>(NavArgs.ORDER_ID_KEY, null)
 
   @OptIn(ExperimentalCoroutinesApi::class)
   val order =
-      orderId
+      orderid
           .flatMapMerge { it?.let { orderRepository.getOrder(it) } ?: flow { emit(InvalidOrder) } }
           .stateIn(
               scope = viewModelScope,
@@ -78,11 +79,14 @@ constructor(
   var refreshWorkState by mutableStateOf<WorkState>(WorkState.NotWorking)
     private set
 
+  var submitNewToAddressWorkState: WorkState = WorkState.NotWorking
+    private set
+
   fun refreshOrder() {
-    if (WorkState.isWorking(refreshWorkState) || orderId.value == null) return
+    if (refreshWorkState.isWorking() || orderid.value == null) return
 
     refreshWorkState = WorkState.Working()
-    val id = orderId.value!!
+    val id = orderid.value!!
 
     viewModelScope.launch {
       try {
@@ -90,6 +94,27 @@ constructor(
         refreshWorkState = WorkState.NotWorking
       } catch (e: Throwable) {
         refreshWorkState = WorkState.Error(e)
+        SnackbarManager.showMessage(
+            SnackbarMessage.from(
+                message = e.toUserMessage(),
+                withDismissAction = true,
+                duration = SnackbarDuration.Long,
+            ))
+      }
+    }
+  }
+
+  fun submitNewToAddress(newAddress: String) {
+    if (submitNewToAddressWorkState.isWorking()) return
+    submitNewToAddressWorkState = WorkState.Working()
+    val orderid = orderid.value!!
+
+    viewModelScope.launch {
+      try {
+        orderRepository.revalidateAddress(orderid, newAddress)
+        submitNewToAddressWorkState = WorkState.NotWorking
+      } catch (e: Throwable) {
+        submitNewToAddressWorkState = WorkState.Error(e)
         SnackbarManager.showMessage(
             SnackbarMessage.from(
                 message = e.toUserMessage(),

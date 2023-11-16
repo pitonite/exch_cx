@@ -38,6 +38,9 @@ abstract class OrderDao : BaseDao<Order> {
   abstract suspend fun exists(id: String): Boolean
 
   @Update(entity = Order::class) abstract suspend fun setArchive(entity: OrderArchive)
+
+  @Update(entity = Order::class) abstract suspend fun setLetterOfGuarantee(entity: OrderLetterOfGuarantee)
+
   @Query("DELETE FROM `order` WHERE id = :orderid")
   abstract suspend fun delete(orderid: String)
 }

@@ -1,5 +1,6 @@
 package io.github.pitonite.exch_cx.ui.screens.orderdetail
 
+import android.Manifest
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -12,13 +13,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.InlineTextContent
-import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Archive
-import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.OpenInBrowser
 import androidx.compose.material.icons.filled.Unarchive
@@ -28,7 +26,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -50,11 +47,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.Placeholder
-import androidx.compose.ui.text.PlaceholderVerticalAlign
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -69,24 +61,27 @@ import io.github.pitonite.exch_cx.di.getExchDomain
 import io.github.pitonite.exch_cx.model.api.OrderState
 import io.github.pitonite.exch_cx.model.getTranslation
 import io.github.pitonite.exch_cx.ui.components.Card
-import io.github.pitonite.exch_cx.ui.components.ClickableText
+import io.github.pitonite.exch_cx.ui.components.CopyableText
 import io.github.pitonite.exch_cx.ui.components.Notice
 import io.github.pitonite.exch_cx.ui.components.RefreshButton
 import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import io.github.pitonite.exch_cx.ui.navigation.NavArgs
 import io.github.pitonite.exch_cx.ui.screens.home.orders.ExchangePairRow
+import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.AutomaticOrderUpdateDialog
+import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderCancelled
+import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderCreated
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 import io.github.pitonite.exch_cx.utils.WorkState
 import io.github.pitonite.exch_cx.utils.codified.enums.toLocalizedString
-import io.github.pitonite.exch_cx.utils.copyToClipboard
 import io.github.pitonite.exch_cx.utils.createNotificationChannels
+import io.github.pitonite.exch_cx.utils.isWorking
 import io.github.pitonite.exch_cx.utils.rememberQrBitmapPainter
 import io.github.pitonite.exch_cx.utils.verticalFadingEdge
+import java.math.BigDecimal
+import java.math.RoundingMode
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
-import java.math.BigDecimal
-import java.math.RoundingMode
 
 // TODO: remove if network indicator was provided by the api
 val etheriumBasedCoins = "eth|dai|usdt|usdc".toRegex(RegexOption.IGNORE_CASE)
@@ -112,12 +107,15 @@ fun OrderDetail(
         }
       }
 
-  LaunchedEffect(true) {
-    // You can replace this with lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) if needed
-    coroutineScope {
-      while (isActive) {
-        viewModel.refreshOrder()
-        delay(15000L)
+  if (order?.archived == false) {
+    LaunchedEffect(true) {
+      // You can replace this with lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) if
+      // needed
+      coroutineScope {
+        while (isActive) {
+          viewModel.refreshOrder()
+          delay(15000L)
+        }
       }
     }
   }
@@ -135,7 +133,7 @@ fun OrderDetail(
               Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(stringResource(R.string.order))
                 Text(
-                    viewModel.orderId.value ?: "",
+                    viewModel.orderid.value ?: "",
                     color = MaterialTheme.colorScheme.primary,
                     fontSize = 16.sp)
               }
@@ -153,8 +151,8 @@ fun OrderDetail(
               if (order != null) {
                 RefreshButton(
                     onClick = { viewModel.refreshOrder() },
-                    enabled = !WorkState.isWorking(viewModel.refreshWorkState),
-                    refreshing = WorkState.isWorking(viewModel.refreshWorkState),
+                    enabled = !viewModel.refreshWorkState.isWorking(),
+                    refreshing = viewModel.refreshWorkState.isWorking(),
                 )
 
                 var showMenu by remember { mutableStateOf(false) }
@@ -211,13 +209,13 @@ fun OrderDetail(
           AutomaticOrderUpdateDialog(show = !settings.hasShownOrderBackgroundUpdateNotice) {
             if (it) {
               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                launcher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
               }
             }
             viewModel.onAutomaticDialogResult(it)
           }
           if (order != null) {
-            OrderColumn(order!!)
+            OrderColumn(viewModel, order!!)
           } else {
             Card {
               Column(
@@ -236,9 +234,7 @@ fun OrderDetail(
 }
 
 @Composable
-fun OrderColumn(order: Order) {
-  val context = LocalContext.current
-
+fun OrderColumn(viewModel: OrderDetailViewModel, order: Order, ) {
   Column(verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.page_padding))) {
     ExchangePairRow(fromCurrency = order.fromCurrency, toCurrency = order.toCurrency)
 
@@ -274,26 +270,17 @@ fun OrderColumn(order: Order) {
 
     when (order.state.knownOrNull()) {
       OrderState.CANCELLED -> {
-
-        Card(isError = true) {
-          Column(
-              modifier =
-                  Modifier.padding(horizontal = dimensionResource(R.dimen.padding_lg))
-                      .padding(
-                          vertical = dimensionResource(R.dimen.padding_xl),
-                      ),
-              horizontalAlignment = Alignment.CenterHorizontally,
-              verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_sm)),
-          ) {
-            Text(
-                stringResource(R.string.error_order_cancelled),
-                color = MaterialTheme.colorScheme.onErrorContainer)
-          }
-        }
+        OrderCancelled()
       }
-      OrderState.CREATED -> {}
-      OrderState.AWAITING_INPUT -> {
+      OrderState.CREATED -> {
+        // check if address invalid error is present and show revalidate form
+        // else, tell user the address is being generated and user should wait
 
+        OrderCreated(order, onSubmitNewToAddress = {
+                   viewModel.submitNewToAddress(it)
+        }, submitWorkState = viewModel.submitNewToAddressWorkState)
+      }
+      OrderState.AWAITING_INPUT -> {
         if (order.maxInput.compareTo(BigDecimal.ZERO) == 0) {
           Column(
               modifier =
@@ -303,10 +290,9 @@ fun OrderColumn(order: Order) {
                       ),
               verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_lg)),
           ) {
-            Text(stringResource(R.string.order_state_max_input_zero))
+            Text(stringResource(R.string.order_state_max_input_zero, order.fromCurrency))
           }
         } else {
-
           Card {
             Column(
                 modifier =
@@ -329,86 +315,87 @@ fun OrderColumn(order: Order) {
                       " ${order.maxInput} ${order.fromCurrency.uppercase()}")
               Spacer(Modifier)
 
-              Text(stringResource(R.string.label_to_order_address, order.fromCurrency.uppercase()))
+              Column(
+                  verticalArrangement =
+                      Arrangement.spacedBy(dimensionResource(R.dimen.padding_sm))) {
+                    Text(
+                        stringResource(
+                            R.string.label_to_order_address, order.fromCurrency.uppercase()))
 
-              if (order.fromAddr != GENERATING_FROM_ADDRESS) {
-                val annotatedString = buildAnnotatedString {
-                  withStyle(
-                      style =
-                          SpanStyle(
-                              color = MaterialTheme.colorScheme.onSurfaceVariant,
-                              fontSize = MaterialTheme.typography.titleLarge.fontSize),
-                  ) {
-                    append(order.fromAddr)
-                  }
-                  append("  ")
-                  pushStringAnnotation(tag = "copy_icon", annotation = "copy_icon")
-                  appendInlineContent("copy_icon", "([copy address])")
-                  pop()
-                }
-                val iconSize = LocalTextStyle.current.fontSize.times(1.5f)
+                    if (order.fromAddr != GENERATING_FROM_ADDRESS) {
+                      CopyableText(order.fromAddr, copyConfirmationMessage = R.string.snack_address_copied)
 
-                ClickableText(
-                    text = annotatedString,
-                    onClick = { offset ->
-                      annotatedString.getStringAnnotations(offset, offset).firstOrNull()?.let { span
-                        ->
-                        if (span.tag == "copy_icon") {
-                          copyToClipboard(
-                              context,
-                              order.fromAddr,
-                              confirmationMessage = R.string.snack_address_copied)
-                        }
+                      if (order.stateError == null &&
+                          etheriumBasedCoins.containsMatchIn(order.fromCurrency)) {
+                        Notice(stringResource(R.string.notice_etherium_based_coins))
                       }
-                    },
-                    inlineContent =
-                        mapOf(
-                            Pair(
-                                "copy_icon",
-                                InlineTextContent(
-                                    Placeholder(
-                                        width = iconSize,
-                                        height = iconSize,
-                                        placeholderVerticalAlign =
-                                            PlaceholderVerticalAlign.Center)) {
-                                      Icon(
-                                          Icons.Default.ContentCopy,
-                                          contentDescription =
-                                              stringResource(R.string.label_copy_address))
-                                    })),
-                )
 
-                if (order.stateError == null &&
-                    etheriumBasedCoins.containsMatchIn(order.fromCurrency)) {
-                  Notice(stringResource(R.string.notice_etherium_based_coins))
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                ) {
-                  Image(
-                      painter =
-                          rememberQrBitmapPainter(
-                              content = order.fromAddr, size = 300.dp, padding = 1.dp),
-                      contentDescription =
-                          stringResource(R.string.desc_send_qrcode_image, order.fromCurrency),
-                      modifier = Modifier.clip(MaterialTheme.shapes.large),
-                  )
-                }
-              } else {
-                Text(
-                    stringResource(R.string.address_generating),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-                )
-              }
+                      Row(
+                          modifier = Modifier.fillMaxWidth(),
+                          horizontalArrangement = Arrangement.Center,
+                      ) {
+                        Image(
+                            painter =
+                                rememberQrBitmapPainter(
+                                    content = order.fromAddr, size = 300.dp, padding = 1.dp),
+                            contentDescription =
+                                stringResource(R.string.desc_send_qrcode_image, order.fromCurrency),
+                            modifier = Modifier.clip(MaterialTheme.shapes.large),
+                        )
+                      }
+                    } else {
+                      Text(
+                          stringResource(R.string.address_generating),
+                          color = MaterialTheme.colorScheme.onSurfaceVariant,
+                          fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                      )
+                    }
+                  }
             }
           }
         }
       }
+      OrderState.CONFIRMING_INPUT -> {
+        // let user know we have detected the funds and are waiting for it to be confirmed
+        // currently ETH->[ANY] orders don't show the txid
+      }
+      OrderState.EXCHANGING -> {
+        // the order is enqueued to send the payout.
+        // If there is no balance available (for example the user overpaid by mistake or someone
+        // else took their amount meanwhile their input was confirming) then the automatic refund
+        // option is offered
+        // if the payout is sent successfully, the order's state changes to CONFIRMING_SEND.
+
+      }
+      OrderState.CONFIRMING_SEND -> {
+        // once there is a confirmation, the order's state changes to COMPLETE,
+        // which is a final state.
+      }
+      OrderState.REFUND_REQUEST -> {
+        // when the user has requested refund,
+        // user is required to select the fee during this state
+        // also the refund address in case it wasn't provided during the order creation
+        // once they submitted the address and the desired fee, the order will enter the
+        // REFUND_PENDING state
+        // for USDT/DAI/USDC, the order state will directly become REFUNDED, revealing a deposit's
+        // address private key to the user
+      }
+      OrderState.REFUND_PENDING -> {
+        // the order is enqueued for the refund payout. Once the payout sent, the state will change
+        // to CONFIRMING_REFUND
+      }
+      OrderState.CONFIRMING_REFUND -> {
+        // Once the payout txid is confirmed, the order state will change to REFUNDED, this is a
+        // final state
+      }
+      OrderState.REFUNDED -> {}
+      OrderState.COMPLETE -> {
+        // user can request delete at this state
+      }
       else -> {
-        // TODO: implement unknown state enum
+        // this is when order state is null, this can happen if the states are experimental
+
+        // TODO: implement unknown enum state
       }
     }
 
@@ -421,51 +408,10 @@ fun OrderColumn(order: Order) {
                   ),
           verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_lg)),
       ) {
-        Column {
+        Column(verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_sm))) {
           Text(stringResource(R.string.label_exchanged_amount_to_address))
 
-          val annotatedString = buildAnnotatedString {
-            withStyle(
-                style =
-                    SpanStyle(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontSize = MaterialTheme.typography.bodyLarge.fontSize),
-            ) {
-              append(order.toAddress)
-            }
-            append("  ")
-            pushStringAnnotation(tag = "copy_icon", annotation = "copy_icon")
-            appendInlineContent("copy_icon", "([copy address])")
-            pop()
-          }
-          val iconSize = LocalTextStyle.current.fontSize.times(1.5f)
-
-          ClickableText(
-              text = annotatedString,
-              onClick = { offset ->
-                annotatedString.getStringAnnotations(offset, offset).firstOrNull()?.let { span ->
-                  if (span.tag == "copy_icon") {
-                    copyToClipboard(
-                        context,
-                        order.toAddress,
-                        confirmationMessage = R.string.snack_address_copied)
-                  }
-                }
-              },
-              inlineContent =
-                  mapOf(
-                      Pair(
-                          "copy_icon",
-                          InlineTextContent(
-                              Placeholder(
-                                  width = iconSize,
-                                  height = iconSize,
-                                  placeholderVerticalAlign = PlaceholderVerticalAlign.Center)) {
-                                Icon(
-                                    Icons.Default.ContentCopy,
-                                    contentDescription =
-                                        stringResource(R.string.label_copy_address))
-                              })))
+          CopyableText(order.toAddress, copyConfirmationMessage = R.string.snack_address_copied)
         }
       }
     }
@@ -474,43 +420,46 @@ fun OrderColumn(order: Order) {
   }
 }
 
+fun getMockViewModel()  =OrderDetailViewModel(
+     SavedStateHandle().apply {
+       this[NavArgs.ORDER_ID_KEY] = "ee902b8a5fe0844d41"
+     },
+    OrderRepositoryMock(),
+    UserSettingsRepositoryMock(),
+)
+
 @Preview("order - created", widthDp = 360)
 @Composable
 fun OrderColumnCreatedPreview() {
-  ExchTheme { Surface { OrderColumn(OrderRepositoryMock.orders[0]) } }
+  ExchTheme { Surface { OrderColumn(getMockViewModel(), OrderRepositoryMock.orders[0]) } }
 }
 
 @Preview("order - created - max zero", widthDp = 360)
 @Composable
 fun OrderColumnCreatedMaxZeroPreview() {
-  ExchTheme { Surface { OrderColumn(OrderRepositoryMock.orders[1]) } }
+  ExchTheme { Surface { OrderColumn(getMockViewModel(), OrderRepositoryMock.orders[1]) } }
 }
 
 @Preview("order - created - error address", widthDp = 360)
 @Composable
 fun OrderColumnCreatedErrorAddressPreview() {
-  ExchTheme { Surface { OrderColumn(OrderRepositoryMock.orders[2]) } }
+  ExchTheme { Surface { OrderColumn(getMockViewModel() , OrderRepositoryMock.orders[2]) } }
 }
 
 @Preview("order - cancelled - error address", widthDp = 360)
 @Composable
 fun OrderColumnCancelledPreview() {
-  ExchTheme { Surface { OrderColumn(OrderRepositoryMock.orders[3]) } }
+  ExchTheme { Surface { OrderColumn(getMockViewModel(), OrderRepositoryMock.orders[3]) } }
 }
 
 @Preview("default")
 @Composable
 fun OrderDetailPreview() {
-  val savedStateHandle = SavedStateHandle()
-  savedStateHandle[NavArgs.ORDER_ID_KEY] = "ee902b8a5fe0844d41"
+
   ExchTheme {
     OrderDetail(
         viewModel =
-            OrderDetailViewModel(
-                savedStateHandle,
-                OrderRepositoryMock(),
-                UserSettingsRepositoryMock(),
-            ),
+        getMockViewModel(),
         upPress = {},
     )
   }
