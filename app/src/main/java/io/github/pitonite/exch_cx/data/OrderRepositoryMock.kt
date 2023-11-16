@@ -47,19 +47,6 @@ class OrderRepositoryMock : OrderRepository {
         maxInput = BigDecimal.ONE,
     )
 
-    private val orderCreatedMaxInputZero = Order(
-        id = "ee902b8a5fe0844d41",
-        fromCurrency = "eth",
-        toCurrency = "btc",
-        rate = BigDecimal.valueOf(18.867924528301927),
-        rateMode = RateFeeMode.DYNAMIC,
-        state = OrderState.CREATED.codifiedEnum(),
-        svcFee = BigDecimal.valueOf(0.5),
-        toAddress = "0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ",
-        minInput = BigDecimal.ZERO,
-        maxInput = BigDecimal.ZERO,
-    )
-
     val orderCreatedToAddressInvalid = Order(
         id = "ee902b8a5fe0844d41",
         fromCurrency = "BTC",
@@ -74,12 +61,59 @@ class OrderRepositoryMock : OrderRepository {
         maxInput = BigDecimal.ONE,
     )
 
+    val orderAwaitingInput = Order(
+        id = "ee902b8a5fe0844d41",
+        fromCurrency = "eth",
+        toCurrency = "btc",
+        fromAddr = "89yfsb5edVfZe7xZTPLarrZaDdg5UKYzs73ggY6jkuaFKjfbSPfmW15P72mG8K1CdiAwL4V5LLXGY98S1cctS2XNPhmUXGC",
+        rate = BigDecimal.valueOf(18.867924528301927),
+        rateMode = RateFeeMode.DYNAMIC,
+        state = OrderState.AWAITING_INPUT.codifiedEnum(),
+        svcFee = BigDecimal.valueOf(0.5),
+        toAddress = "0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ",
+        minInput = BigDecimal.ZERO,
+        maxInput = BigDecimal.ONE,
+    )
+
+
+    val orderAwaitingInputWithFromAmount = Order(
+        id = "c6b728fe153f566d97",
+        fromCurrency = "xmr",
+        toCurrency = "eth",
+        fromAddr = "89yfsb5edVfZe7xZTPLarrZaDdg5UKYzs73ggY6jkuaFKjfbSPfmW15P72mG8K1CdiAwL4V5LLXGY98S1cctS2XNPhmUXGC",
+        rate = "0.078380831366853865".toBigDecimal(),
+        networkFee = BigDecimal.valueOf(0.0020280),
+        rateMode = RateFeeMode.FLAT,
+        state = OrderState.AWAITING_INPUT.codifiedEnum(),
+        svcFee = BigDecimal.valueOf(1),
+        toAddress = "0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ",
+        minInput = BigDecimal.ZERO,
+        maxInput = BigDecimal.ONE,
+        fromAmount = BigDecimal.ONE,
+    )
+
+    val orderAwaitingInputMaxInputZero = Order(
+        id = "c6b728fe153f566d97",
+        fromCurrency = "xmr",
+        toCurrency = "eth",
+        rate = "0.078180003629105696".toBigDecimal(),
+        networkFee = BigDecimal.valueOf(0.00087897),
+        rateMode = RateFeeMode.FLAT,
+        state = OrderState.AWAITING_INPUT.codifiedEnum(),
+        svcFee = BigDecimal.valueOf(1),
+        toAddress = "0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ",
+        minInput = BigDecimal.ZERO,
+        maxInput = BigDecimal.ZERO,
+    )
+
     val orders =
         persistentListOf(
-            orderCreated,
-            orderCreatedMaxInputZero,
-            orderCreatedToAddressInvalid,
             orderCancelled,
+            orderCreated,
+            orderCreatedToAddressInvalid,
+            orderAwaitingInput,
+            orderAwaitingInputWithFromAmount,
+            orderAwaitingInputMaxInputZero,
         )
   }
 

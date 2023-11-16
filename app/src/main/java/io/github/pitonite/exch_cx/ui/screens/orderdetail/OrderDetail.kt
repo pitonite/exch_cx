@@ -4,10 +4,8 @@ import android.Manifest
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -42,7 +40,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -57,20 +54,19 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock
 import io.github.pitonite.exch_cx.data.UserSettingsRepositoryMock
-import io.github.pitonite.exch_cx.data.room.GENERATING_FROM_ADDRESS
 import io.github.pitonite.exch_cx.data.room.Order
 import io.github.pitonite.exch_cx.di.getExchDomain
 import io.github.pitonite.exch_cx.model.api.OrderState
 import io.github.pitonite.exch_cx.model.getTranslation
 import io.github.pitonite.exch_cx.ui.components.Card
 import io.github.pitonite.exch_cx.ui.components.CopyableText
-import io.github.pitonite.exch_cx.ui.components.Notice
 import io.github.pitonite.exch_cx.ui.components.RefreshButton
 import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import io.github.pitonite.exch_cx.ui.navigation.NavArgs
 import io.github.pitonite.exch_cx.ui.screens.home.orders.ExchangePairRow
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.AutomaticOrderUpdateDialog
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.OrderStateCard
+import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderAwaitingInput
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderCancelled
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderCreated
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
@@ -78,9 +74,7 @@ import io.github.pitonite.exch_cx.utils.codified.enums.toLocalizedString
 import io.github.pitonite.exch_cx.utils.createNotificationChannels
 import io.github.pitonite.exch_cx.utils.isWorking
 import io.github.pitonite.exch_cx.utils.noRippleClickable
-import io.github.pitonite.exch_cx.utils.rememberQrBitmapPainter
 import io.github.pitonite.exch_cx.utils.verticalFadingEdge
-import java.math.BigDecimal
 import java.math.RoundingMode
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -294,86 +288,7 @@ fun OrderColumn(
             submitWorkState = viewModel.submitNewToAddressWorkState)
       }
       OrderState.AWAITING_INPUT -> {
-        if (order.maxInput.compareTo(BigDecimal.ZERO) == 0) {
-          Column(
-              modifier =
-                  Modifier.padding(horizontal = dimensionResource(R.dimen.padding_lg))
-                      .padding(
-                          vertical = dimensionResource(R.dimen.padding_lg),
-                      ),
-              verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_lg)),
-          ) {
-            Text(stringResource(R.string.order_state_max_input_zero, order.fromCurrency))
-          }
-        } else {
-          Card {
-            Column(
-                modifier =
-                    Modifier.padding(horizontal = dimensionResource(R.dimen.padding_lg))
-                        .padding(
-                            vertical = dimensionResource(R.dimen.padding_lg),
-                        ),
-                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_lg)),
-            ) {
-              Text(
-                  stringResource(
-                      R.string.order_state_title_created, order.fromCurrency.uppercase()),
-                  style = MaterialTheme.typography.headlineSmall)
-
-              SelectionContainer {
-                Text(
-                    stringResource(R.string.label_minimum) +
-                        " ${order.minInput} ${order.fromCurrency.uppercase()}")
-              }
-
-              SelectionContainer {
-                Text(
-                    stringResource(R.string.label_maximum) +
-                        " ${order.maxInput} ${order.fromCurrency.uppercase()}")
-              }
-
-              Spacer(Modifier)
-
-              Column(
-                  verticalArrangement =
-                      Arrangement.spacedBy(dimensionResource(R.dimen.padding_sm))) {
-                    Text(
-                        stringResource(
-                            R.string.label_to_order_address, order.fromCurrency.uppercase()))
-
-                    if (order.fromAddr != GENERATING_FROM_ADDRESS) {
-                      CopyableText(
-                          order.fromAddr, copyConfirmationMessage = R.string.snack_address_copied)
-
-                      if (order.stateError == null &&
-                          etheriumBasedCoins.containsMatchIn(order.fromCurrency)) {
-                        Notice(stringResource(R.string.notice_etherium_based_coins))
-                      }
-
-                      Row(
-                          modifier = Modifier.fillMaxWidth(),
-                          horizontalArrangement = Arrangement.Center,
-                      ) {
-                        Image(
-                            painter =
-                                rememberQrBitmapPainter(
-                                    content = order.fromAddr, size = 300.dp, padding = 1.dp),
-                            contentDescription =
-                                stringResource(R.string.desc_send_qrcode_image, order.fromCurrency),
-                            modifier = Modifier.clip(MaterialTheme.shapes.large),
-                        )
-                      }
-                    } else {
-                      Text(
-                          stringResource(R.string.address_generating),
-                          color = MaterialTheme.colorScheme.onSurfaceVariant,
-                          fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-                      )
-                    }
-                  }
-            }
-          }
-        }
+        OrderAwaitingInput(order)
       }
       OrderState.CONFIRMING_INPUT -> {
         // let user know we have detected the funds and are waiting for it to be confirmed

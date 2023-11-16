@@ -1,6 +1,8 @@
 package io.github.pitonite.exch_cx.ui.components
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CardDefaults
@@ -34,6 +36,36 @@ fun Notice(
       color = bgColor,
   ) {
     Text(text, textAlign = TextAlign.Center, fontSize = 18.sp, modifier = Modifier.fillMaxWidth())
+  }
+}
+
+@Composable
+fun Notice(
+    modifier: Modifier = Modifier,
+    bgColor: Color = Color.Transparent,
+    borderColor: Color = MaterialTheme.colorScheme.tertiary,
+    content: @Composable () -> Unit,
+) {
+  Surface(
+      modifier =
+          modifier
+              .border(2.dp, borderColor, CardDefaults.shape)
+              .padding(dimensionResource(R.dimen.padding_lg)),
+      shape = CardDefaults.shape,
+      color = bgColor,
+  ) {
+    Column(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(horizontal = dimensionResource(R.dimen.padding_sm))
+                .padding(
+                    vertical = dimensionResource(R.dimen.padding_sm),
+                ),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_md)),
+    ) {
+      content()
+    }
   }
 }
 

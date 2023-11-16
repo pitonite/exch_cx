@@ -94,8 +94,8 @@
   <string name="snack_address_copied">Address Copied!</string>
   <string name="notice_etherium_based_coins">Send funds only on Ethereum Mainnet or they will be lost</string>
   <string name="order_state_title_created">Waiting for you to send %1$s</string>
-  <string name="label_minimum">Minimum:</string>
-  <string name="label_maximum">Maximum:</string>
+  <string name="label_minimum">Min:</string>
+  <string name="label_maximum">Max:</string>
   <string name="order_state_max_input_zero">Sorry, but we cannot accept %1$s right now.</string>
   <string name="label_to_order_address">To the %1$s address:</string>
   <string name="desc_send_qrcode_image">%1$s address QRCode</string>
@@ -133,4 +133,8 @@
   <string name="exception_failed_to_request_refund">Refund request failed</string>
   <string name="exception_failed_to_confirm_refund_request">Cannot confirm refund request</string>
   <string name="exception_failed_to_fetch_letter_of_guarantee">Could not download letter of guarantee</string>
+  <string name="label_send">Send:</string>
+  <string name="label_receive">Receive:</string>
+  <string name="network_fee_included">Network fee included</string>
+  <string name="notice_order_different_amount">If the amount sent is different than %1$s\u00A0%2$s, the exchange amount will be recalculated automatically</string>
 </resources>
