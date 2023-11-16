@@ -99,7 +99,7 @@
   <string name="order_state_max_input_zero">Sorry, but we cannot accept %1$s right now.</string>
   <string name="label_to_order_address">To the %1$s address:</string>
   <string name="desc_send_qrcode_image">%1$s address QRCode</string>
-  <string name="address_generating">Generating...</string>
+  <string name="address_generating">Generating…</string>
   <string name="copied">Copied!</string>
   <string name="order_state_created">Created</string>
   <string name="order_state_cancelled">Cancelled</string>

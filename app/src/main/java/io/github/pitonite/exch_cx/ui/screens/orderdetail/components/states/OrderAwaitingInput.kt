@@ -7,11 +7,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.dimensionResource
@@ -79,7 +82,8 @@ fun OrderAwaitingInput(
                             .minus(order.svcFee)
                             .divide(hundred)
                             .times(order.rate))
-                    .minus(order.networkFee ?: BigDecimal.ZERO).stripTrailingZeros()
+                    .minus(order.networkFee ?: BigDecimal.ZERO)
+                    .stripTrailingZeros()
             Text(
                 stringResource(R.string.label_receive) +
                     " $receiveAmount ${order.toCurrency.uppercase()} (${stringResource(R.string.network_fee_included)})")
@@ -132,7 +136,8 @@ fun OrderAwaitingInput(
                         R.string.notice_order_different_amount,
                         order.fromAmount,
                         order.fromCurrency.uppercase()),
-                    textAlign = TextAlign.Justify,)
+                    textAlign = TextAlign.Justify,
+                )
 
                 SelectionContainer {
                   Text(
@@ -148,11 +153,14 @@ fun OrderAwaitingInput(
               }
             }
           } else {
-            Text(
-                stringResource(R.string.address_generating),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+              Text(
+                  stringResource(R.string.address_generating) + " ",
+                  color = MaterialTheme.colorScheme.onSurfaceVariant,
+                  fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+              )
+              CircularProgressIndicator(Modifier.size(24.dp))
+            }
           }
         }
       }

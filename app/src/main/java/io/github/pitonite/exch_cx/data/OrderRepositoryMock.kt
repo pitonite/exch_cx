@@ -65,7 +65,6 @@ class OrderRepositoryMock : OrderRepository {
         id = "ee902b8a5fe0844d41",
         fromCurrency = "eth",
         toCurrency = "btc",
-        fromAddr = "89yfsb5edVfZe7xZTPLarrZaDdg5UKYzs73ggY6jkuaFKjfbSPfmW15P72mG8K1CdiAwL4V5LLXGY98S1cctS2XNPhmUXGC",
         rate = BigDecimal.valueOf(18.867924528301927),
         rateMode = RateFeeMode.DYNAMIC,
         state = OrderState.AWAITING_INPUT.codifiedEnum(),
