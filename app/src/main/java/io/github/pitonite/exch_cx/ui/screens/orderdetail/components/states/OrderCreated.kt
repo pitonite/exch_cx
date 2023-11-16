@@ -24,6 +24,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderCreated
@@ -46,10 +47,12 @@ fun OrderCreated(
 
     if (order.stateError?.knownOrNull() == OrderStateError.TO_ADDRESS_INVALID) {
       Text(
+          modifier = Modifier.fillMaxWidth(),
           text =
               stringResource(
                   R.string.order_error_to_address_invalid_title, order.toCurrency.uppercase()),
-          style = MaterialTheme.typography.headlineSmall)
+          style = MaterialTheme.typography.headlineSmall,
+          textAlign = TextAlign.Center)
 
       var newAddress by rememberSaveable(key = "newAddress_${order.id}") { mutableStateOf("") }
       OutlinedTextField(
@@ -66,14 +69,17 @@ fun OrderCreated(
           keyboardOptions =
               KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
       )
-      Button(
-          onClick = { onSubmitNewToAddress(newAddress) }, enabled = !submitWorkState.isWorking()) {
-            if (submitWorkState.isWorking()) {
-              CircularProgressIndicator()
-            } else {
-              Text(stringResource(R.string.submit))
+      Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.Center) {
+        Button(
+            onClick = { onSubmitNewToAddress(newAddress) },
+            enabled = !submitWorkState.isWorking()) {
+              if (submitWorkState.isWorking()) {
+                CircularProgressIndicator()
+              } else {
+                Text(stringResource(R.string.submit))
+              }
             }
-          }
+      }
     } else {
       Text(
           text = stringResource(R.string.order_state_created_title),
