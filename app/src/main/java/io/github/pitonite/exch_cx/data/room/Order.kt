@@ -135,5 +135,13 @@ data class OrderArchive(
 @Stable
 data class OrderLetterOfGuarantee(
   val id: String,
-  val letterOfGuarantee: String?,
+  val letterOfGuarantee: String,
 )
+
+
+@Stable
+data class OrderToAddress(
+  val id: String,
+  val toAddress: String,
+)
+

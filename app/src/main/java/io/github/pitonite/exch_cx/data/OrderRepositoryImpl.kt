@@ -15,6 +15,7 @@ import io.github.pitonite.exch_cx.data.room.Order
 import io.github.pitonite.exch_cx.data.room.OrderArchive
 import io.github.pitonite.exch_cx.data.room.OrderCreate
 import io.github.pitonite.exch_cx.data.room.OrderLetterOfGuarantee
+import io.github.pitonite.exch_cx.data.room.OrderToAddress
 import io.github.pitonite.exch_cx.data.room.OrderUpdate
 import io.github.pitonite.exch_cx.data.room.OrderUpdateWithArchive
 import io.github.pitonite.exch_cx.di.ExchHttpClient
@@ -164,6 +165,8 @@ constructor(
             .body()
 
     if (!resp.result) throw FailedToRevalidateToAddressException()
+
+    exchDatabase.ordersDao().setToAddress(OrderToAddress(orderid, newToAddress))
   }
 
   override suspend fun requestRefund(orderid: String) {
