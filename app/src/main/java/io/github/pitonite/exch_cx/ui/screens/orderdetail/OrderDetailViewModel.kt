@@ -112,6 +112,7 @@ constructor(
     viewModelScope.launch {
       try {
         orderRepository.revalidateAddress(orderid, newAddress)
+        refreshOrder()
         submitNewToAddressWorkState = WorkState.NotWorking
       } catch (e: Throwable) {
         submitNewToAddressWorkState = WorkState.Error(e)
