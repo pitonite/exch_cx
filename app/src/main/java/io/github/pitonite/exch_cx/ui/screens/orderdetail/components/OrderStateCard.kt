@@ -2,8 +2,6 @@ package io.github.pitonite.exch_cx.ui.screens.orderdetail.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -19,7 +17,8 @@ import io.github.pitonite.exch_cx.ui.components.Card
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 
 @Composable
-fun OrderStateCard(modifier: Modifier = Modifier,content: @Composable () -> Unit) {
+fun OrderStateCard(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+
   Card(modifier) {
     Column(
         modifier =
@@ -39,7 +38,7 @@ fun OrderStateCard(modifier: Modifier = Modifier,content: @Composable () -> Unit
 fun OrderStateCardPreview() {
   ExchTheme {
     Surface() {
-      Column (Modifier.padding(10.dp)) {
+      Column(Modifier.padding(10.dp)) {
         OrderStateCard {
           Text(
               stringResource(R.string.order_state_title_created, "BTC"),
@@ -49,7 +48,6 @@ fun OrderStateCardPreview() {
           Text("bar")
         }
       }
-
     }
   }
 }

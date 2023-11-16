@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -44,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -68,13 +70,14 @@ import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import io.github.pitonite.exch_cx.ui.navigation.NavArgs
 import io.github.pitonite.exch_cx.ui.screens.home.orders.ExchangePairRow
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.AutomaticOrderUpdateDialog
+import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.OrderStateCard
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderCancelled
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderCreated
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
-import io.github.pitonite.exch_cx.utils.WorkState
 import io.github.pitonite.exch_cx.utils.codified.enums.toLocalizedString
 import io.github.pitonite.exch_cx.utils.createNotificationChannels
 import io.github.pitonite.exch_cx.utils.isWorking
+import io.github.pitonite.exch_cx.utils.noRippleClickable
 import io.github.pitonite.exch_cx.utils.rememberQrBitmapPainter
 import io.github.pitonite.exch_cx.utils.verticalFadingEdge
 import java.math.BigDecimal
@@ -99,6 +102,7 @@ fun OrderDetail(
   val settings by viewModel.userSettings.collectAsStateWithLifecycle()
   val scrollState = rememberScrollState()
   val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+  val focusManager = LocalFocusManager.current
 
   val launcher =
       rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
@@ -132,10 +136,12 @@ fun OrderDetail(
             title = {
               Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(stringResource(R.string.order))
-                Text(
-                    viewModel.orderid.value ?: "",
-                    color = MaterialTheme.colorScheme.primary,
-                    fontSize = 16.sp)
+                SelectionContainer {
+                  Text(
+                      viewModel.orderid.value ?: "",
+                      color = MaterialTheme.colorScheme.primary,
+                      fontSize = 16.sp)
+                }
               }
             },
             navigationIcon = {
@@ -204,7 +210,8 @@ fun OrderDetail(
                 .padding(padding)
                 .verticalFadingEdge(scrollState, dimensionResource(R.dimen.fading_edge))
                 .padding(horizontal = dimensionResource(R.dimen.page_padding))
-                .verticalScroll(scrollState),
+                .verticalScroll(scrollState)
+                .noRippleClickable() { focusManager.clearFocus() },
         ) {
           AutomaticOrderUpdateDialog(show = !settings.hasShownOrderBackgroundUpdateNotice) {
             if (it) {
@@ -234,7 +241,10 @@ fun OrderDetail(
 }
 
 @Composable
-fun OrderColumn(viewModel: OrderDetailViewModel, order: Order, ) {
+fun OrderColumn(
+    viewModel: OrderDetailViewModel,
+    order: Order,
+) {
   Column(verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.page_padding))) {
     ExchangePairRow(fromCurrency = order.fromCurrency, toCurrency = order.toCurrency)
 
@@ -242,9 +252,11 @@ fun OrderColumn(viewModel: OrderDetailViewModel, order: Order, ) {
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_md)),
         horizontalAlignment = Alignment.CenterHorizontally) {
-          Text(
-              "1 ${order.fromCurrency.uppercase()} = ${order.rate} ${order.toCurrency.uppercase()}",
-              color = MaterialTheme.colorScheme.onSurfaceVariant)
+          SelectionContainer {
+            Text(
+                "1 ${order.fromCurrency.uppercase()} = ${order.rate} ${order.toCurrency.uppercase()}",
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
+          }
           Text(
               "${stringResource(R.string.label_mode)} ${order.rateMode.getTranslation()} [${order.svcFee.setScale(1, RoundingMode.HALF_UP)}%]",
               color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -276,9 +288,10 @@ fun OrderColumn(viewModel: OrderDetailViewModel, order: Order, ) {
         // check if address invalid error is present and show revalidate form
         // else, tell user the address is being generated and user should wait
 
-        OrderCreated(order, onSubmitNewToAddress = {
-                   viewModel.submitNewToAddress(it)
-        }, submitWorkState = viewModel.submitNewToAddressWorkState)
+        OrderCreated(
+            order,
+            onSubmitNewToAddress = { viewModel.submitNewToAddress(it) },
+            submitWorkState = viewModel.submitNewToAddressWorkState)
       }
       OrderState.AWAITING_INPUT -> {
         if (order.maxInput.compareTo(BigDecimal.ZERO) == 0) {
@@ -307,12 +320,18 @@ fun OrderColumn(viewModel: OrderDetailViewModel, order: Order, ) {
                       R.string.order_state_title_created, order.fromCurrency.uppercase()),
                   style = MaterialTheme.typography.headlineSmall)
 
-              Text(
-                  stringResource(R.string.label_minimum) +
-                      " ${order.minInput} ${order.fromCurrency.uppercase()}")
-              Text(
-                  stringResource(R.string.label_maximum) +
-                      " ${order.maxInput} ${order.fromCurrency.uppercase()}")
+              SelectionContainer {
+                Text(
+                    stringResource(R.string.label_minimum) +
+                        " ${order.minInput} ${order.fromCurrency.uppercase()}")
+              }
+
+              SelectionContainer {
+                Text(
+                    stringResource(R.string.label_maximum) +
+                        " ${order.maxInput} ${order.fromCurrency.uppercase()}")
+              }
+
               Spacer(Modifier)
 
               Column(
@@ -323,7 +342,8 @@ fun OrderColumn(viewModel: OrderDetailViewModel, order: Order, ) {
                             R.string.label_to_order_address, order.fromCurrency.uppercase()))
 
                     if (order.fromAddr != GENERATING_FROM_ADDRESS) {
-                      CopyableText(order.fromAddr, copyConfirmationMessage = R.string.snack_address_copied)
+                      CopyableText(
+                          order.fromAddr, copyConfirmationMessage = R.string.snack_address_copied)
 
                       if (order.stateError == null &&
                           etheriumBasedCoins.containsMatchIn(order.fromCurrency)) {
@@ -399,20 +419,11 @@ fun OrderColumn(viewModel: OrderDetailViewModel, order: Order, ) {
       }
     }
 
-    Card {
-      Column(
-          modifier =
-              Modifier.padding(horizontal = dimensionResource(R.dimen.padding_lg))
-                  .padding(
-                      vertical = dimensionResource(R.dimen.padding_lg),
-                  ),
-          verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_lg)),
-      ) {
-        Column(verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_sm))) {
-          Text(stringResource(R.string.label_exchanged_amount_to_address))
+    OrderStateCard {
+      Column(verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_sm))) {
+        Text(stringResource(R.string.label_exchanged_amount_to_address))
 
-          CopyableText(order.toAddress, copyConfirmationMessage = R.string.snack_address_copied)
-        }
+        CopyableText(order.toAddress, copyConfirmationMessage = R.string.snack_address_copied)
       }
     }
 
@@ -420,13 +431,12 @@ fun OrderColumn(viewModel: OrderDetailViewModel, order: Order, ) {
   }
 }
 
-fun getMockViewModel()  =OrderDetailViewModel(
-     SavedStateHandle().apply {
-       this[NavArgs.ORDER_ID_KEY] = "ee902b8a5fe0844d41"
-     },
-    OrderRepositoryMock(),
-    UserSettingsRepositoryMock(),
-)
+fun getMockViewModel() =
+    OrderDetailViewModel(
+        SavedStateHandle().apply { this[NavArgs.ORDER_ID_KEY] = "ee902b8a5fe0844d41" },
+        OrderRepositoryMock(),
+        UserSettingsRepositoryMock(),
+    )
 
 @Preview("order - created", widthDp = 360)
 @Composable
@@ -443,7 +453,7 @@ fun OrderColumnCreatedMaxZeroPreview() {
 @Preview("order - created - error address", widthDp = 360)
 @Composable
 fun OrderColumnCreatedErrorAddressPreview() {
-  ExchTheme { Surface { OrderColumn(getMockViewModel() , OrderRepositoryMock.orders[2]) } }
+  ExchTheme { Surface { OrderColumn(getMockViewModel(), OrderRepositoryMock.orders[2]) } }
 }
 
 @Preview("order - cancelled - error address", widthDp = 360)
@@ -458,8 +468,7 @@ fun OrderDetailPreview() {
 
   ExchTheme {
     OrderDetail(
-        viewModel =
-        getMockViewModel(),
+        viewModel = getMockViewModel(),
         upPress = {},
     )
   }
