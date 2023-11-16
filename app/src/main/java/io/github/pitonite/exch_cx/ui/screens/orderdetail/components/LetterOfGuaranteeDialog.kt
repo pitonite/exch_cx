@@ -11,7 +11,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.letterOfGuaranteeExample
 
@@ -34,8 +34,10 @@ fun LetterOfGuaranteeDialog(
   if (show) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        modifier = Modifier.padding(dimensionResource(R.dimen.page_padding)),
     ) {
-      Card() {
+      Card {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -46,7 +48,11 @@ fun LetterOfGuaranteeDialog(
               style = MaterialTheme.typography.titleMedium,
           )
 
-          OutlinedTextField(letterOfGuarantee, {}, readOnly = true)
+          OutlinedTextField(
+              letterOfGuarantee,
+              {},
+              readOnly = true,
+          )
 
           Row(horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_md))) {
             OutlinedButton(onClick = onDismissRequest) {
@@ -66,7 +72,5 @@ fun LetterOfGuaranteeDialog(
 @Composable
 fun LetterOfGuaranteeDialogPreview() {
   LetterOfGuaranteeDialog(
-      show = true,
-      onDismissRequest = {},
-      letterOfGuarantee = letterOfGuaranteeExample)
+      show = true, onDismissRequest = {}, letterOfGuarantee = letterOfGuaranteeExample)
 }
