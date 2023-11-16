@@ -1,6 +1,5 @@
 package io.github.pitonite.exch_cx.data
 
-import android.content.Context
 import androidx.compose.runtime.Stable
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -8,7 +7,6 @@ import androidx.paging.PagingData
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.github.pitonite.exch_cx.ExchWorkManager
 import io.github.pitonite.exch_cx.data.mappers.toOrderUpdateEntity
@@ -47,7 +45,6 @@ constructor(
     private val exchHttpClient: ExchHttpClient,
     private val userSettingsRepository: UserSettingsRepository,
     private val exchWorkManager: ExchWorkManager,
-    @ApplicationContext private val context: Context,
 ) : OrderRepository {
   override fun getOrder(orderId: String): Flow<Order?> {
     return exchDatabase.ordersDao().orderWithId(orderId)
@@ -158,10 +155,12 @@ constructor(
   override suspend fun revalidateAddress(orderid: String, newToAddress: String) {
     val resp: BooleanResult =
         exchHttpClient
-            .get("/api/order/revalidate_address") { url {
-              parameters.append("orderid", orderid)
-              parameters.append("to_address", newToAddress)
-            } }
+            .get("/api/order/revalidate_address") {
+              url {
+                parameters.append("orderid", orderid)
+                parameters.append("to_address", newToAddress)
+              }
+            }
             .body()
 
     if (!resp.result) throw FailedToRevalidateToAddressException()
@@ -170,9 +169,7 @@ constructor(
   override suspend fun requestRefund(orderid: String) {
     val resp: BooleanResult =
         exchHttpClient
-            .get("/api/order/refund") { url {
-              parameters.append("orderid", orderid)
-            } }
+            .get("/api/order/refund") { url { parameters.append("orderid", orderid) } }
             .body()
 
     if (!resp.result) throw FailedToRequestRefundException()
@@ -181,10 +178,12 @@ constructor(
   override suspend fun requestRefundConfirm(orderid: String, refundAddress: String) {
     val resp: BooleanResult =
         exchHttpClient
-            .get("/api/order/refund_confirm") { url {
-              parameters.append("orderid", orderid)
-              parameters.append("refund_address", refundAddress)
-            } }
+            .get("/api/order/refund_confirm") {
+              url {
+                parameters.append("orderid", orderid)
+                parameters.append("refund_address", refundAddress)
+              }
+            }
             .body()
 
     if (!resp.result) throw FailedToConfirmRefundRequestException()
@@ -193,14 +192,14 @@ constructor(
   override suspend fun fetchAndUpdateLetterOfGuarantee(orderid: String) {
     val resp: String =
         exchHttpClient
-            .get("/api/order/fetch_guarantee") { url {
-              parameters.append("orderid", orderid)
-            } }
+            .get("/api/order/fetch_guarantee") { url { parameters.append("orderid", orderid) } }
             .body()
 
     if (resp.isNullOrEmpty()) throw FailedToFetchLetterOfGuaranteeException()
 
-    exchDatabase.ordersDao().setLetterOfGuarantee(OrderLetterOfGuarantee(id = orderid, letterOfGuarantee = resp))
+    exchDatabase
+        .ordersDao()
+        .setLetterOfGuarantee(OrderLetterOfGuarantee(id = orderid, letterOfGuarantee = resp))
   }
 
   override suspend fun deleteRemote(orderid: String) {
