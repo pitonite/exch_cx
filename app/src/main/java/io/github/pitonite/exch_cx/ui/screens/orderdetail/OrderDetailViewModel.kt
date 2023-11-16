@@ -79,7 +79,7 @@ constructor(
   var refreshWorkState by mutableStateOf<WorkState>(WorkState.NotWorking)
     private set
 
-  var submitNewToAddressWorkState: WorkState = WorkState.NotWorking
+  var submitNewToAddressWorkState by mutableStateOf<WorkState>(WorkState.NotWorking)
     private set
 
   fun refreshOrder() {
