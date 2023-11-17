@@ -4,15 +4,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,7 +23,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -128,7 +122,7 @@ fun OrderSupport(
                 Text(stringResource(R.string.support_chat))
                 SelectionContainer {
                   Text(
-                      viewModel.orderid.value ?: "",
+                      orderid,
                       color = MaterialTheme.colorScheme.primary,
                       fontSize = 16.sp,
                   )
@@ -145,7 +139,7 @@ fun OrderSupport(
               }
             },
             actions = {
-              if (orderid != null) {
+              if (orderid.isNotEmpty()) {
                 RefreshButton(
                     onClick = { viewModel.refreshMessages() },
                     enabled = !viewModel.refreshWorkState.isWorking(),
@@ -155,22 +149,17 @@ fun OrderSupport(
             },
         )
       },
-      // Exclude ime and navigation bar padding so this can be added by the UserInput composable
-      contentWindowInsets = ScaffoldDefaults
-          .contentWindowInsets
-          .exclude(WindowInsets.navigationBars)
-          .exclude(WindowInsets.ime),
   ) { padding ->
     Column(
-        modifier
+        modifier.fillMaxSize()
             .padding(padding)
             .noRippleClickable { focusManager.clearFocus() },
     ) {
       Messages(
-          messages, scrollState,
+          messages = messages,
+          scrollState = scrollState,
           modifier = Modifier
-              .fillMaxWidth()
-              .weight(1f, true),
+              .weight(1f, true).fillMaxWidth(),
       )
       UserInput(
           value = viewModel.messageDraft,
@@ -183,11 +172,6 @@ fun OrderSupport(
             }
           },
           sendingMessage = viewModel.sendingWorkState.isWorking(),
-          // let this element handle the padding so that the elevation is shown behind the
-          // navigation bar
-          modifier = Modifier
-              .navigationBarsPadding()
-              .imePadding(),
       )
     }
   }
@@ -309,7 +293,7 @@ private fun Messages(
     // Jump to bottom button shows up when user scrolls past a threshold.
     // Convert to pixels:
     val jumpThreshold = with(LocalDensity.current) {
-      JumpToBottomThreshold.toPx()
+      jumpToBottomThreshold.toPx()
     }
 
     // Show the button if the first visible item is not the first one or if the offset is
@@ -352,4 +336,4 @@ fun OrderSupportPreview() {
   }
 }
 
-private val JumpToBottomThreshold = 56.dp
+private val jumpToBottomThreshold = 56.dp
