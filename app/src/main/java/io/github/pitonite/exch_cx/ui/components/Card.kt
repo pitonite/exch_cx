@@ -23,7 +23,8 @@ fun Card(
   Surface(
       color =
           if (isError) errorColor
-          else MaterialTheme.colorScheme.surfaceContainerHigh,
+          else MaterialTheme.colorScheme.surfaceVariant,
+
       shape = CardDefaults.shape,
       modifier = modifier.fillMaxWidth(),
       content = content)
@@ -40,7 +41,7 @@ fun Card(
   Surface(
       color =
           if (isError) errorColor
-          else MaterialTheme.colorScheme.surfaceContainerHigh,
+          else MaterialTheme.colorScheme.surfaceVariant,
       shape = CardDefaults.shape,
       modifier = modifier.fillMaxWidth(),
       onClick = onClick,
