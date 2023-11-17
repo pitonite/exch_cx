@@ -10,4 +10,6 @@
   <dimen name="padding_xl">20dp</dimen>
 
   <dimen name="rounded_sm">6dp</dimen>
+  <dimen name="rounded_md">8dp</dimen>
+  <dimen name="rounded_lg">10dp</dimen>
 </resources>

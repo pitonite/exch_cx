@@ -225,7 +225,7 @@ fun Exchange(
                       count = 2,
                       baseShape =
                       RoundedCornerShape(
-                          dimensionResource(R.dimen.rounded_sm),
+                          dimensionResource(R.dimen.rounded_md),
                       ),
                   ),
                   enabled = usable,
@@ -244,7 +244,7 @@ fun Exchange(
                       index = 1,
                       count = 2,
                       baseShape =
-                      RoundedCornerShape(dimensionResource(R.dimen.rounded_sm)),
+                      RoundedCornerShape(dimensionResource(R.dimen.rounded_md)),
                   ),
                   enabled = usable,
               )
@@ -296,7 +296,7 @@ fun Exchange(
                         count = keys.size,
                         baseShape =
                         RoundedCornerShape(
-                            dimensionResource(R.dimen.rounded_sm),
+                            dimensionResource(R.dimen.rounded_md),
                         ),
                     ),
                     enabled = usable,
