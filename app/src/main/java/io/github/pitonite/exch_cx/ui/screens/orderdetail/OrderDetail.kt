@@ -285,10 +285,11 @@ fun OrderColumn(
       Card(isError = true) {
         Column(
             modifier =
-                Modifier.padding(horizontal = dimensionResource(R.dimen.padding_lg))
-                    .padding(
-                        vertical = dimensionResource(R.dimen.padding_xl),
-                    ),
+            Modifier
+                .padding(horizontal = dimensionResource(R.dimen.padding_lg))
+                .padding(
+                    vertical = dimensionResource(R.dimen.padding_xl),
+                ),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_sm)),
         ) {
@@ -379,10 +380,12 @@ fun OrderColumn(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.page_padding)),
         modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.padding_lg)),
     ) {
-      Text(
-          stringResource(
-              R.string.order_created_at, DateFormat.format("MMM dd, yyyy HH:mm", order.createdAt)),
-          color = MaterialTheme.colorScheme.onSurfaceVariant)
+      SelectionContainer {
+        Text(
+            stringResource(
+                R.string.order_created_at, DateFormat.format("MMM dd, yyyy HH:mm", order.createdAt)),
+            color = MaterialTheme.colorScheme.onSurfaceVariant)
+      }
 
       var getSupportText = buildAnnotatedString {
         pushStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant))
