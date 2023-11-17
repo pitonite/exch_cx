@@ -51,6 +51,7 @@ import io.github.pitonite.exch_cx.ExchWorkManager
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock
 import io.github.pitonite.exch_cx.data.UserSettingsRepositoryMock
+import io.github.pitonite.exch_cx.exceptions.toUserMessage
 import io.github.pitonite.exch_cx.model.SnackbarMessage
 import io.github.pitonite.exch_cx.model.UserMessage
 import io.github.pitonite.exch_cx.ui.components.Card
@@ -65,9 +66,9 @@ import io.github.pitonite.exch_cx.utils.verticalFadingEdge
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Orders(
-    viewModel: OrdersViewModel,
-    onOrderSelected: (String) -> Unit,
-    modifier: Modifier = Modifier
+  viewModel: OrdersViewModel,
+  onOrderSelected: (String) -> Unit,
+  modifier: Modifier = Modifier
 ) {
   val orderPagingItems = viewModel.orderPagingDataFlow.collectAsLazyPagingItems()
   val autoUpdateWorkState by viewModel.autoUpdateWorkState.collectAsStateWithLifecycle()
@@ -76,12 +77,9 @@ fun Orders(
 
   LaunchedEffect(key1 = orderPagingItems.loadState.refresh) {
     if (orderPagingItems.loadState.refresh is LoadState.Error) {
-      val errorMsg = (orderPagingItems.loadState.refresh as LoadState.Error).error.localizedMessage
       SnackbarManager.showMessage(
           SnackbarMessage.from(
-              message =
-                  if (errorMsg.isNullOrEmpty()) UserMessage.from(R.string.unknown_error)
-                  else UserMessage.from(errorMsg),
+              message = (orderPagingItems.loadState.refresh as LoadState.Error).error.toUserMessage(),
           ),
       )
     }
@@ -94,8 +92,9 @@ fun Orders(
         CenterAlignedTopAppBar(
             scrollBehavior = scrollBehavior,
             colors =
-                TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    scrolledContainerColor = MaterialTheme.colorScheme.inverseOnSurface),
+            TopAppBarDefaults.centerAlignedTopAppBarColors(
+                scrolledContainerColor = MaterialTheme.colorScheme.inverseOnSurface,
+            ),
             title = { Text(stringResource(R.string.orders)) },
             actions = {
               if (autoUpdateWorkState == WorkState.NotWorking) {
@@ -128,10 +127,10 @@ fun Orders(
     )
     Box(
         modifier =
-            modifier
-                .padding(padding)
-                .padding(horizontal = dimensionResource(R.dimen.page_padding))
-                .fillMaxSize(),
+        modifier
+            .padding(padding)
+            .padding(horizontal = dimensionResource(R.dimen.page_padding))
+            .fillMaxSize(),
     ) {
       if (autoUpdateWorkState.isWorking()) {
         Card {
@@ -159,95 +158,102 @@ fun Orders(
           }
         }
       } else
-          when (orderPagingItems.loadState.refresh) {
-            is LoadState.Loading ->
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center).size(50.dp))
-            is LoadState.Error ->
+        when (orderPagingItems.loadState.refresh) {
+          is LoadState.Loading ->
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center).size(50.dp))
+
+          is LoadState.Error ->
+            Card {
+              Column(Modifier.padding(vertical = 70.dp, horizontal = 20.dp)) {
+                Text(stringResource(R.string.unknown_error))
+              }
+            }
+
+          else -> {
+            if (orderPagingItems.itemCount == 0) {
+              Column {
                 Card {
-                  Column(Modifier.padding(vertical = 70.dp, horizontal = 20.dp)) {
-                    Text(stringResource(R.string.unknown_error))
-                  }
-                }
-            else -> {
-              if (orderPagingItems.itemCount == 0) {
-                Column {
-                  Card {
-                    Column(
-                        Modifier.padding(
-                            horizontal = dimensionResource(R.dimen.padding_md),
-                            vertical = 70.dp,
+                  Column(
+                      Modifier.padding(
+                          horizontal = dimensionResource(R.dimen.padding_md),
+                          vertical = 70.dp,
+                      ),
+                      horizontalAlignment = Alignment.CenterHorizontally,
+                  ) {
+                    Text(
+                        stringResource(R.string.notice_empty_orders),
+                        fontSize = 22.sp,
+                        textAlign = TextAlign.Center,
+                    )
+                    Spacer(Modifier.height(50.dp))
+                    val importHintText = buildAnnotatedString {
+                      append(stringResource(R.string.hint_import_order))
+                      append(" (")
+                      // Append a placeholder string "[icon]" and attach an annotation
+                      // "inlineContent"
+                      // on it.
+                      appendInlineContent("icon", "([import icon])")
+                      append(")")
+                    }
+                    Text(
+                        text = importHintText,
+                        fontSize = 22.sp,
+                        textAlign = TextAlign.Center,
+                        inlineContent =
+                        mapOf(
+                            Pair(
+                                "icon",
+                                InlineTextContent(
+                                    Placeholder(
+                                        width = 22.sp,
+                                        height = 22.sp,
+                                        placeholderVerticalAlign =
+                                        PlaceholderVerticalAlign.Center,
+                                    ),
+                                ) {
+                                  Icon(
+                                      Icons.Default.PostAdd,
+                                      contentDescription =
+                                      stringResource(R.string.label_import_order),
+                                  )
+                                },
+                            ),
                         ),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                      Text(
-                          stringResource(R.string.notice_empty_orders),
-                          fontSize = 22.sp,
-                          textAlign = TextAlign.Center,
-                      )
-                      Spacer(Modifier.height(50.dp))
-                      val importHintText = buildAnnotatedString {
-                        append(stringResource(R.string.hint_import_order))
-                        append(" (")
-                        // Append a placeholder string "[icon]" and attach an annotation
-                        // "inlineContent"
-                        // on it.
-                        appendInlineContent("icon", "([import icon])")
-                        append(")")
-                      }
-                      Text(
-                          text = importHintText,
-                          fontSize = 22.sp,
-                          textAlign = TextAlign.Center,
-                          inlineContent =
-                              mapOf(
-                                  Pair(
-                                      "icon",
-                                      InlineTextContent(
-                                          Placeholder(
-                                              width = 22.sp,
-                                              height = 22.sp,
-                                              placeholderVerticalAlign =
-                                                  PlaceholderVerticalAlign.Center)) {
-                                            Icon(
-                                                Icons.Default.PostAdd,
-                                                contentDescription =
-                                                    stringResource(R.string.label_import_order))
-                                          })),
-                      )
-                    }
+                    )
                   }
                 }
-              } else {
-                LazyColumn(
-                    state = listState,
-                    modifier =
-                        Modifier.fillMaxSize()
-                            .verticalFadingEdge(listState, dimensionResource(R.dimen.fading_edge)),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement =
-                        Arrangement.spacedBy(dimensionResource(R.dimen.page_padding)),
-                ) {
-                  items(
-                      count = orderPagingItems.itemCount,
-                      key = orderPagingItems.itemKey { it.id },
-                  ) { index ->
-                    val order = orderPagingItems[index]
-                    if (order != null) {
-                      OrderItem(
-                          order,
-                          onClick = { onOrderSelected(order.id) },
-                      )
-                    }
+              }
+            } else {
+              LazyColumn(
+                  state = listState,
+                  modifier =
+                  Modifier.fillMaxSize()
+                      .verticalFadingEdge(listState, dimensionResource(R.dimen.fading_edge)),
+                  horizontalAlignment = Alignment.CenterHorizontally,
+                  verticalArrangement =
+                  Arrangement.spacedBy(dimensionResource(R.dimen.page_padding)),
+              ) {
+                items(
+                    count = orderPagingItems.itemCount,
+                    key = orderPagingItems.itemKey { it.id },
+                ) { index ->
+                  val order = orderPagingItems[index]
+                  if (order != null) {
+                    OrderItem(
+                        order,
+                        onClick = { onOrderSelected(order.id) },
+                    )
                   }
-                  item {
-                    if (orderPagingItems.loadState.append == LoadState.Loading) {
-                      CircularProgressIndicator(modifier = Modifier.padding(16.dp))
-                    }
+                }
+                item {
+                  if (orderPagingItems.loadState.append == LoadState.Loading) {
+                    CircularProgressIndicator(modifier = Modifier.padding(16.dp))
                   }
                 }
               }
             }
           }
+        }
     }
   }
 }
@@ -258,12 +264,12 @@ fun OrdersPreview() {
   ExchTheme {
     Orders(
         viewModel =
-            OrdersViewModel(
-                SavedStateHandle(),
-                OrderRepositoryMock(),
-                UserSettingsRepositoryMock(),
-                ExchWorkManager(LocalContext.current),
-            ),
+        OrdersViewModel(
+            SavedStateHandle(),
+            OrderRepositoryMock(),
+            UserSettingsRepositoryMock(),
+            ExchWorkManager(LocalContext.current),
+        ),
         onOrderSelected = {},
     )
   }

@@ -29,6 +29,8 @@ import io.github.pitonite.exch_cx.ui.screens.home.orders.Orders
 import io.github.pitonite.exch_cx.ui.screens.home.orders.OrdersViewModel
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.OrderDetail
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.OrderDetailViewModel
+import io.github.pitonite.exch_cx.ui.screens.ordersupport.OrderSupport
+import io.github.pitonite.exch_cx.ui.screens.ordersupport.OrderSupportViewModel
 import io.github.pitonite.exch_cx.ui.screens.settings.Settings
 import io.github.pitonite.exch_cx.ui.screens.settings.SettingsViewModel
 import io.github.pitonite.exch_cx.utils.enumByNameIgnoreCase
@@ -53,6 +55,7 @@ enum class ExchangeSections(@StringRes val title: Int, val route: String) {
 
 object SecondaryDestinations {
   const val ORDER_DETAIL_ROUTE = "order"
+  const val ORDER_SUPPORT_ROUTE = "order_support"
   const val SETTINGS_ROUTE = "settings"
 }
 
@@ -74,7 +77,8 @@ fun NavGraphBuilder.exchNavGraph(
       modifier)
   addOrders(exchNavController::navigateToOrderDetail, modifier)
   addHistory(exchNavController::navigateToOrderDetail, modifier)
-  addOrderDetail(exchNavController::upPress, modifier)
+  addOrderDetail(exchNavController::upPress, exchNavController::navigateToOrderSupport, modifier)
+  addOrderSupport(exchNavController::upPress, modifier)
   addSettings(exchNavController::upPress, modifier)
 }
 
@@ -156,8 +160,9 @@ private fun NavGraphBuilder.addHistory(
 }
 
 private fun NavGraphBuilder.addOrderDetail(
-    upPress: () -> Unit,
-    modifier: Modifier = Modifier,
+  upPress: () -> Unit,
+  navigateToOrderSupport: (String, NavBackStackEntry) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   composable(
       "${SecondaryDestinations.ORDER_DETAIL_ROUTE}/{${NavArgs.ORDER_ID_KEY}}",
@@ -177,6 +182,7 @@ private fun NavGraphBuilder.addOrderDetail(
           OrderDetail(
               viewModel = viewModel,
               upPress = upPress,
+              navigateToOrderSupport = { navigateToOrderSupport(it, backStackEntry)},
               modifier = modifier,
           )
         }
@@ -195,4 +201,37 @@ private fun NavGraphBuilder.addSettings(
     val viewModel = hiltViewModel<SettingsViewModel>()
     Settings(viewModel, upPress, modifier)
   }
+}
+
+
+private fun NavGraphBuilder.addOrderSupport(
+  upPress: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  composable(
+      "${SecondaryDestinations.ORDER_SUPPORT_ROUTE}/{${NavArgs.ORDER_ID_KEY}}",
+      deepLinks =
+      listOf(
+          navDeepLink {
+            uriPattern =
+                "$EXCH_APP_SCHEME://${SecondaryDestinations.ORDER_SUPPORT_ROUTE}/{${NavArgs.ORDER_ID_KEY}}"
+          }),
+      arguments = listOf(navArgument(NavArgs.ORDER_ID_KEY) { type = NavType.StringType })) {
+    backStackEntry ->
+    val orderid = backStackEntry.arguments?.getString(NavArgs.ORDER_ID_KEY)
+    if (orderid.isNullOrEmpty()) {
+      upPress()
+    } else {
+      val viewModel = hiltViewModel<OrderSupportViewModel>()
+      OrderSupport(
+          viewModel = viewModel,
+          upPress = upPress,
+          modifier = modifier,
+      )
+    }
+  }
+}
+
+fun getOrderSupportUri(orderid: String): Uri {
+  return "$EXCH_APP_SCHEME://${SecondaryDestinations.ORDER_SUPPORT_ROUTE}/${orderid}".toUri()
 }

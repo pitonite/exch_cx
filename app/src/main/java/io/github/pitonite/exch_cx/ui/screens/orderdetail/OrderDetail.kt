@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavBackStackEntry
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock
 import io.github.pitonite.exch_cx.data.UserSettingsRepositoryMock
@@ -93,9 +94,10 @@ val etheriumBasedCoins = "eth|dai|usdt|usdc".toRegex(RegexOption.IGNORE_CASE)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderDetail(
-    viewModel: OrderDetailViewModel,
-    upPress: () -> Unit,
-    modifier: Modifier = Modifier
+  viewModel: OrderDetailViewModel,
+  upPress: () -> Unit,
+  modifier: Modifier = Modifier,
+  navigateToOrderSupport: (String) -> Unit
 ) {
   val context = LocalContext.current
   val uriHandler = LocalUriHandler.current
@@ -214,7 +216,10 @@ fun OrderDetail(
                       },
                       text = { Text(stringResource(R.string.support_chat)) },
                       onClick = {
-                        // TODO: Open support chat
+                        val orderid = viewModel.orderid.value
+                        if (!orderid.isNullOrBlank()) {
+                          navigateToOrderSupport(orderid)
+                        }
                       },
                   )
                 }
@@ -239,7 +244,7 @@ fun OrderDetail(
             viewModel.onAutomaticDialogResult(it)
           }
           if (order != null) {
-            OrderColumn(viewModel, order!!)
+            OrderColumn(viewModel, order!!, navigateToOrderSupport)
           } else {
             Card {
               Column(
@@ -261,6 +266,7 @@ fun OrderDetail(
 fun OrderColumn(
     viewModel: OrderDetailViewModel,
     order: Order,
+    navigateToOrderSupport: (String) -> Unit,
 ) {
   Column(verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.page_padding))) {
     ExchangePairRow(fromCurrency = order.fromCurrency, toCurrency = order.toCurrency)
@@ -401,7 +407,7 @@ fun OrderColumn(
           style = LocalTextStyle.current,
       ) {
         getSupportText.getStringAnnotations(it, it).firstOrNull()?.tag?.let {
-          // TODO: Open support chat
+          navigateToOrderSupport(order.id)
         }
       }
 
@@ -439,25 +445,25 @@ fun getMockViewModel() =
 @Preview("order - created", widthDp = 360)
 @Composable
 fun OrderColumnCreatedPreview() {
-  ExchTheme { Surface { OrderColumn(getMockViewModel(), OrderRepositoryMock.orders[0]) } }
+  ExchTheme { Surface { OrderColumn(getMockViewModel(), OrderRepositoryMock.orders[0], {}) } }
 }
 
 @Preview("order - created - max zero", widthDp = 360)
 @Composable
 fun OrderColumnCreatedMaxZeroPreview() {
-  ExchTheme { Surface { OrderColumn(getMockViewModel(), OrderRepositoryMock.orders[1]) } }
+  ExchTheme { Surface { OrderColumn(getMockViewModel(), OrderRepositoryMock.orders[1], {}) } }
 }
 
 @Preview("order - created - error address", widthDp = 360)
 @Composable
 fun OrderColumnCreatedErrorAddressPreview() {
-  ExchTheme { Surface { OrderColumn(getMockViewModel(), OrderRepositoryMock.orders[2]) } }
+  ExchTheme { Surface { OrderColumn(getMockViewModel(), OrderRepositoryMock.orders[2], {}) } }
 }
 
 @Preview("order - cancelled - error address", widthDp = 360)
 @Composable
 fun OrderColumnCancelledPreview() {
-  ExchTheme { Surface { OrderColumn(getMockViewModel(), OrderRepositoryMock.orders[3]) } }
+  ExchTheme { Surface { OrderColumn(getMockViewModel(), OrderRepositoryMock.orders[3], {}) } }
 }
 
 @Preview("default")
@@ -468,6 +474,7 @@ fun OrderDetailPreview() {
     OrderDetail(
         viewModel = getMockViewModel(),
         upPress = {},
+        navigateToOrderSupport = { },
     )
   }
 }

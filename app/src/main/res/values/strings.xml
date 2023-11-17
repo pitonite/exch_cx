@@ -149,4 +149,11 @@
   <string name="aggregated">Aggregated</string>
   <string name="mixed">Mixed</string>
   <string name="any">Any</string>
+  <string name="send">Send</string>
+  <string name="textfield_hint_support_message">Write a message…</string>
+  <string name="textfield_desc">Text input</string>
+  <string name="jump_to_bottom">Jump To Bottom</string>
+  <string name="notice_empty_support_chat">Start chat by sending a message</string>
+  <string name="accessibility_label_message_has_been_read">Message has been read by support</string>
+  <string name="accessibility_label_message_has_been_sent">Message has been sent</string>
 </resources>

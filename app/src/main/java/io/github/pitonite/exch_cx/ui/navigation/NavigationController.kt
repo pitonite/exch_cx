@@ -59,6 +59,14 @@ class ExchNavController(
       )
     }
   }
+
+  fun navigateToOrderSupport(orderid: String, from: NavBackStackEntry) {
+    if (from.lifecycleIsResumed()) {
+      this.navigateTo(
+          "${SecondaryDestinations.ORDER_SUPPORT_ROUTE}/$orderid",
+      )
+    }
+  }
 }
 
 /**

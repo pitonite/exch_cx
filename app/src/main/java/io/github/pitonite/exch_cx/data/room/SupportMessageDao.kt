@@ -14,7 +14,7 @@ import java.util.Date
 abstract class SupportMessageDao : BaseDao<Order> {
 
   @Transaction
-  @Query("SELECT * FROM `SupportMessage` WHERE orderid = :orderid ORDER BY `index` ASC")
+  @Query("SELECT * FROM `SupportMessage` WHERE orderid = :orderid ORDER BY `index` DESC")
   abstract fun supportMessagesSortedByIndexPagingSource(
     orderid: String,
   ): PagingSource<Int, SupportMessage>
