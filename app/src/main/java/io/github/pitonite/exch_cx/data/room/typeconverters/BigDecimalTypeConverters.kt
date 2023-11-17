@@ -13,6 +13,6 @@ object BigDecimalTypeConverters {
   @TypeConverter
   @JvmStatic
   fun stringToBigDecimal(value: String?): BigDecimal? {
-    return value?.toBigDecimalOrNull() ?: BigDecimal.ZERO
+    return value?.toBigDecimalOrNull()
   }
 }
