@@ -9,9 +9,11 @@ import io.github.pitonite.exch_cx.model.api.AggregationOption
 import io.github.pitonite.exch_cx.model.api.NetworkFeeOption
 import io.github.pitonite.exch_cx.model.api.OrderState
 import io.github.pitonite.exch_cx.model.api.OrderStateError
+import io.github.pitonite.exch_cx.model.api.OrderWalletPool
 import io.github.pitonite.exch_cx.model.api.RateFeeMode
 import io.github.pitonite.exch_cx.utils.codified.enums.CodifiedEnum
 import io.github.pitonite.exch_cx.utils.codified.enums.codifiedEnum
+import kotlinx.serialization.SerialName
 import java.math.BigDecimal
 import java.util.Date
 
@@ -32,7 +34,9 @@ data class Order(
     val fromAddr: String = GENERATING_FROM_ADDRESS,
     val fromCurrency: String,
     @ColumnInfo(defaultValue = "null") val fromAmountReceived: BigDecimal? = null,
+    /** Minimum amount of from_currency to deposit */
     val maxInput: BigDecimal,
+    /** Maximum amount of from_currency to deposit */
     val minInput: BigDecimal,
     @ColumnInfo(defaultValue = "null") val networkFee: BigDecimal? = null,
     val rate: BigDecimal,
@@ -41,11 +45,17 @@ data class Order(
     @ColumnInfo(defaultValue = "null")
     val stateError: CodifiedEnum<OrderStateError, String>? = null,
     val svcFee: BigDecimal,
+    /** Amount of to_currency to be sent (null when no amount received yet) */
     @ColumnInfo(defaultValue = "null") val toAmount: BigDecimal? = null,
     val toAddress: String,
     val toCurrency: String,
     @ColumnInfo(defaultValue = "null") val transactionIdReceived: String? = null,
     @ColumnInfo(defaultValue = "null") val transactionIdSent: String? = null,
+    // newly added
+    @ColumnInfo(defaultValue = "0") val refundAvailable: Boolean = false,
+    /** Private key in case an ETH token is refunded in the REFUNDED state (when from_currency is one of USDC, DAI, USDT) */
+    @ColumnInfo(defaultValue = "null") val refundPrivateKey: String? = null,
+    @ColumnInfo(defaultValue = "null") val walletPool: CodifiedEnum<OrderWalletPool, String>? = null,
     //
     // custom added data:
     //
@@ -61,25 +71,28 @@ data class Order(
 // to not touch archive when updating order
 @Stable
 data class OrderUpdate(
-    val id: String,
-    val createdAt: Date = Date(),
-    val modifiedAt: Date = Date(),
-    val fromAddr: String = "_GENERATING_",
-    val fromCurrency: String,
-    val fromAmountReceived: BigDecimal? = null,
-    val maxInput: BigDecimal,
-    val minInput: BigDecimal,
-    val networkFee: BigDecimal? = null,
-    val rate: BigDecimal,
-    val rateMode: RateFeeMode,
-    val state: CodifiedEnum<OrderState, String>,
-    val stateError: CodifiedEnum<OrderStateError, String>? = null,
-    val svcFee: BigDecimal,
-    val toAmount: BigDecimal? = null,
-    val toAddress: String,
-    val toCurrency: String,
-    val transactionIdReceived: String? = null,
-    val transactionIdSent: String? = null,
+  val id: String,
+  val createdAt: Date = Date(),
+  val modifiedAt: Date = Date(),
+  val fromAddr: String = "_GENERATING_",
+  val fromCurrency: String,
+  val fromAmountReceived: BigDecimal? = null,
+  val maxInput: BigDecimal,
+  val minInput: BigDecimal,
+  val networkFee: BigDecimal? = null,
+  val rate: BigDecimal,
+  val rateMode: RateFeeMode,
+  val state: CodifiedEnum<OrderState, String>,
+  val stateError: CodifiedEnum<OrderStateError, String>? = null,
+  val svcFee: BigDecimal,
+  val toAmount: BigDecimal? = null,
+  val toAddress: String,
+  val toCurrency: String,
+  val transactionIdReceived: String? = null,
+  val transactionIdSent: String? = null,
+  val walletPool: CodifiedEnum<OrderWalletPool, String>? = null,
+  val refundAvailable: Boolean = false,
+  val refundPrivateKey: String? = null,
 )
 
 @Stable
@@ -104,6 +117,9 @@ data class OrderUpdateWithArchive(
     val toCurrency: String,
     val transactionIdReceived: String? = null,
     val transactionIdSent: String? = null,
+    val walletPool: CodifiedEnum<OrderWalletPool, String>? = null,
+    val refundAvailable: Boolean = false,
+    val refundPrivateKey: String? = null,
 )
 
 /** for use when an order is initially created by sending a request to api */

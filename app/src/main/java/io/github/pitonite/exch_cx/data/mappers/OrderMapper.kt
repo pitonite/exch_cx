@@ -26,6 +26,9 @@ fun Order.toOrderUpdateEntity() =
         toCurrency = this.toCurrency,
         transactionIdReceived = this.transactionIdReceived,
         transactionIdSent = this.transactionIdSent,
+        walletPool = this.walletPool,
+        refundAvailable = this.refundAvailable,
+        refundPrivateKey = this.refundPrivateKey,
     )
 
 fun OrderResponse.toOrderUpdateEntity() =
@@ -48,6 +51,9 @@ fun OrderResponse.toOrderUpdateEntity() =
         toCurrency = this.toCurrency,
         transactionIdReceived = this.transactionIdReceived,
         transactionIdSent = this.transactionIdSent,
+        walletPool = this.walletPool,
+        refundAvailable = this.refundAvailable,
+        refundPrivateKey = this.refundPrivateKey,
     )
 
 fun OrderUpdate.toOrderUpdateWithArchiveEntity(archived: Boolean) =
@@ -71,4 +77,7 @@ fun OrderUpdate.toOrderUpdateWithArchiveEntity(archived: Boolean) =
         toCurrency = this.toCurrency,
         transactionIdReceived = this.transactionIdReceived,
         transactionIdSent = this.transactionIdSent,
+        walletPool = this.walletPool,
+        refundAvailable = this.refundAvailable,
+        refundPrivateKey = this.refundPrivateKey,
     )

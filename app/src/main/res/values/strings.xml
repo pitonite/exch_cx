@@ -89,7 +89,7 @@
   <string name="error_order_cancelled">Order expired</string>
   <string name="notice">Notice</string>
   <string name="label_mode">Mode:</string>
-  <string name="label_exchanged_to_address">To your %1$S address:</string>
+  <string name="label_exchanged_to_address">Your %1$S address:</string>
   <string name="label_copy_address">Copy address</string>
   <string name="snack_address_copied">Address Copied!</string>
   <string name="notice_etherium_based_coins">Send funds only on Ethereum Mainnet or they will be lost</string>
@@ -146,4 +146,7 @@
   <string name="close">Close</string>
   <string name="title_letter_of_guarantee">Letter of Guarantee</string>
   <string name="show_letter_of_guarantee">Show Letter of Guarantee</string>
+  <string name="aggregated">Aggregated</string>
+  <string name="mixed">Mixed</string>
+  <string name="any">Any</string>
 </resources>

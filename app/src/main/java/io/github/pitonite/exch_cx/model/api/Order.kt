@@ -7,10 +7,10 @@ import io.github.pitonite.exch_cx.utils.BigDecimalSerializer
 import io.github.pitonite.exch_cx.utils.codified.Codified
 import io.github.pitonite.exch_cx.utils.codified.enums.CodifiedEnum
 import io.github.pitonite.exch_cx.utils.codified.serializer.codifiedEnumSerializer
+import java.math.BigDecimal
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.math.BigDecimal
 
 @Stable
 enum class OrderState(override val code: String, override val translation: Int? = null) :
@@ -45,6 +45,18 @@ enum class OrderStateError(override val code: String, override val translation: 
 
   object CodifiedSerializer :
       KSerializer<CodifiedEnum<OrderStateError, String>> by codifiedEnumSerializer()
+}
+
+@Stable
+enum class OrderWalletPool(override val code: String, override val translation: Int? = null) :
+    Codified<String>, Translatable {
+  AGGREGATED("AGGREGATED", R.string.aggregated),
+  MIXED("MIXED", R.string.mixed),
+  ANY("ANY", R.string.any),
+  ;
+
+  object CodifiedSerializer :
+      KSerializer<CodifiedEnum<OrderWalletPool, String>> by codifiedEnumSerializer()
 }
 
 @Serializable
@@ -118,5 +130,10 @@ data class OrderResponse(
     /** Transaction ID for from_currency received (null when no amount received yet) */
     @SerialName("transaction_id_received") val transactionIdReceived: String? = null,
     /** Transaction ID for to_currency sent (null when exchange not finished yet) */
-    @SerialName("transaction_id_sent") val transactionIdSent: String? = null
+    @SerialName("transaction_id_sent") val transactionIdSent: String? = null,
+    @Serializable(with = OrderWalletPool.CodifiedSerializer::class)
+    @SerialName("wallet_pool")
+    val walletPool: CodifiedEnum<OrderWalletPool, String>? = null,
+    @SerialName("refund_available") val refundAvailable: Boolean = false,
+    @SerialName("refund_private_key") val refundPrivateKey: String? = null,
 )

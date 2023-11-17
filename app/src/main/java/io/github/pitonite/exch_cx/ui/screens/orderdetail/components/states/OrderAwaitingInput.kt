@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderAwaitingInput
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderAwaitingInputMaxInputZero
@@ -38,15 +39,16 @@ import java.math.BigDecimal
 
 @Composable
 fun OrderAwaitingInput(
-    order: Order,
+  order: Order,
 ) {
   if (order.maxInput.compareTo(BigDecimal.ZERO) == 0) {
     Column(
         modifier =
-            Modifier.padding(horizontal = dimensionResource(R.dimen.padding_lg))
-                .padding(
-                    vertical = dimensionResource(R.dimen.padding_lg),
-                ),
+        Modifier
+            .padding(horizontal = dimensionResource(R.dimen.padding_lg))
+            .padding(
+                vertical = dimensionResource(R.dimen.padding_lg),
+            ),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_lg)),
     ) {
       Text(stringResource(R.string.order_state_max_input_zero, order.fromCurrency))
@@ -55,15 +57,17 @@ fun OrderAwaitingInput(
     Card {
       Column(
           modifier =
-              Modifier.padding(horizontal = dimensionResource(R.dimen.padding_lg))
-                  .padding(
-                      vertical = dimensionResource(R.dimen.padding_lg),
-                  ),
+          Modifier
+              .padding(horizontal = dimensionResource(R.dimen.padding_lg))
+              .padding(
+                  vertical = dimensionResource(R.dimen.padding_lg),
+              ),
           verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_lg)),
       ) {
         Text(
             stringResource(R.string.order_state_title_created, order.fromCurrency),
-            style = MaterialTheme.typography.headlineSmall)
+            style = MaterialTheme.typography.headlineSmall,
+        )
 
         Spacer(Modifier)
 
@@ -79,12 +83,14 @@ fun OrderAwaitingInput(
                         BigDecimal.valueOf(100)
                             .minus(order.svcFee)
                             .divide(hundred)
-                            .times(order.rate))
+                            .times(order.rate),
+                    )
                     .minus(order.networkFee ?: BigDecimal.ZERO)
                     .stripTrailingZeros()
             Text(
                 stringResource(R.string.label_receive, receiveAmount, order.toCurrency) +
-                    " (${stringResource(R.string.network_fee_included)})")
+                    " (${stringResource(R.string.network_fee_included)})",
+            )
           }
         } else {
           SelectionContainer {
@@ -102,10 +108,14 @@ fun OrderAwaitingInput(
           Text(stringResource(R.string.label_to_order_address, order.fromCurrency))
 
           if (order.fromAddr != GENERATING_FROM_ADDRESS) {
-            CopyableText(order.fromAddr, copyConfirmationMessage = R.string.snack_address_copied)
+            CopyableText(
+                order.fromAddr,
+                copyConfirmationMessage = R.string.snack_address_copied,
+                fontSize = 19.sp,
+            )
 
             if (order.stateError == null &&
-                etheriumBasedCoins.containsMatchIn(order.fromCurrency)) {
+              etheriumBasedCoins.containsMatchIn(order.fromCurrency)) {
               Notice(stringResource(R.string.notice_etherium_based_coins))
             }
 
@@ -115,10 +125,11 @@ fun OrderAwaitingInput(
             ) {
               Image(
                   painter =
-                      rememberQrBitmapPainter(
-                          content = order.fromAddr, size = 300.dp, padding = 1.dp),
+                  rememberQrBitmapPainter(
+                      content = order.fromAddr, size = 300.dp, padding = 1.dp,
+                  ),
                   contentDescription =
-                      stringResource(R.string.desc_send_qrcode_image, order.fromCurrency),
+                  stringResource(R.string.desc_send_qrcode_image, order.fromCurrency),
                   modifier = Modifier.clip(MaterialTheme.shapes.large),
               )
             }
@@ -129,7 +140,8 @@ fun OrderAwaitingInput(
                     stringResource(
                         R.string.notice_order_different_amount,
                         order.fromAmount,
-                        order.fromCurrency),
+                        order.fromCurrency,
+                    ),
                     textAlign = TextAlign.Justify,
                 )
 
