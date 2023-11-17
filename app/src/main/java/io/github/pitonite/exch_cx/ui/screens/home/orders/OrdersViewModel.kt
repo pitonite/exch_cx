@@ -63,13 +63,13 @@ constructor(
           .combine(oneTimeWorkInfo) { periodicInfo, oneTimeInfo ->
             if (oneTimeInfo?.state == WorkInfo.State.RUNNING ) {
               WorkState.Working(
-                  currentWorkProgress = oneTimeInfo?.progress?.getInt(CurrentWorkProgress, 0) ?: 0,
-                  totalWorkItems = oneTimeInfo?.progress?.getInt(TotalWorkItems, 0) ?: 0,
+                  currentWorkProgress = oneTimeInfo.progress.getInt(CurrentWorkProgress, 0),
+                  totalWorkItems = oneTimeInfo.progress.getInt(TotalWorkItems, 0),
                   )
             } else if (periodicInfo?.state == WorkInfo.State.RUNNING) {
               WorkState.Working(
-                  currentWorkProgress = periodicInfo?.progress?.getInt(CurrentWorkProgress, 0) ?: 0,
-                  totalWorkItems = periodicInfo?.progress?.getInt(TotalWorkItems, 0) ?: 0,
+                  currentWorkProgress = periodicInfo.progress.getInt(CurrentWorkProgress, 0),
+                  totalWorkItems = periodicInfo.progress.getInt(TotalWorkItems, 0),
               )
             }  else {
               WorkState.NotWorking
