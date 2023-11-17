@@ -35,7 +35,7 @@ constructor(
   private val supportMessagesRepository: SupportMessagesRepository,
 ) : ViewModel() {
 
-  val orderId = savedStateHandle.getStateFlow(NavArgs.ORDER_ID_KEY, "").apply {
+  val orderid = savedStateHandle.getStateFlow(NavArgs.ORDER_ID_KEY, "").apply {
     onEach {
       messageDraft = savedStateHandle.get<String>("$it-messageDraft") ?: ""
     }
@@ -43,7 +43,7 @@ constructor(
 
   @OptIn(ExperimentalCoroutinesApi::class)
   val messages =
-      orderId
+      orderid
           .flatMapMerge { supportMessagesRepository.getMessages(it) }
           .stateIn(
               scope = viewModelScope,
@@ -60,20 +60,20 @@ constructor(
   fun updateMessageDraft(value: String) {
     messageDraft = value
     kotlin.runCatching {
-      savedStateHandle.set<String>((orderId.value?:"")+"-messageDraft", value)
+      savedStateHandle.set<String>((orderid.value?:"")+"-messageDraft", value)
     }
   }
 
   fun sendMessage() {
-    if (sendingWorkState.isWorking() || orderId.value == null) return
+    if (sendingWorkState.isWorking() || orderid.value == null) return
 
     sendingWorkState = WorkState.Working()
-    val orderId = orderId.value!!
+    val orderid = orderid.value!!
     val message = messageDraft
 
     viewModelScope.launch {
       try {
-        supportMessagesRepository.sendMessage(orderId, message)
+        supportMessagesRepository.sendMessage(orderid, message)
         sendingWorkState = WorkState.NotWorking
         updateMessageDraft("")
       } catch (e: Throwable) {

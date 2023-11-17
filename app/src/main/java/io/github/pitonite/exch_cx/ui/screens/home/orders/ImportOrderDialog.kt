@@ -52,7 +52,7 @@ fun ImportOrderDialog(
     modifier: Modifier = Modifier,
 ) {
   if (show) {
-    var orderId by remember { mutableStateOf("") }
+    var orderid by remember { mutableStateOf("") }
     val enabled = !workState.isWorking()
     AlertDialog(
         onDismissRequest,
@@ -71,8 +71,8 @@ fun ImportOrderDialog(
               stringResource(R.string.desc_import_order),
               modifier = Modifier.padding(dimensionResource(R.dimen.padding_sm)))
           OutlinedTextField(
-              value = orderId,
-              onValueChange = { orderId = it },
+              value = orderid,
+              onValueChange = { orderid = it },
               label = { Text(stringResource(R.string.label_order_id)) },
               enabled = enabled,
               isError = workState is WorkState.Error,
@@ -82,7 +82,7 @@ fun ImportOrderDialog(
                   } else null,
           )
 
-          Button(onClick = { onImportPressed(orderId) }, enabled = enabled) {
+          Button(onClick = { onImportPressed(orderid) }, enabled = enabled) {
             if (workState.isWorking()) {
               CircularProgressIndicator()
             } else {

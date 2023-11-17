@@ -131,7 +131,7 @@ class OrderRepositoryMock : OrderRepository {
         )
   }
 
-  override fun getOrder(orderId: String): Flow<Order> {
+  override fun getOrder(orderid: String): Flow<Order> {
     return flow { emit(orders[0]) }
   }
 
@@ -147,7 +147,7 @@ class OrderRepositoryMock : OrderRepository {
     }
   }
 
-  override suspend fun fetchOrder(orderId: String): OrderUpdate {
+  override suspend fun fetchOrder(orderid: String): OrderUpdate {
     return orders[0].toOrderUpdateEntity()
   }
 
@@ -163,7 +163,7 @@ class OrderRepositoryMock : OrderRepository {
     return false
   }
 
-  override suspend fun fetchAndUpdateOrder(orderId: String): Boolean {
+  override suspend fun fetchAndUpdateOrder(orderid: String): Boolean {
     return false
   }
 
@@ -171,7 +171,7 @@ class OrderRepositoryMock : OrderRepository {
     throw Error("Not implemented")
   }
 
-  override suspend fun setArchive(orderId: String, value: Boolean) {
+  override suspend fun setArchive(orderid: String, value: Boolean) {
     throw Error("Not implemented")
   }
 

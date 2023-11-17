@@ -117,12 +117,12 @@ constructor(
     showImportDialog = true
   }
 
-  fun onImportOrderPressed(orderId: String) {
+  fun onImportOrderPressed(orderid: String) {
     if (importOrderWork.isWorking()) return
     importOrderWork = WorkState.Working()
     viewModelScope.launch {
       try {
-        if (orderRepository.fetchAndUpdateOrder(orderId)) {
+        if (orderRepository.fetchAndUpdateOrder(orderid)) {
           SnackbarManager.showMessage(
               snackbarMessage =
                   SnackbarMessage.from(message = UserMessage.from(R.string.import_order_existed)))

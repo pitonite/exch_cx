@@ -47,8 +47,8 @@ constructor(
     private val userSettingsRepository: UserSettingsRepository,
     private val exchWorkManager: ExchWorkManager,
 ) : OrderRepository {
-  override fun getOrder(orderId: String): Flow<Order?> {
-    return exchDatabase.ordersDao().orderWithId(orderId)
+  override fun getOrder(orderid: String): Flow<Order?> {
+    return exchDatabase.ordersDao().orderWithId(orderid)
   }
 
   override fun getOrderAfter(createdAt: Date, archived: Boolean): Order? {
@@ -65,9 +65,9 @@ constructor(
         .flow
   }
 
-  override suspend fun fetchOrder(orderId: String): OrderUpdate {
+  override suspend fun fetchOrder(orderid: String): OrderUpdate {
     val orderResp: OrderResponse =
-        exchHttpClient.get("/api/order/") { url { parameters.append("orderid", orderId) } }.body()
+        exchHttpClient.get("/api/order/") { url { parameters.append("orderid", orderid) } }.body()
 
     return orderResp.toOrderUpdateEntity()
   }
@@ -90,9 +90,9 @@ constructor(
     return existedBeforeUpsert
   }
 
-  /** Returns true if the orderId already existed in db. */
-  override suspend fun fetchAndUpdateOrder(orderId: String): Boolean {
-    val orderUpdate = this.fetchOrder(orderId)
+  /** Returns true if the orderid already existed in db. */
+  override suspend fun fetchAndUpdateOrder(orderid: String): Boolean {
+    val orderUpdate = this.fetchOrder(orderid)
     return this.updateOrder(orderUpdate)
   }
 
@@ -146,8 +146,8 @@ constructor(
     }
   }
 
-  override suspend fun setArchive(orderId: String, value: Boolean) {
-    exchDatabase.ordersDao().setArchive(OrderArchive(orderId, value))
+  override suspend fun setArchive(orderid: String, value: Boolean) {
+    exchDatabase.ordersDao().setArchive(OrderArchive(orderid, value))
   }
 
   override suspend fun count(archived: Boolean): Int {

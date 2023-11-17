@@ -58,7 +58,7 @@ object SecondaryDestinations {
 
 object NavArgs {
   const val SELECTION_KEY = "selection"
-  const val ORDER_ID_KEY = "orderId"
+  const val ORDER_ID_KEY = "orderid"
 }
 
 fun NavGraphBuilder.exchNavGraph(
@@ -169,8 +169,8 @@ private fun NavGraphBuilder.addOrderDetail(
               }),
       arguments = listOf(navArgument(NavArgs.ORDER_ID_KEY) { type = NavType.StringType })) {
           backStackEntry ->
-        val orderId = backStackEntry.arguments?.getString(NavArgs.ORDER_ID_KEY)
-        if (orderId.isNullOrEmpty()) {
+        val orderid = backStackEntry.arguments?.getString(NavArgs.ORDER_ID_KEY)
+        if (orderid.isNullOrEmpty()) {
           upPress()
         } else {
           val viewModel = hiltViewModel<OrderDetailViewModel>()

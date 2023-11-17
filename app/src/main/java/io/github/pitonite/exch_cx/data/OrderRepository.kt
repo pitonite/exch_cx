@@ -13,31 +13,31 @@ import java.util.Date
 interface OrderRepository {
 
   /** Loads an order from database */
-  fun getOrder(orderId: String): Flow<Order?>
+  fun getOrder(orderid: String): Flow<Order?>
 
   fun getOrderAfter(createdAt: Date, archived: Boolean = false): Order?
 
   fun getOrderList(archived: Boolean, pageSize: Int = 10): Flow<PagingData<Order>>
 
   /** Returns order details from api. can throw errors. */
-  suspend fun fetchOrder(orderId: String): OrderUpdate
+  suspend fun fetchOrder(orderid: String): OrderUpdate
 
-  /** Returns true if the orderId already existed in db. */
+  /** Returns true if the orderid already existed in db. */
   suspend fun updateOrder(orderUpdate: Order): Boolean
 
-  /** Returns true if the orderId already existed in db. */
+  /** Returns true if the orderid already existed in db. */
   suspend fun updateOrder(orderUpdate: OrderUpdate): Boolean
 
-  /** Returns true if the orderId already existed in db. */
+  /** Returns true if the orderid already existed in db. */
   suspend fun updateOrder(orderUpdate: OrderUpdateWithArchive): Boolean
 
-  /** Returns true if the orderId already existed in db. */
-  suspend fun fetchAndUpdateOrder(orderId: String): Boolean
+  /** Returns true if the orderid already existed in db. */
+  suspend fun fetchAndUpdateOrder(orderid: String): Boolean
 
   /** Returns orderid if successful */
   suspend fun createOrder(createRequest: OrderCreateRequest): String
 
-  suspend fun setArchive(orderId: String, value: Boolean)
+  suspend fun setArchive(orderid: String, value: Boolean)
 
   suspend fun count(archived: Boolean): Int
 
