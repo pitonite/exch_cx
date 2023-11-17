@@ -50,7 +50,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
@@ -229,7 +228,7 @@ fun OrderDetail(
                 .verticalFadingEdge(scrollState, dimensionResource(R.dimen.fading_edge))
                 .padding(horizontal = dimensionResource(R.dimen.page_padding))
                 .verticalScroll(scrollState)
-                .noRippleClickable() { focusManager.clearFocus() },
+                .noRippleClickable { focusManager.clearFocus() },
         ) {
           AutomaticOrderUpdateDialog(show = !settings.hasShownOrderBackgroundUpdateNotice) {
             if (it) {
@@ -258,7 +257,6 @@ fun OrderDetail(
       }
 }
 
-@OptIn(ExperimentalTextApi::class)
 @Composable
 fun OrderColumn(
     viewModel: OrderDetailViewModel,
@@ -387,7 +385,7 @@ fun OrderColumn(
             color = MaterialTheme.colorScheme.onSurfaceVariant)
       }
 
-      var getSupportText = buildAnnotatedString {
+      val getSupportText = buildAnnotatedString {
         pushStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant))
         append(stringResource(R.string.having_problem_question))
         append(" ")
@@ -409,7 +407,7 @@ fun OrderColumn(
 
       if (!order.letterOfGuarantee.isNullOrEmpty()) {
         var showLetter by remember { mutableStateOf(false) }
-        var showLetterText = buildAnnotatedString {
+        val showLetterText = buildAnnotatedString {
           pushStyle(SpanStyle(color = MaterialTheme.colorScheme.tertiary))
           append(stringResource(R.string.show_letter_of_guarantee))
         }
