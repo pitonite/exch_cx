@@ -78,4 +78,5 @@ class SupportMessagesRepositoryMock : SupportMessagesRepository {
   override suspend fun updateMessages(messages: List<SupportMessage>) {}
 
   override suspend fun updateMessage(message: SupportMessage) {}
+  override suspend fun addUserMessage(orderid: String, message: String) {}
 }

@@ -97,6 +97,11 @@ constructor(
     viewModelScope.launch {
       try {
         supportMessagesRepository.sendMessage(orderid, message)
+        try {
+          supportMessagesRepository.addUserMessage(orderid, message)
+        } catch (e: Exception) {
+          // no need
+        }
         sendingWorkState = WorkState.NotWorking
         updateMessageDraft("")
         sent()

@@ -26,5 +26,6 @@ abstract class SupportMessageDao : BaseDao<Order> {
 
   @Upsert(entity = SupportMessage::class) abstract suspend fun upsertMessages(entities: List<SupportMessage>)
 
-
+  @Query("INSERT OR IGNORE INTO `SupportMessage` (orderid, 'index', readBySupport, sender, message)  VALUES (:orderid, (SELECT `index` + 1 FROM `SupportMessage` where orderid = :orderid ORDER by `index` DESC LIMIT 1) , 0, \"USER\", :message)")
+  abstract suspend fun addUserMessage(orderid: String, message: String)
 }

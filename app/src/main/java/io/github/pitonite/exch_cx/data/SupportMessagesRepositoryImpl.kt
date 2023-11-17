@@ -69,6 +69,10 @@ constructor(
     exchDatabase.supportMessagesDao().upsert(message)
   }
 
+  override suspend fun addUserMessage(orderid: String, message: String) {
+    exchDatabase.supportMessagesDao().addUserMessage(orderid, message)
+  }
+
   override suspend fun updateMessages(messages: List<SupportMessage>) {
     exchDatabase.supportMessagesDao().upsertMessages(messages)
   }
