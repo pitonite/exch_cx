@@ -202,7 +202,7 @@ private fun BoxScope.UserInputTextField(
           },
       keyboardOptions = KeyboardOptions(
           keyboardType = keyboardType,
-          imeAction = ImeAction.Send,
+          imeAction = ImeAction.Default,
       ),
       cursorBrush = SolidColor(LocalContentColor.current),
       textStyle = LocalTextStyle.current.copy(color = LocalContentColor.current),
