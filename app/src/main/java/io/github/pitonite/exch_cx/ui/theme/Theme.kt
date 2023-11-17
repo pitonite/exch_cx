@@ -107,12 +107,15 @@ fun ExchTheme(
       val statusBarColor = colorScheme.inverseOnSurface
       val navigationBarColor = colorScheme.surfaceColorAtElevation(NavigationBarDefaults.Elevation)
       window.statusBarColor = statusBarColor.toArgb()
-      window.navigationBarColor = navigationBarColor.toArgb()
       window.decorView.setBackgroundColor(colorScheme.background.toArgb())
       WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars =
-          statusBarColor.luminance() > 0.5
-      WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars =
-          navigationBarColor.luminance() > 0.5
+          statusBarColor.luminance() >= 0.5
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+        window.navigationBarColor = navigationBarColor.toArgb()
+        WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars =
+            navigationBarColor.luminance() >= 0.5
+      }
     }
   }
 
