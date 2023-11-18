@@ -91,6 +91,7 @@
   <string name="notice">Notice</string>
   <string name="label_mode">Mode:</string>
   <string name="label_exchanged_to_address">Your %1$S address:</string>
+  <string name="label_your_to_address_before_refund">Your %1$S address before refund:</string>
   <string name="label_copy_address">Copy address</string>
   <string name="snack_address_copied">Address Copied!</string>
   <string name="notice_etherium_based_coins">Send funds only on Ethereum Mainnet or they will be lost</string>
@@ -187,4 +188,5 @@
   <string name="order_state_refund_pending_title">Refund Requested</string>
   <string name="order_state_refund_pending_title_error">Error in Refund</string>
   <string name="order_state_refund_pending_desc">Your refund is being processed, Please wait</string>
+  <string name="refund_address_missing">*Refund address is missing*</string>
 </resources>

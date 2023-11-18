@@ -15,6 +15,7 @@ import io.github.pitonite.exch_cx.data.room.Order
 import io.github.pitonite.exch_cx.data.room.OrderArchive
 import io.github.pitonite.exch_cx.data.room.OrderCreate
 import io.github.pitonite.exch_cx.data.room.OrderLetterOfGuarantee
+import io.github.pitonite.exch_cx.data.room.OrderRefundAddress
 import io.github.pitonite.exch_cx.data.room.OrderToAddress
 import io.github.pitonite.exch_cx.data.room.OrderUpdate
 import io.github.pitonite.exch_cx.data.room.OrderUpdateWithArchive
@@ -180,6 +181,8 @@ constructor(
   }
 
   override suspend fun requestRefundConfirm(orderid: String, refundAddress: String) {
+    exchDatabase.ordersDao().setRefundAddress(OrderRefundAddress(orderid, refundAddress))
+
     val resp: BooleanResult =
         exchHttpClient
             .get("/api/order/refund_confirm") {

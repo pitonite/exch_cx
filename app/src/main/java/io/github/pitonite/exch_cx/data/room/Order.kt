@@ -162,4 +162,9 @@ data class OrderToAddress(
   val id: String,
   val toAddress: String,
 )
+@Stable
+data class OrderRefundAddress(
+  val id: String,
+  val refundAddress: String,
+)
 

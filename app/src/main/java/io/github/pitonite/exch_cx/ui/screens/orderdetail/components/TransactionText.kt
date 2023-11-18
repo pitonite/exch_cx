@@ -41,11 +41,11 @@ fun getTxidUri(txid: String, currency: String): String {
 @OptIn(ExperimentalTextApi::class)
 @Composable
 fun TransactionText(
-    fromCurrency: String,
-    txid: String,
-    color: Color = MaterialTheme.colorScheme.onSurfaceVariant,
-    fontSize: TextUnit = MaterialTheme.typography.bodyLarge.fontSize,
-    @StringRes copyConfirmationMessage: Int = R.string.snack_copied,
+  currency: String,
+  txid: String,
+  color: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+  fontSize: TextUnit = MaterialTheme.typography.bodyLarge.fontSize,
+  @StringRes copyConfirmationMessage: Int = R.string.snack_copied,
 ) {
   val context = LocalContext.current
   val annotatedString = buildAnnotatedString {
@@ -71,7 +71,7 @@ fun TransactionText(
             if (span.tag == "copy_icon") {
               copyToClipboard(context, txid, confirmationMessage = copyConfirmationMessage)
             } else if (span.tag == "url") {
-              urlHandler.openUri(getTxidUri(txid, fromCurrency))
+              urlHandler.openUri(getTxidUri(txid, currency))
             }
           }
         },

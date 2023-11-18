@@ -44,7 +44,7 @@ fun OrderConfirmingSend(
       Column {
         Text(stringResource(R.string.label_transaction_id))
         SelectionContainer {
-          TransactionText(fromCurrency = order.fromCurrency, txid = order.transactionIdReceived)
+          TransactionText(currency = order.fromCurrency, txid = order.transactionIdReceived)
         }
       }
     }

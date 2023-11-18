@@ -372,6 +372,7 @@ fun OrderColumn(
       OrderState.CONFIRMING_REFUND -> {
         // Once the payout txid is confirmed, the order state will change to REFUNDED, this is a
         // final state
+
       }
       OrderState.REFUNDED -> {}
       OrderState.COMPLETE -> {
@@ -392,22 +393,39 @@ fun OrderColumn(
     }
 
     OrderStateCard {
-      Column(verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_sm))) {
-        Text(stringResource(R.string.label_exchanged_to_address, order.toCurrency))
+      val isRefund = order.state.code().lowercase().startsWith("refund")
+      val currency =  if (isRefund) order.fromCurrency else order.toCurrency
 
-        CopyableText(order.toAddress, copyConfirmationMessage = R.string.snack_address_copied)
+      if (isRefund) {
+        Column {
+          Text(stringResource(R.string.label_exchanged_to_address, order.fromCurrency))
+          CopyableText(order.refundAddress ?: stringResource(R.string.refund_address_missing), copyConfirmationMessage = R.string.snack_address_copied)
+        }
+      } else {
+        Column {
+          Text(stringResource(R.string.label_exchanged_to_address, order.toCurrency))
+          CopyableText(order.toAddress, copyConfirmationMessage = R.string.snack_address_copied)
+        }
       }
+
 
       if (!order.transactionIdSent.isNullOrEmpty()) {
         if (order.toAmount != null) {
-          Text(stringResource(R.string.order_sent_amount, order.toAmount, order.toCurrency))
+          Text(stringResource(R.string.order_sent_amount, order.toAmount, currency ))
         }
 
         Column {
           Text(stringResource(R.string.label_transaction_id))
           SelectionContainer {
-            TransactionText(fromCurrency = order.toCurrency, txid = order.transactionIdSent)
+            TransactionText(currency = currency, txid = order.transactionIdSent)
           }
+        }
+      }
+
+      if (isRefund) {
+        Column {
+          Text(stringResource(R.string.label_your_to_address_before_refund, order.toCurrency))
+          CopyableText(order.toAddress, copyConfirmationMessage = R.string.snack_address_copied)
         }
       }
     }

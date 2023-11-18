@@ -43,6 +43,8 @@ abstract class OrderDao : BaseDao<Order> {
 
   @Update(entity = Order::class) abstract suspend fun setToAddress(entity: OrderToAddress)
 
+  @Update(entity = Order::class) abstract suspend fun setRefundAddress(entity: OrderRefundAddress)
+
   @Query("DELETE FROM `order` WHERE id = :orderid")
   abstract suspend fun delete(orderid: String)
 }

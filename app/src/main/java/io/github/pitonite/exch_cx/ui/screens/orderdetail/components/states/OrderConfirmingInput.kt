@@ -1,6 +1,5 @@
 package io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.text.selection.SelectionContainer
@@ -9,11 +8,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import io.github.pitonite.exch_cx.R
-import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderAwaitingInput
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderConfirmingInput
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderConfirmingInputEthNote
 import io.github.pitonite.exch_cx.data.room.Order
@@ -38,7 +35,7 @@ fun OrderConfirmingInput(
     if (order.transactionIdReceived != null) {
       Column {
         Text(stringResource(R.string.label_detected_transaction_id))
-        SelectionContainer { TransactionText(fromCurrency = order.fromCurrency, txid = order.transactionIdReceived) }
+        SelectionContainer { TransactionText(currency = order.fromCurrency, txid = order.transactionIdReceived) }
       }
     } else if (order.fromCurrency.lowercase() == "eth") {
       Text(stringResource(R.string.notice_eth_txid_notice))
