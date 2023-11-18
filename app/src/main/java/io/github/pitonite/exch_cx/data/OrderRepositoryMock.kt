@@ -342,6 +342,49 @@ class OrderRepositoryMock : OrderRepository {
         toAmount = "1.078380831366853865".toBigDecimal(),
     )
 
+    val orderComplete = Order(
+        id = "c6b728fe153f566d97",
+        fromCurrency = "btc",
+        toCurrency = "eth",
+        fromAddr = "zzzzp3fvmc8yg0m0h9msh9gddgs2wlwzssstsrn2kr",
+        rate = "0.078380831366853865".toBigDecimal(),
+        networkFee = BigDecimal.valueOf(0.0020280),
+        rateMode = RateFeeMode.FLAT,
+        state = OrderState.COMPLETE.codifiedEnum(),
+        svcFee = BigDecimal.valueOf(1),
+        toAddress = "0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ",
+        minInput = BigDecimal.ZERO,
+        maxInput = BigDecimal.ONE,
+        fromAmount = BigDecimal.ONE,
+        letterOfGuarantee = letterOfGuaranteeExample,
+        transactionIdReceived = "zzww481d0d50298eba3bf924354cfb77abf10399cc0704ac72a18d41037feb58",
+        transactionIdSent = "0xzzcb5154bbb0d9d8b6919e989d65f87ca4b536bf6b80f4c9a2b0de25ff26fd70",
+        fromAmountReceived = "0.078380831366853865".toBigDecimal(),
+        toAmount = "1.078380831366853865".toBigDecimal(),
+    )
+
+    val orderCompleteDeletedInRemote = Order(
+        id = "c6b728fe153f566d97",
+        fromCurrency = "btc",
+        toCurrency = "eth",
+        fromAddr = "zzzzp3fvmc8yg0m0h9msh9gddgs2wlwzssstsrn2kr",
+        rate = "0.078380831366853865".toBigDecimal(),
+        networkFee = BigDecimal.valueOf(0.0020280),
+        rateMode = RateFeeMode.FLAT,
+        state = OrderState.COMPLETE.codifiedEnum(),
+        svcFee = BigDecimal.valueOf(1),
+        toAddress = "0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ",
+        minInput = BigDecimal.ZERO,
+        maxInput = BigDecimal.ONE,
+        fromAmount = BigDecimal.ONE,
+        letterOfGuarantee = letterOfGuaranteeExample,
+        transactionIdReceived = "zzww481d0d50298eba3bf924354cfb77abf10399cc0704ac72a18d41037feb58",
+        transactionIdSent = "0xzzcb5154bbb0d9d8b6919e989d65f87ca4b536bf6b80f4c9a2b0de25ff26fd70",
+        fromAmountReceived = "0.078380831366853865".toBigDecimal(),
+        toAmount = "1.078380831366853865".toBigDecimal(),
+        deletedInRemote = true,
+    )
+
 
     val orders =
         persistentListOf(

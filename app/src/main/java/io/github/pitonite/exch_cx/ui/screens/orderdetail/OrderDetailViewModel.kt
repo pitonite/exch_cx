@@ -88,6 +88,9 @@ constructor(
   var requestRefundConfirmWorkState by mutableStateOf<WorkState>(WorkState.NotWorking)
     private set
 
+  var requestOrderDataDeleteWorkState by mutableStateOf<WorkState>(WorkState.NotWorking)
+    private set
+
   fun refreshOrder() {
     if (refreshWorkState.isWorking() || orderid.value == null) return
 
@@ -197,6 +200,28 @@ constructor(
         requestRefundConfirmWorkState = WorkState.NotWorking
       } catch (e: Throwable) {
         requestRefundConfirmWorkState = WorkState.Error(e)
+        SnackbarManager.showMessage(
+            SnackbarMessage.from(
+                message = e.toUserMessage(),
+                withDismissAction = true,
+                duration = SnackbarDuration.Long,
+            ))
+      }
+    }
+  }
+
+
+  fun requestOrderDataDelete() {
+    if (requestOrderDataDeleteWorkState.isWorking()) return
+    requestOrderDataDeleteWorkState = WorkState.Working()
+    val orderid = orderid.value!!
+
+    viewModelScope.launch {
+      try {
+        orderRepository.deleteRemote(orderid)
+        requestOrderDataDeleteWorkState = WorkState.NotWorking
+      } catch (e: Throwable) {
+        requestOrderDataDeleteWorkState = WorkState.Error(e)
         SnackbarManager.showMessage(
             SnackbarMessage.from(
                 message = e.toUserMessage(),

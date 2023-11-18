@@ -81,6 +81,7 @@ import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.OrderStateCa
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.TransactionText
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderAwaitingInput
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderCancelled
+import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderComplete
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderConfirmingInput
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderConfirmingRefund
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderConfirmingSend
@@ -381,6 +382,10 @@ fun OrderColumn(
       }
       OrderState.COMPLETE -> {
         // user can request delete at this state
+        OrderComplete(
+            order = order,
+            requestOrderDataDelete = { viewModel.requestOrderDataDelete() },
+            requestOrderDataDeleteWorkState = viewModel.requestOrderDataDeleteWorkState)
       }
       else -> {
         // this is when order state is null, this can happen if the states are experimental
@@ -398,7 +403,7 @@ fun OrderColumn(
 
     OrderStateCard {
       val isRefund = order.state.code().lowercase().startsWith("refund")
-      val currency =  if (isRefund) order.fromCurrency else order.toCurrency
+      val currency = if (isRefund) order.fromCurrency else order.toCurrency
 
       if (isRefund && order.refundAddress != null) {
         Column {
@@ -412,10 +417,9 @@ fun OrderColumn(
         }
       }
 
-
       if (!order.transactionIdSent.isNullOrEmpty()) {
         if (order.toAmount != null) {
-          Text(stringResource(R.string.order_sent_amount, order.toAmount, currency ))
+          Text(stringResource(R.string.order_sent_amount, order.toAmount, currency))
         }
 
         Column {

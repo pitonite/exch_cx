@@ -24,9 +24,6 @@ const val GENERATING_FROM_ADDRESS = "_GENERATING_"
 )
 @Stable
 data class Order(
-    // data for ui:
-    @ColumnInfo(defaultValue = CURRENT_TIMESTAMP_EXPRESSION) val modifiedAt: Date = Date(),
-    @ColumnInfo(defaultValue = "0") val archived: Boolean = false, // for moving orders to history
     // order data (api/v1):
     @PrimaryKey val id: String,
     val createdAt: Date = Date(),
@@ -61,13 +58,18 @@ data class Order(
     //
     // custom added data:
     //
+    @ColumnInfo(defaultValue = CURRENT_TIMESTAMP_EXPRESSION) val modifiedAt: Date = Date(),
+    @ColumnInfo(defaultValue = "0") val archived: Boolean = false, // for moving orders to history
+    //
     @ColumnInfo(defaultValue = "null") val fromAmount: BigDecimal? = null,
     @ColumnInfo(defaultValue = "null") val referrerId: String? = null,
     @ColumnInfo(defaultValue = "null") val aggregationOption: AggregationOption? = null,
     @ColumnInfo(defaultValue = "null") val feeOption: NetworkFeeOption? = null,
     @ColumnInfo(defaultValue = "null") val refundAddress: String? = null,
-    // fetched using an api later by user:
+    // fetched using an api while order is being updated:
     @ColumnInfo(defaultValue = "null") val letterOfGuarantee: String? = null,
+    @ColumnInfo(defaultValue = "0") val deletedInRemote: Boolean = false,
+
 )
 
 // to not touch archive when updating order
@@ -168,3 +170,8 @@ data class OrderRefundAddress(
   val refundAddress: String,
 )
 
+@Stable
+data class OrderDeletedInRemote(
+  val id: String,
+  val deletedInRemote: Boolean,
+)

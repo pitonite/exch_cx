@@ -14,6 +14,7 @@ import io.github.pitonite.exch_cx.data.room.ExchDatabase
 import io.github.pitonite.exch_cx.data.room.Order
 import io.github.pitonite.exch_cx.data.room.OrderArchive
 import io.github.pitonite.exch_cx.data.room.OrderCreate
+import io.github.pitonite.exch_cx.data.room.OrderDeletedInRemote
 import io.github.pitonite.exch_cx.data.room.OrderLetterOfGuarantee
 import io.github.pitonite.exch_cx.data.room.OrderRefundAddress
 import io.github.pitonite.exch_cx.data.room.OrderToAddress
@@ -216,6 +217,8 @@ constructor(
             .body()
 
     if (!resp.result) throw FailedToDeleteOrderDataException()
+
+    exchDatabase.ordersDao().setDeletedInRemote(OrderDeletedInRemote(orderid, true))
   }
 
   override suspend fun deleteLocal(orderid: String) {
