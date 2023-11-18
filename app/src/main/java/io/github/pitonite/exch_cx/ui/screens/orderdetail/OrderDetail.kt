@@ -82,8 +82,10 @@ import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.TransactionT
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderAwaitingInput
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderCancelled
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderConfirmingInput
+import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderConfirmingSend
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderCreated
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderExchanging
+import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderRefundRequest
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 import io.github.pitonite.exch_cx.utils.codified.enums.toLocalizedString
 import io.github.pitonite.exch_cx.utils.createNotificationChannels
@@ -346,6 +348,7 @@ fun OrderColumn(
       OrderState.CONFIRMING_SEND -> {
         // once there is a confirmation, the order's state changes to COMPLETE,
         // which is a final state.
+        OrderConfirmingSend(order)
       }
       OrderState.REFUND_REQUEST -> {
         // when the user has requested refund,
@@ -355,6 +358,10 @@ fun OrderColumn(
         // REFUND_PENDING state
         // for USDT/DAI/USDC, the order state will directly become REFUNDED, revealing a deposit's
         // address private key to the user
+        OrderRefundRequest(
+            order,
+            requestRefundConfirm = { viewModel.requestRefundConfirm(it) },
+            requestRefundConfirmWorkState = viewModel.requestRefundConfirmWorkState)
       }
       OrderState.REFUND_PENDING -> {
         // the order is enqueued for the refund payout. Once the payout sent, the state will change
@@ -389,14 +396,16 @@ fun OrderColumn(
         CopyableText(order.toAddress, copyConfirmationMessage = R.string.snack_address_copied)
       }
 
-      if (order.toAmount != null) {
-        Text(stringResource(R.string.order_sent_amount, order.toAmount, order.toCurrency))
-      }
-
       if (!order.transactionIdSent.isNullOrEmpty()) {
+        if (order.toAmount != null) {
+          Text(stringResource(R.string.order_sent_amount, order.toAmount, order.toCurrency))
+        }
+
         Column {
           Text(stringResource(R.string.label_transaction_id))
-          SelectionContainer { TransactionText(fromCurrency = order.toCurrency, txid = order.transactionIdSent) }
+          SelectionContainer {
+            TransactionText(fromCurrency = order.toCurrency, txid = order.transactionIdSent)
+          }
         }
       }
     }

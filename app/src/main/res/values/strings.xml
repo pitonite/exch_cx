@@ -55,11 +55,12 @@
   <string name="hint_refund_address_input_p2">however it can\'t be changed later once provided.</string>
   <string name="next_step">Next Step</string>
   <string name="label_to_address">To Address</string>
-  <string name="label_refund_address">Refund Address (Optional)</string>
+  <string name="label_refund_address_optional">Refund Address (Optional)</string>
+  <string name="label_refund_address">Refund Address</string>
   <string name="label_create_order">Create Order</string>
   <string name="tip_exchange">You can start exchange without calculating and send any amount (calculation will be performed on receipt)</string>
   <string name="tip">Tip</string>
-  <string name="dismiss">dismiss</string>
+  <string name="dismiss">Dismiss</string>
   <string name="order">Order</string>
   <string name="label_open_in_browser">Open In Browser</string>
   <string name="label_more">More</string>
@@ -172,4 +173,15 @@
   <string name="order_state_exchanging_refund_available_tip">If you have not provided a refund address when creating the order, it will be asked in the next step</string>
   <string name="order_state_unknown">Unknown State</string>
   <string name="order_state_unknown_tip">Please open website from top corner menu to see more information</string>
+  <string name="order_state_refund_request_title">Refund</string>
+  <string name="order_state_confirming_send_desc">Making sure you receive the funds correctly</string>
+  <string name="order_state_unexpected_error">Error at this stage is unexpected, please visit website or contact support for more information</string>
+  <string name="order_state_confirming_send_title">Confirming Send</string>
+  <string name="you_have_sent_us_amount">You have sent us %1$s %2$S</string>
+  <string name="order_state_refund_request_desc">Please confirm your refund address:</string>
+  <string name="confirm">Confirm</string>
+  <string name="warning">Warning</string>
+  <string name="order_state_refund_request_warning_dialog">Are you sure the address is correct? This action is irreversible!</string>
+  <string name="order_state_exchanging_request_refund_dialog">Are you sure you want to request refund?</string>
+  <string name="notice_refund_network_fee">Network fee will be paid from your funds</string>
 </resources>

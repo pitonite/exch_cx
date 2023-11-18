@@ -344,7 +344,7 @@ fun Exchange(
           OutlinedTextField(
               modifier = Modifier.fillMaxWidth(),
               value = viewModel.refundAddress,
-              label = { Text(stringResource(R.string.label_refund_address)) },
+              label = { Text(stringResource(R.string.label_refund_address_optional)) },
               onValueChange = viewModel::updateRefundAddress,
               supportingText = {
                 val importHintText = buildAnnotatedString {
