@@ -192,4 +192,10 @@
   <string name="order_state_confirming_refund_title">Confirming Refund</string>
   <string name="label_refund_to_address">Your %1$S refund address:</string>
   <string name="you_will_be_refunded">You will be refunded %1$s %2$S</string>
+  <string name="order_state_refunded_title">Refunded</string>
+  <string name="order_state_refunded_desc">Your funds have been refunded successfully</string>
+  <string name="order_state_refunded_private_key_desc">Your refund is available through a private key that is provided below:</string>
+  <string name="show_private_key">Show Private Key</string>
+  <string name="title_private_key">Private Key</string>
+  <string name="you_have_been_given_amount">You have been given %1$s %2$S</string>
 </resources>

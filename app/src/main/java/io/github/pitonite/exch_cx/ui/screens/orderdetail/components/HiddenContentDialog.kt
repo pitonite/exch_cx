@@ -25,10 +25,11 @@ import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.letterOfGua
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LetterOfGuaranteeDialog(
+fun HiddenContentDialog(
     modifier: Modifier = Modifier,
     show: Boolean,
-    letterOfGuarantee: String,
+    title: String,
+    content: String,
     onDismissRequest: () -> Unit = {},
 ) {
   if (show) {
@@ -44,12 +45,12 @@ fun LetterOfGuaranteeDialog(
             modifier = modifier.padding(dimensionResource(R.dimen.padding_lg)),
         ) {
           Text(
-              text = stringResource(R.string.title_letter_of_guarantee),
+              text = title,
               style = MaterialTheme.typography.titleMedium,
           )
 
           OutlinedTextField(
-              letterOfGuarantee,
+              content,
               {},
               readOnly = true,
           )
@@ -70,7 +71,10 @@ fun LetterOfGuaranteeDialog(
 
 @Preview
 @Composable
-fun LetterOfGuaranteeDialogPreview() {
-  LetterOfGuaranteeDialog(
-      show = true, onDismissRequest = {}, letterOfGuarantee = letterOfGuaranteeExample)
+fun HiddenContentDialogDialogPreview() {
+  HiddenContentDialog(
+      show = true,
+      onDismissRequest = {},
+      title = stringResource(R.string.title_letter_of_guarantee),
+      content = letterOfGuaranteeExample)
 }

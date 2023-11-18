@@ -76,7 +76,7 @@ import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import io.github.pitonite.exch_cx.ui.navigation.NavArgs
 import io.github.pitonite.exch_cx.ui.screens.home.orders.ExchangePairRow
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.AutomaticOrderUpdateDialog
-import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.LetterOfGuaranteeDialog
+import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.HiddenContentDialog
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.OrderStateCard
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.TransactionText
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderAwaitingInput
@@ -88,6 +88,7 @@ import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.Order
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderExchanging
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderRefundPending
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderRefundRequest
+import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderRefunded
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 import io.github.pitonite.exch_cx.utils.codified.enums.toLocalizedString
 import io.github.pitonite.exch_cx.utils.createNotificationChannels
@@ -375,7 +376,9 @@ fun OrderColumn(
         // final state
         OrderConfirmingRefund(order)
       }
-      OrderState.REFUNDED -> {}
+      OrderState.REFUNDED -> {
+        OrderRefunded(order)
+      }
       OrderState.COMPLETE -> {
         // user can request delete at this state
       }
@@ -397,10 +400,10 @@ fun OrderColumn(
       val isRefund = order.state.code().lowercase().startsWith("refund")
       val currency =  if (isRefund) order.fromCurrency else order.toCurrency
 
-      if (isRefund) {
+      if (isRefund && order.refundAddress != null) {
         Column {
           Text(stringResource(R.string.label_refund_to_address, order.fromCurrency))
-          CopyableText(order.refundAddress ?: stringResource(R.string.refund_address_missing), copyConfirmationMessage = R.string.snack_address_copied)
+          CopyableText(order.refundAddress, copyConfirmationMessage = R.string.snack_address_copied)
         }
       } else {
         Column {
@@ -423,7 +426,7 @@ fun OrderColumn(
         }
       }
 
-      if (isRefund) {
+      if (isRefund && order.refundAddress == null) {
         Column {
           Text(stringResource(R.string.label_your_to_address_before_refund, order.toCurrency))
           CopyableText(order.toAddress, copyConfirmationMessage = R.string.snack_address_copied)
@@ -476,9 +479,10 @@ fun OrderColumn(
           showLetter = true
         }
 
-        LetterOfGuaranteeDialog(
+        HiddenContentDialog(
             show = showLetter,
-            letterOfGuarantee = order.letterOfGuarantee,
+            title = stringResource(R.string.title_letter_of_guarantee),
+            content = order.letterOfGuarantee,
             onDismissRequest = { showLetter = false })
       }
     }
