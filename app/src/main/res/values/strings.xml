@@ -93,7 +93,7 @@
   <string name="label_copy_address">Copy address</string>
   <string name="snack_address_copied">Address Copied!</string>
   <string name="notice_etherium_based_coins">Send funds only on Ethereum Mainnet or they will be lost</string>
-  <string name="order_state_title_created">Waiting for you to send %1$S</string>
+  <string name="order_state_title_waiting_for_input">Waiting for you to send %1$S</string>
   <string name="label_minimum">Min: %1$s %2$S</string>
   <string name="label_maximum">Max: %1$s %2$S</string>
   <string name="order_state_max_input_zero">Sorry, but we cannot accept %1$S right now.</string>
@@ -156,4 +156,5 @@
   <string name="notice_empty_support_chat">Start chat by sending a message</string>
   <string name="accessibility_label_message_has_been_read">Message has been read by support</string>
   <string name="accessibility_label_message_has_been_sent">Message has been sent</string>
+  <string name="order_state_title_confirming_input">Confirming transaction</string>
 </resources>
