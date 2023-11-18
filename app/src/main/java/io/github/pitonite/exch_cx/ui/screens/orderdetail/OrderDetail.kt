@@ -82,6 +82,7 @@ import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.TransactionT
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderAwaitingInput
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderCancelled
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderConfirmingInput
+import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderConfirmingRefund
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderConfirmingSend
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderCreated
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderExchanging
@@ -372,7 +373,7 @@ fun OrderColumn(
       OrderState.CONFIRMING_REFUND -> {
         // Once the payout txid is confirmed, the order state will change to REFUNDED, this is a
         // final state
-
+        OrderConfirmingRefund(order)
       }
       OrderState.REFUNDED -> {}
       OrderState.COMPLETE -> {
@@ -398,7 +399,7 @@ fun OrderColumn(
 
       if (isRefund) {
         Column {
-          Text(stringResource(R.string.label_exchanged_to_address, order.fromCurrency))
+          Text(stringResource(R.string.label_refund_to_address, order.fromCurrency))
           CopyableText(order.refundAddress ?: stringResource(R.string.refund_address_missing), copyConfirmationMessage = R.string.snack_address_copied)
         }
       } else {

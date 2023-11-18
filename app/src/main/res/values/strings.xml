@@ -189,4 +189,7 @@
   <string name="order_state_refund_pending_title_error">Error in Refund</string>
   <string name="order_state_refund_pending_desc">Your refund is being processed, Please wait</string>
   <string name="refund_address_missing">*Refund address is missing*</string>
+  <string name="order_state_confirming_refund_title">Confirming Refund</string>
+  <string name="label_refund_to_address">Your %1$S refund address:</string>
+  <string name="you_will_be_refunded">You will be refunded %1$s %2$S</string>
 </resources>
