@@ -46,7 +46,7 @@ fun OrderAwaitingInput(
       Text(stringResource(R.string.order_state_max_input_zero, order.fromCurrency))
     } else {
       Text(
-          stringResource(R.string.order_state_title_waiting_for_input, order.fromCurrency),
+          stringResource(R.string.order_state_waiting_for_input_title, order.fromCurrency),
           style = MaterialTheme.typography.headlineSmall,
       )
 

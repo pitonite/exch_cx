@@ -41,7 +41,7 @@ fun OrderStateCardPreview() {
       Column(Modifier.padding(10.dp)) {
         OrderStateCard {
           Text(
-              stringResource(R.string.order_state_title_created, "BTC"),
+              stringResource(R.string.order_state_waiting_for_input_title, "BTC"),
               style = MaterialTheme.typography.headlineSmall)
 
           Text("foo")

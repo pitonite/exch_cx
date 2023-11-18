@@ -57,7 +57,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavBackStackEntry
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock
 import io.github.pitonite.exch_cx.data.UserSettingsRepositoryMock
@@ -76,6 +75,7 @@ import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.LetterOfGuar
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.OrderStateCard
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderAwaitingInput
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderCancelled
+import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderConfirmingInput
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderCreated
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 import io.github.pitonite.exch_cx.utils.codified.enums.toLocalizedString
@@ -94,10 +94,10 @@ val etheriumBasedCoins = "eth|dai|usdt|usdc".toRegex(RegexOption.IGNORE_CASE)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderDetail(
-  viewModel: OrderDetailViewModel,
-  upPress: () -> Unit,
-  modifier: Modifier = Modifier,
-  navigateToOrderSupport: (String) -> Unit
+    viewModel: OrderDetailViewModel,
+    upPress: () -> Unit,
+    modifier: Modifier = Modifier,
+    navigateToOrderSupport: (String) -> Unit
 ) {
   val context = LocalContext.current
   val uriHandler = LocalUriHandler.current
@@ -289,11 +289,10 @@ fun OrderColumn(
       Card(isError = true) {
         Column(
             modifier =
-            Modifier
-                .padding(horizontal = dimensionResource(R.dimen.padding_lg))
-                .padding(
-                    vertical = dimensionResource(R.dimen.padding_xl),
-                ),
+                Modifier.padding(horizontal = dimensionResource(R.dimen.padding_lg))
+                    .padding(
+                        vertical = dimensionResource(R.dimen.padding_xl),
+                    ),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_sm)),
         ) {
@@ -323,8 +322,9 @@ fun OrderColumn(
       OrderState.CONFIRMING_INPUT -> {
         // let user know we have detected the funds and are waiting for it to be confirmed
         // currently ETH->[ANY] orders don't show the txid
+        OrderConfirmingInput(order)
       }
-      OrderState.EXCHANGING -> {
+      OrderState.EXCHANGING-> {
         // the order is enqueued to send the payout.
         // If there is no balance available (for example the user overpaid by mistake or someone
         // else took their amount meanwhile their input was confirming) then the automatic refund
@@ -387,7 +387,8 @@ fun OrderColumn(
       SelectionContainer {
         Text(
             stringResource(
-                R.string.order_created_at, DateFormat.format("MMM dd, yyyy HH:mm", order.createdAt)),
+                R.string.order_created_at,
+                DateFormat.format("MMM dd, yyyy HH:mm", order.createdAt)),
             color = MaterialTheme.colorScheme.onSurfaceVariant)
       }
 
@@ -474,7 +475,7 @@ fun OrderDetailPreview() {
     OrderDetail(
         viewModel = getMockViewModel(),
         upPress = {},
-        navigateToOrderSupport = { },
+        navigateToOrderSupport = {},
     )
   }
 }
