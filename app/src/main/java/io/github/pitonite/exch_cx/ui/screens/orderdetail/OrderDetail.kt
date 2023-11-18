@@ -77,6 +77,7 @@ import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.Order
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderCancelled
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderConfirmingInput
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderCreated
+import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderExchanging
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 import io.github.pitonite.exch_cx.utils.codified.enums.toLocalizedString
 import io.github.pitonite.exch_cx.utils.createNotificationChannels
@@ -324,13 +325,17 @@ fun OrderColumn(
         // currently ETH->[ANY] orders don't show the txid
         OrderConfirmingInput(order)
       }
-      OrderState.EXCHANGING-> {
+      OrderState.EXCHANGING -> {
         // the order is enqueued to send the payout.
         // If there is no balance available (for example the user overpaid by mistake or someone
         // else took their amount meanwhile their input was confirming) then the automatic refund
         // option is offered
         // if the payout is sent successfully, the order's state changes to CONFIRMING_SEND.
-
+        OrderExchanging(
+            order = order,
+            requestRefund = viewModel::requestRefund,
+            requestRefundWorkState = viewModel.requestRefundWorkState,
+        )
       }
       OrderState.CONFIRMING_SEND -> {
         // once there is a confirmation, the order's state changes to COMPLETE,

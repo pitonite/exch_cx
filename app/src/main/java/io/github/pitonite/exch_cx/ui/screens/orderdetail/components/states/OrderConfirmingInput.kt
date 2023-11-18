@@ -36,7 +36,7 @@ fun OrderConfirmingInput(
     Spacer(Modifier)
 
     if (order.transactionIdReceived != null) {
-      Column(verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_md))) {
+      Column {
         Text(stringResource(R.string.label_detected_transaction_id))
         SelectionContainer { TransactionText(fromCurrency = order.fromCurrency, txid = order.transactionIdReceived) }
       }

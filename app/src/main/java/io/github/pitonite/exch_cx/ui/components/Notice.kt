@@ -16,6 +16,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.pitonite.exch_cx.R
@@ -24,6 +25,7 @@ import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 @Composable
 fun Notice(
     text: String,
+    fontSize: TextUnit = 18.sp,
     bgColor: Color = Color.Transparent,
     modifier: Modifier = Modifier,
 ) {
@@ -35,7 +37,8 @@ fun Notice(
       shape = CardDefaults.shape,
       color = bgColor,
   ) {
-    Text(text, textAlign = TextAlign.Center, fontSize = 18.sp, modifier = Modifier.fillMaxWidth())
+    Text(
+        text, textAlign = TextAlign.Center, fontSize = fontSize, modifier = Modifier.fillMaxWidth())
   }
 }
 

@@ -82,6 +82,9 @@ constructor(
   var submitNewToAddressWorkState by mutableStateOf<WorkState>(WorkState.NotWorking)
     private set
 
+  var requestRefundWorkState by mutableStateOf<WorkState>(WorkState.NotWorking)
+    private set
+
   fun refreshOrder() {
     if (refreshWorkState.isWorking() || orderid.value == null) return
 
@@ -155,6 +158,28 @@ constructor(
     viewModelScope.launch {
       userSettingsRepository.setHasShownOrderBackgroundUpdateNotice(true)
       userSettingsRepository.setIsOrderAutoUpdateEnabled(result)
+    }
+  }
+
+  fun requestRefund() {
+    if (requestRefundWorkState.isWorking()) return
+    requestRefundWorkState = WorkState.Working()
+    val orderid = orderid.value!!
+
+    viewModelScope.launch {
+      try {
+        orderRepository.requestRefund(orderid)
+        refreshOrder()
+        requestRefundWorkState = WorkState.NotWorking
+      } catch (e: Throwable) {
+        requestRefundWorkState = WorkState.Error(e)
+        SnackbarManager.showMessage(
+            SnackbarMessage.from(
+                message = e.toUserMessage(),
+                withDismissAction = true,
+                duration = SnackbarDuration.Long,
+            ))
+      }
     }
   }
 }

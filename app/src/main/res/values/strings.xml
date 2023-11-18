@@ -158,7 +158,16 @@
   <string name="accessibility_label_message_has_been_sent">Message has been sent</string>
   <string name="order_state_confirming_input_title">Confirming transaction</string>
   <string name="label_detected_transaction_id">Detected transaction ID:</string>
-  <string name="detected_amount">Detected amount: %1$s %2$S</string>
+  <string name="label_transaction_id">Transaction ID:</string>
+  <string name="detected_amount">Amount: %1$s %2$S</string>
+  <string name="from_amount_received">Received: %1$s %2$S</string>
   <string name="order_state_confirming_input_desc">Please wait till the detected transaction gets enough confirmations</string>
-  <string name="notice_eth_txid_notice">"Note: currently etherium transaction ids cannot be retrieved due to software limitations, this may change in future"</string>
+  <string name="notice_eth_txid_notice">"Note: Currently etherium transaction ids cannot be retrieved due to software limitations, this may change in future</string>
+  <string name="order_state_exchanging_title">Exchanging</string>
+  <string name="order_state_exchanging_refund_available">You can request a refund:</string>
+  <string name="request_refund">Request Refund</string>
+  <string name="order_state_exchanging_working">Your order is being processed, Please wait</string>
+  <string name="you_will_receive">You will receive: %1$s %2$S</string>
+  <string name="order_state_exchanging_title_error">Error while exchanging</string>
+  <string name="order_state_exchanging_refund_available_tip">If you have not provided a refund address when creating the order, it will be asked in the next step</string>
 </resources>

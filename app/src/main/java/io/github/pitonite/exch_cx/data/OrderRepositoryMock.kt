@@ -179,6 +179,28 @@ class OrderRepositoryMock : OrderRepository {
         fromAmountReceived = "0.078380831366853865".toBigDecimal(),
     )
 
+    val orderExchangingErrorRefundAvailable = Order(
+        id = "c6b728fe153f566d97",
+        fromCurrency = "btc",
+        toCurrency = "eth",
+        fromAddr = "zzzzp3fvmc8yg0m0h9msh9gddgs2wlwzssstsrn2kr",
+        rate = "0.078380831366853865".toBigDecimal(),
+        networkFee = BigDecimal.valueOf(0.0020280),
+        rateMode = RateFeeMode.FLAT,
+        state = OrderState.EXCHANGING.codifiedEnum(),
+        stateError = OrderStateError.NO_BALANCE_AVAILABLE_TO_SEND.codifiedEnum(),
+        refundAvailable = true,
+        svcFee = BigDecimal.valueOf(1),
+        toAddress = "0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ",
+        minInput = BigDecimal.ZERO,
+        maxInput = BigDecimal.ONE,
+        fromAmount = BigDecimal.ONE,
+        letterOfGuarantee = letterOfGuaranteeExample,
+        transactionIdReceived = "zzww481d0d50298eba3bf924354cfb77abf10399cc0704ac72a18d41037feb58",
+        transactionIdSent = null,
+        fromAmountReceived = "0.078380831366853865".toBigDecimal(),
+    )
+
     val orderConfirmingSend = Order(
         id = "c6b728fe153f566d97",
         fromCurrency = "btc",
