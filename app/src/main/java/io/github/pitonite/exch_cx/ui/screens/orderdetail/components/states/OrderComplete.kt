@@ -85,7 +85,7 @@ fun OrderComplete(
                   disabledContentColor = MaterialTheme.colorScheme.onError,
               )) {
             if (requestOrderDataDeleteWorkState.isWorking()) {
-              CircularProgressIndicator()
+              CircularProgressIndicator(color = MaterialTheme.colorScheme.onError)
             } else {
               Text(stringResource(R.string.delete_data))
             }
