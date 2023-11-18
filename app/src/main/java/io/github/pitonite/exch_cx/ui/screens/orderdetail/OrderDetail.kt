@@ -85,6 +85,7 @@ import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.Order
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderConfirmingSend
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderCreated
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderExchanging
+import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderRefundPending
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderRefundRequest
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 import io.github.pitonite.exch_cx.utils.codified.enums.toLocalizedString
@@ -366,6 +367,7 @@ fun OrderColumn(
       OrderState.REFUND_PENDING -> {
         // the order is enqueued for the refund payout. Once the payout sent, the state will change
         // to CONFIRMING_REFUND
+        OrderRefundPending(order)
       }
       OrderState.CONFIRMING_REFUND -> {
         // Once the payout txid is confirmed, the order state will change to REFUNDED, this is a

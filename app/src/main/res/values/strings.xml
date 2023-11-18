@@ -184,4 +184,7 @@
   <string name="order_state_refund_request_warning_dialog">Are you sure the address is correct? This action is irreversible!</string>
   <string name="order_state_exchanging_request_refund_dialog">Are you sure you want to request refund?</string>
   <string name="notice_refund_network_fee">Network fee will be paid from your funds</string>
+  <string name="order_state_refund_pending_title">Refund Requested</string>
+  <string name="order_state_refund_pending_title_error">Error in Refund</string>
+  <string name="order_state_refund_pending_desc">Your refund is being processed, Please wait</string>
 </resources>
