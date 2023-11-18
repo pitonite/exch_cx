@@ -402,24 +402,24 @@ fun OrderColumn(
     }
 
     OrderStateCard {
-      val isRefund = order.state.code().lowercase().startsWith("refund")
-      val currency = if (isRefund) order.fromCurrency else order.toCurrency
-
-      if (isRefund && order.refundAddress != null) {
-        Column {
-          Text(stringResource(R.string.label_refund_to_address, order.fromCurrency))
-          CopyableText(order.refundAddress, copyConfirmationMessage = R.string.snack_address_copied)
-        }
-      } else {
-        Column {
-          Text(stringResource(R.string.label_exchanged_to_address, order.toCurrency))
-          CopyableText(order.toAddress, copyConfirmationMessage = R.string.snack_address_copied)
-        }
+      Column {
+        Text(stringResource(R.string.label_your_address, order.toCurrency))
+        CopyableText(order.toAddress, copyConfirmationMessage = R.string.snack_address_copied)
       }
 
+
+
       if (!order.transactionIdSent.isNullOrEmpty()) {
+        val isRefund = order.state.code().lowercase().startsWith("refund")
+        val currency = if (isRefund) order.fromCurrency else order.toCurrency
+
         if (order.toAmount != null) {
-          Text(stringResource(R.string.order_sent_amount, order.toAmount, currency))
+          val msg =  if (isRefund) {
+            R.string.order_refund_amount
+          } else {
+            R.string.order_sent_amount
+          }
+          Text(stringResource(msg, order.toAmount, currency))
         }
 
         Column {
@@ -430,9 +430,9 @@ fun OrderColumn(
         }
       }
 
-      if (isRefund && order.refundAddress == null) {
+      if (order.refundAddress != null) {
         Column {
-          Text(stringResource(R.string.label_your_to_address_before_refund, order.toCurrency))
+          Text(stringResource(R.string.label_your_refund_address, order.toCurrency))
           CopyableText(order.toAddress, copyConfirmationMessage = R.string.snack_address_copied)
         }
       }

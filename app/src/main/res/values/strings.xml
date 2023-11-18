@@ -90,8 +90,8 @@
   <string name="error_order_cancelled">Order expired</string>
   <string name="notice">Notice</string>
   <string name="label_mode">Mode:</string>
-  <string name="label_exchanged_to_address">Your %1$S address:</string>
-  <string name="label_your_to_address_before_refund">Your %1$S address before refund:</string>
+  <string name="label_your_address">Your %1$S address:</string>
+  <string name="label_your_refund_address">Your %1$S refund address:</string>
   <string name="label_copy_address">Copy address</string>
   <string name="snack_address_copied">Address Copied!</string>
   <string name="notice_etherium_based_coins">Send funds only on Ethereum Mainnet or they will be lost</string>
@@ -144,6 +144,7 @@
   <string name="open">Open</string>
   <string name="in_order_support_chat">in-order support chat</string>
   <string name="order_sent_amount">Sent amount: %1$s %2$S</string>
+  <string name="order_refund_amount">Refunded amount: %1$s %2$S</string>
   <string name="support_chat">Support Chat</string>
   <string name="close">Close</string>
   <string name="title_letter_of_guarantee">Letter of Guarantee</string>
