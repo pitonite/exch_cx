@@ -49,7 +49,9 @@ data class Order(
     @ColumnInfo(defaultValue = "null") val toAmount: BigDecimal? = null,
     val toAddress: String,
     val toCurrency: String,
+    /** Transaction ID for from_currency received (null when no amount received yet) */
     @ColumnInfo(defaultValue = "null") val transactionIdReceived: String? = null,
+    /** Transaction ID for to_currency sent (null when exchange not finished yet) */
     @ColumnInfo(defaultValue = "null") val transactionIdSent: String? = null,
     // newly added
     @ColumnInfo(defaultValue = "0") val refundAvailable: Boolean = false,
