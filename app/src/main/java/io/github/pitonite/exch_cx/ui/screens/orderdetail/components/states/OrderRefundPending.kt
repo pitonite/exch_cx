@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderExchanging
+import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderRefundPending
 import io.github.pitonite.exch_cx.data.room.Order
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.OrderStateCard
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.TransactionText
@@ -70,7 +71,7 @@ fun OrderRefundPendingPreview() {
   ExchTheme {
     Surface {
       OrderRefundPending(
-          order = orderExchanging,
+          order = orderRefundPending,
       )
     }
   }

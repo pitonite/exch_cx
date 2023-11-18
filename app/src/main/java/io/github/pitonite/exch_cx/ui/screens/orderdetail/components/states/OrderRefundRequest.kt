@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderExchanging
+import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderRefundRequest
 import io.github.pitonite.exch_cx.data.room.Order
 import io.github.pitonite.exch_cx.ui.components.Notice
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.OrderStateCard
@@ -119,7 +120,7 @@ fun OrderRefundRequestPreview() {
   ExchTheme {
     Surface {
       OrderRefundRequest(
-          order = orderExchanging,
+          order = orderRefundRequest,
           requestRefundConfirm = {},
           requestRefundConfirmWorkState = WorkState.NotWorking,
       )
