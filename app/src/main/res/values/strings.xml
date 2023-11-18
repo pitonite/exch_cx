@@ -170,4 +170,6 @@
   <string name="you_will_receive">You will receive: %1$s %2$S</string>
   <string name="order_state_exchanging_title_error">Error while exchanging</string>
   <string name="order_state_exchanging_refund_available_tip">If you have not provided a refund address when creating the order, it will be asked in the next step</string>
+  <string name="order_state_unknown">Unknown State</string>
+  <string name="order_state_unknown_tip">Please open website from top corner menu to see more information</string>
 </resources>

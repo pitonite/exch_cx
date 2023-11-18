@@ -59,6 +59,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock
+import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderAwaitingInputMaxInputZero
+import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderCancelled
+import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderCreated
+import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderCreatedToAddressInvalid
+import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderUnknownState
 import io.github.pitonite.exch_cx.data.UserSettingsRepositoryMock
 import io.github.pitonite.exch_cx.data.room.Order
 import io.github.pitonite.exch_cx.di.getExchDomain
@@ -73,6 +78,7 @@ import io.github.pitonite.exch_cx.ui.screens.home.orders.ExchangePairRow
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.AutomaticOrderUpdateDialog
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.LetterOfGuaranteeDialog
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.OrderStateCard
+import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.TransactionText
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderAwaitingInput
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderCancelled
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderConfirmingInput
@@ -365,7 +371,14 @@ fun OrderColumn(
       else -> {
         // this is when order state is null, this can happen if the states are experimental
 
-        // TODO: implement unknown enum state
+        OrderStateCard {
+          Text(
+              stringResource(R.string.order_state_unknown),
+              style = MaterialTheme.typography.headlineSmall,
+          )
+
+          Text(stringResource(R.string.order_state_unknown_tip))
+        }
       }
     }
 
@@ -381,7 +394,10 @@ fun OrderColumn(
       }
 
       if (!order.transactionIdSent.isNullOrEmpty()) {
-        // todo make transaction id clickable (open website) and copyable
+        Column {
+          Text(stringResource(R.string.label_transaction_id))
+          SelectionContainer { TransactionText(fromCurrency = order.toCurrency, txid = order.transactionIdSent) }
+        }
       }
     }
 
@@ -451,25 +467,31 @@ fun getMockViewModel() =
 @Preview("order - created", widthDp = 360)
 @Composable
 fun OrderColumnCreatedPreview() {
-  ExchTheme { Surface { OrderColumn(getMockViewModel(), OrderRepositoryMock.orders[0], {}) } }
+  ExchTheme { Surface { OrderColumn(getMockViewModel(), orderCreated, {}) } }
 }
 
 @Preview("order - created - max zero", widthDp = 360)
 @Composable
 fun OrderColumnCreatedMaxZeroPreview() {
-  ExchTheme { Surface { OrderColumn(getMockViewModel(), OrderRepositoryMock.orders[1], {}) } }
+  ExchTheme { Surface { OrderColumn(getMockViewModel(), orderAwaitingInputMaxInputZero, {}) } }
 }
 
 @Preview("order - created - error address", widthDp = 360)
 @Composable
 fun OrderColumnCreatedErrorAddressPreview() {
-  ExchTheme { Surface { OrderColumn(getMockViewModel(), OrderRepositoryMock.orders[2], {}) } }
+  ExchTheme { Surface { OrderColumn(getMockViewModel(), orderCreatedToAddressInvalid, {}) } }
 }
 
 @Preview("order - cancelled - error address", widthDp = 360)
 @Composable
 fun OrderColumnCancelledPreview() {
-  ExchTheme { Surface { OrderColumn(getMockViewModel(), OrderRepositoryMock.orders[3], {}) } }
+  ExchTheme { Surface { OrderColumn(getMockViewModel(), orderCancelled, {}) } }
+}
+
+@Preview("order - unknown", widthDp = 360)
+@Composable
+fun OrderColumnUnknownPreview() {
+  ExchTheme { Surface { OrderColumn(getMockViewModel(), orderUnknownState, {}) } }
 }
 
 @Preview("default")

@@ -44,6 +44,20 @@ class OrderRepositoryMock : OrderRepository {
         letterOfGuarantee = letterOfGuaranteeExample,
     )
 
+    val orderUnknownState = Order(
+        id = "ee902b8a5fe0844d41",
+        fromCurrency = "BTC",
+        toCurrency = "ETH",
+        rate = BigDecimal.valueOf(18.867924528301927),
+        rateMode = RateFeeMode.FLAT,
+        state = "unknown".codifiedEnum(),
+        svcFee = BigDecimal.valueOf(1),
+        toAddress = "0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ",
+        minInput = BigDecimal.ZERO,
+        maxInput = BigDecimal.ONE,
+        letterOfGuarantee = letterOfGuaranteeExample,
+    )
+
     val orderCreated = Order(
         id = "ee902b8a5fe0844d41",
         fromCurrency = "eth",
