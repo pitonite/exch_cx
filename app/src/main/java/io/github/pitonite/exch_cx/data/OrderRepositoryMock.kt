@@ -140,6 +140,25 @@ class OrderRepositoryMock : OrderRepository {
         fromAmountReceived = "0.078380831366853865".toBigDecimal(),
     )
 
+    val orderConfirmingInputEthNote = Order(
+        id = "c6b728fe153f566d97",
+        fromCurrency = "eth",
+        toCurrency = "btc",
+        fromAddr = "zzzzp3fvmc8yg0m0h9msh9gddgs2wlwzssstsrn2kr",
+        rate = "0.078380831366853865".toBigDecimal(),
+        networkFee = BigDecimal.valueOf(0.0020280),
+        rateMode = RateFeeMode.FLAT,
+        state = OrderState.CONFIRMING_SEND.codifiedEnum(),
+        svcFee = BigDecimal.valueOf(1),
+        toAddress = "0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ",
+        minInput = BigDecimal.ZERO,
+        maxInput = BigDecimal.ONE,
+        fromAmount = BigDecimal.ONE,
+        letterOfGuarantee = letterOfGuaranteeExample,
+        transactionIdReceived = null,
+        fromAmountReceived = "0.078380831366853865".toBigDecimal(),
+    )
+
     val orderExchanging = Order(
         id = "c6b728fe153f566d97",
         fromCurrency = "btc",
