@@ -24,7 +24,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderCreated
@@ -50,7 +49,7 @@ fun OrderCreated(
           modifier = Modifier.fillMaxWidth(),
           text = stringResource(R.string.order_error_to_address_invalid_title, order.toCurrency),
           style = MaterialTheme.typography.headlineSmall,
-          textAlign = TextAlign.Center)
+      )
 
       var newAddress by rememberSaveable(key = "newAddress_${order.id}") { mutableStateOf("") }
       OutlinedTextField(
