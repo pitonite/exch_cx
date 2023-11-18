@@ -1,14 +1,8 @@
 package io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -17,13 +11,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderRefunded
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderRefundedWithPrivateKey
@@ -63,16 +52,15 @@ fun OrderRefunded(
     if (order.refundPrivateKey != null) {
 
       if (order.toAmount != null) {
-        Text(stringResource(R.string.you_have_been_given_amount, order.toAmount, order.fromCurrency))
+        Text(
+            stringResource(R.string.you_have_been_given_amount, order.toAmount, order.fromCurrency))
       }
 
       Text(stringResource(R.string.order_state_refunded_private_key_desc))
 
       var showPrivateKey by remember { mutableStateOf(false) }
 
-      Button(onClick = {
-        showPrivateKey = true
-      }) {
+      Button(onClick = { showPrivateKey = true }) {
         Text(stringResource(R.string.show_private_key))
       }
 
@@ -110,5 +98,3 @@ fun OrderRefundedWithPrivateKeyPreview() {
     }
   }
 }
-
-

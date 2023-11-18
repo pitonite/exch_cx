@@ -31,6 +31,7 @@ import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderExchan
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderExchangingErrorRefundAvailable
 import io.github.pitonite.exch_cx.data.room.Order
 import io.github.pitonite.exch_cx.ui.components.Notice
+import io.github.pitonite.exch_cx.ui.components.TextWithLoading
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.OrderStateCard
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.TransactionText
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
@@ -74,12 +75,7 @@ fun OrderExchanging(
     }
 
     if (order.stateError == null) {
-      Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            stringResource(R.string.order_state_exchanging_working),
-            modifier = Modifier.padding(end = 4.dp))
-        CircularProgressIndicator(Modifier.size(18.dp))
-      }
+      TextWithLoading(stringResource(R.string.order_state_exchanging_working))
     } else {
       Spacer(Modifier)
     }

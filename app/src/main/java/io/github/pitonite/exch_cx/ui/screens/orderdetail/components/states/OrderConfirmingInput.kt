@@ -27,6 +27,7 @@ import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderConfirmingInput
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderConfirmingInputEthNote
 import io.github.pitonite.exch_cx.data.room.Order
+import io.github.pitonite.exch_cx.ui.components.TextWithLoading
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.OrderStateCard
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.TransactionText
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
@@ -41,31 +42,7 @@ fun OrderConfirmingInput(
         style = MaterialTheme.typography.headlineSmall,
         modifier = Modifier.padding(end = dimensionResource(R.dimen.padding_sm)))
 
-
-    val desc = stringResource(R.string.order_state_confirming_input_desc)
-    val annotatedDesc = buildAnnotatedString {
-      append(desc)
-      append("  ")
-      pushStringAnnotation(tag = "indicator", annotation = "indicator")
-      appendInlineContent(
-          "indicator", "([${stringResource(R.string.accessibility_label_working)}])")
-      pop()
-    }
-    val indicatorSize = LocalTextStyle.current.fontSize
-    Text(annotatedDesc,
-        inlineContent =
-        mapOf(
-            Pair(
-                "indicator",
-                InlineTextContent(
-                    Placeholder(
-                        width = indicatorSize,
-                        height = indicatorSize,
-                        placeholderVerticalAlign = PlaceholderVerticalAlign.Center)
-                ) {
-                  CircularProgressIndicator()
-                },
-            )))
+    TextWithLoading(stringResource(R.string.order_state_confirming_input_desc))
 
     Spacer(Modifier)
 

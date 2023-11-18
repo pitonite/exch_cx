@@ -30,6 +30,7 @@ import io.github.pitonite.exch_cx.data.room.GENERATING_FROM_ADDRESS
 import io.github.pitonite.exch_cx.data.room.Order
 import io.github.pitonite.exch_cx.ui.components.CopyableText
 import io.github.pitonite.exch_cx.ui.components.Notice
+import io.github.pitonite.exch_cx.ui.components.TextWithLoading
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.OrderStateCard
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.etheriumBasedCoins
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
@@ -134,14 +135,7 @@ fun OrderAwaitingInput(
             }
           }
         } else {
-          Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                stringResource(R.string.address_generating) + " ",
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-            )
-            CircularProgressIndicator(Modifier.size(24.dp))
-          }
+          TextWithLoading(stringResource(R.string.address_generating), fontSize = MaterialTheme.typography.bodyLarge.fontSize,color = MaterialTheme.colorScheme.onSurfaceVariant )
         }
       }
     }

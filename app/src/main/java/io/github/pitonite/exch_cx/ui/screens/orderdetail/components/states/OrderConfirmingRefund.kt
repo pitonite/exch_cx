@@ -19,6 +19,7 @@ import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderConfirmingRefund
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderConfirmingSend
 import io.github.pitonite.exch_cx.data.room.Order
+import io.github.pitonite.exch_cx.ui.components.TextWithLoading
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.OrderStateCard
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.TransactionText
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
@@ -55,12 +56,7 @@ fun OrderConfirmingRefund(
     }
 
     if (order.stateError == null) {
-      Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            stringResource(R.string.order_state_confirming_send_desc),
-            modifier = Modifier.padding(end = 4.dp))
-        CircularProgressIndicator(Modifier.size(18.dp))
-      }
+      TextWithLoading(stringResource(R.string.order_state_confirming_send_desc))
     } else {
       Text(stringResource(R.string.order_state_unexpected_error))
     }
