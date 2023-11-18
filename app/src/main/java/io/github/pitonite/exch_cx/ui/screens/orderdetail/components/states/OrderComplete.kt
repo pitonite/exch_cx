@@ -81,8 +81,8 @@ fun OrderComplete(
               ButtonDefaults.buttonColors(
                   containerColor = MaterialTheme.colorScheme.error,
                   contentColor = MaterialTheme.colorScheme.onError,
-                  disabledContainerColor = MaterialTheme.colorScheme.errorContainer,
-                  disabledContentColor = MaterialTheme.colorScheme.onErrorContainer,
+                  disabledContainerColor = MaterialTheme.colorScheme.error,
+                  disabledContentColor = MaterialTheme.colorScheme.onError,
               )) {
             if (requestOrderDataDeleteWorkState.isWorking()) {
               CircularProgressIndicator()
