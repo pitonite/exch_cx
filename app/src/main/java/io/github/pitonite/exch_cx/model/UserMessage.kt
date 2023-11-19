@@ -52,5 +52,5 @@ sealed interface UserMessage {
 fun UserMessage.asString(context: Context) =
     when (this) {
       is UserMessage.Text -> value
-      is UserMessage.StringResource -> context.getString(resId, formatArgs)
+      is UserMessage.StringResource -> context.getString(resId, *formatArgs)
     }

@@ -7,7 +7,11 @@ import io.github.pitonite.exch_cx.model.api.RateFeeResponse
 import io.github.pitonite.exch_cx.model.api.RateFeesObjectTransformer
 import io.github.pitonite.exch_cx.model.api.XmlRateFeesResponse
 import io.github.pitonite.exch_cx.model.api.SupportMessagesArrayTransformer
+import io.github.pitonite.exch_cx.utils.jsonFormat
+import io.github.pitonite.exch_cx.utils.xmlFormat
 import io.ktor.client.call.body
+import io.ktor.client.request.accept
+import io.ktor.http.ContentType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
@@ -19,17 +23,6 @@ import org.junit.After
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
-
-val format = Json {
-  isLenient = true
-  ignoreUnknownKeys = true
-  decodeEnumsCaseInsensitive = true
-}
-
-val formatXML = XML {
-  autoPolymorphic = true
-  repairNamespaces = true
-}
 
 class ParsingUnitTest {
 
@@ -70,7 +63,7 @@ class ParsingUnitTest {
     "transaction_id_sent": null
 }"""
 
-    val orderResponse = format.decodeFromString(OrderResponse.serializer(), resp)
+    val orderResponse = jsonFormat.decodeFromString(OrderResponse.serializer(), resp)
 
     assertNotNull(orderResponse)
   }
@@ -105,7 +98,7 @@ class ParsingUnitTest {
       """
             .trimIndent()
 
-    val feeRates = format.decodeFromString(RateFeesObjectTransformer, resp)
+    val feeRates = jsonFormat.decodeFromString(RateFeesObjectTransformer, resp)
 
     assertNotNull(feeRates)
   }
@@ -139,7 +132,7 @@ class ParsingUnitTest {
       """
             .trimIndent()
 
-    val xmlRateFeesResponse = formatXML.decodeFromString(XmlRateFeesResponse.serializer(), resp)
+    val xmlRateFeesResponse = xmlFormat.decodeFromString(XmlRateFeesResponse.serializer(), resp)
 
     assertNotNull(xmlRateFeesResponse)
   }
@@ -150,6 +143,20 @@ class ParsingUnitTest {
     val resp: RateFeeResponse = client.get("/api/rates").body()
 
     assertNotNull(resp)
+  }
+
+  @Test
+  fun canFetchXmlRateFee() = runBlocking {
+    val client = ExchHttpClient(UserSettingsRepositoryMock())
+    val rateFees = client
+        .get("/rates.xml") {
+          headers["X-Requested-With"] = "XMLHttpRequest"
+          accept(ContentType.Text.Html)
+        }
+        .body<XmlRateFeesResponse>()
+        .rateFees
+
+    assertNotNull(rateFees)
   }
 
   @Test
@@ -172,7 +179,7 @@ class ParsingUnitTest {
     """
             .trimIndent()
 
-    val messagesResponse = format.decodeFromString(SupportMessagesArrayTransformer, resp)
+    val messagesResponse = jsonFormat.decodeFromString(SupportMessagesArrayTransformer, resp)
 
     assertNotNull(messagesResponse)
   }

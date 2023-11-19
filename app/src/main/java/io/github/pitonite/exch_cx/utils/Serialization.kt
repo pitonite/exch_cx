@@ -2,6 +2,7 @@ package io.github.pitonite.exch_cx.utils
 
 import io.github.pitonite.exch_cx.model.api.RateFeesObjectTransformer
 import io.github.pitonite.exch_cx.model.api.SupportMessagesArrayTransformer
+import io.github.pitonite.exch_cx.model.api.XmlRateFeesResponse
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -15,6 +16,7 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
 import kotlinx.serialization.serializer
+import nl.adaptivity.xmlutil.serialization.XML
 import java.math.BigDecimal
 
 @OptIn(ExperimentalSerializationApi::class)
@@ -27,6 +29,11 @@ val jsonFormat = Json {
     contextual(RateFeesObjectTransformer)
     contextual(SupportMessagesArrayTransformer)
   }
+}
+
+val xmlFormat =  XML {
+  autoPolymorphic = true
+  repairNamespaces = true
 }
 
 object BigDecimalSerializer : KSerializer<BigDecimal> {

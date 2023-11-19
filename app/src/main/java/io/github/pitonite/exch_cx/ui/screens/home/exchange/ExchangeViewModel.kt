@@ -27,23 +27,24 @@ import io.github.pitonite.exch_cx.model.api.NetworkFeeOption
 import io.github.pitonite.exch_cx.model.api.OrderCreateRequest
 import io.github.pitonite.exch_cx.model.api.RateFee
 import io.github.pitonite.exch_cx.model.api.RateFeeMode
+import io.github.pitonite.exch_cx.model.api.XmlRateFee
 import io.github.pitonite.exch_cx.model.api.exceptions.ToAddressRequiredException
 import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import io.github.pitonite.exch_cx.ui.screens.home.exchange.currencyselect.CurrencySelection
 import io.github.pitonite.exch_cx.utils.ExchangeWorkState
 import io.github.pitonite.exch_cx.utils.WorkState
+import io.github.pitonite.exch_cx.utils.combine
 import io.github.pitonite.exch_cx.utils.isWorking
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.math.MathContext
 import java.math.RoundingMode
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 @Immutable
 data class ExchangeUiState(
@@ -51,6 +52,7 @@ data class ExchangeUiState(
     val toCurrency: String = "eth",
     val rateFeeMode: RateFeeMode = RateFeeMode.DYNAMIC,
     val rateFee: RateFee? = null,
+    val xmlRateFee: XmlRateFee? = null,
     val svcFee: BigDecimal? = null,
     val networkFeeOption: NetworkFeeOption? = null,
 )
@@ -96,6 +98,14 @@ constructor(
               _networkFeeOption.value = null
             }
           }
+          .stateIn(
+              scope = viewModelScope,
+              started = SharingStarted.WhileSubscribed(5_000),
+              initialValue = null)
+
+  private val _xmlRateFee =
+      rateFeeRepository
+          .findXmlRateStream(_fromCurrency, _toCurrency)
           .stateIn(
               scope = viewModelScope,
               started = SharingStarted.WhileSubscribed(5_000),
@@ -156,13 +166,15 @@ constructor(
               _toCurrency,
               _rateFeeMode,
               _rateFee,
+              _xmlRateFee,
               _networkFeeOption,
-          ) { fromCurrency, toCurrency, rateFeeMode, rateFee, networkFeeOption ->
+          ) { fromCurrency, toCurrency, rateFeeMode, rateFee, xmlRateFee, networkFeeOption ->
             ExchangeUiState(
                 fromCurrency = fromCurrency,
                 toCurrency = toCurrency,
                 rateFeeMode = rateFeeMode,
                 rateFee = rateFee,
+                xmlRateFee = xmlRateFee,
                 networkFeeOption = networkFeeOption,
             )
           }
@@ -215,10 +227,38 @@ constructor(
 
   fun updateConversionAmounts(edited: CurrencySelection) {
     val fee = _rateFee.value
+    val xmlRate = _xmlRateFee.value
     if (fee != null) {
       if (edited == CurrencySelection.FROM) {
-        // update to amount
+
         fromAmount.toBigDecimalOrNull()?.let { it ->
+          // check against minimum input
+          if (xmlRate?.minAmount?.compareTo(it) == 1) {
+            updateFromAmount(xmlRate.minAmount.toString())
+            SnackbarManager.showMessage(
+                SnackbarMessage.from(
+                    UserMessage.from(
+                        R.string.minimum_input_is, xmlRate.minAmount, fee.fromCurrency),
+                    duration = SnackbarDuration.Short,
+                    withDismissAction = true,
+                ))
+            updateConversionAmounts(edited)
+            return@let
+          }
+          // check against maximum input
+          if (xmlRate?.maxAmount?.compareTo(it) == -1) {
+            updateFromAmount(xmlRate.maxAmount.toString())
+            SnackbarManager.showMessage(
+                SnackbarMessage.from(
+                    UserMessage.from(
+                        R.string.maximum_input_is, xmlRate.maxAmount, fee.fromCurrency),
+                    duration = SnackbarDuration.Short,
+                    withDismissAction = true,
+                ))
+            updateConversionAmounts(edited)
+            return@let
+          }
+          // update to amount
           if (it > BigDecimal.ZERO) { // we don't want infinity
             val newToAmount =
                 it.multiply(fee.rate, MathContext.DECIMAL64)

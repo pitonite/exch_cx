@@ -5,6 +5,7 @@ import io.github.pitonite.exch_cx.model.CurrencyDetail
 import io.github.pitonite.exch_cx.model.api.NetworkFeeOption
 import io.github.pitonite.exch_cx.model.api.RateFee
 import io.github.pitonite.exch_cx.model.api.RateFeeMode
+import io.github.pitonite.exch_cx.model.api.XmlRateFee
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,7 +13,7 @@ import kotlinx.coroutines.flow.combine
 import java.math.BigDecimal
 
 @Stable
-class RateFeeRepositoryMock() : RateFeeRepository {
+class RateFeeRepositoryMock : RateFeeRepository {
 
   companion object {
     val rates =
@@ -44,9 +45,22 @@ class RateFeeRepositoryMock() : RateFeeRepository {
                     ),
             ),
         )
+
+    val xmlRates = mutableListOf(
+        XmlRateFee(
+            fromCurrency = "eth",
+            toCurrency = "btc",
+            inAmount = "1.05709453".toBigDecimalOrNull()!!,
+            outAmount = "0.05709453".toBigDecimalOrNull()!!,
+            availableAmount= "10.70945013".toBigDecimalOrNull()!!,
+            minAmount= "0.00709453".toBigDecimalOrNull()!!,
+            maxAmount= "1.05709453".toBigDecimalOrNull()!!,
+        )
+    )
   }
 
   override val rateFees: StateFlow<List<RateFee>> = MutableStateFlow(rates)
+  override val xmlRateFees: StateFlow<List<XmlRateFee>> = MutableStateFlow(xmlRates)
 
   override val currencies: StateFlow<List<CurrencyDetail>>
     get() {
@@ -66,6 +80,15 @@ class RateFeeRepositoryMock() : RateFeeRepository {
   ): Flow<RateFee?> {
     return combine(fromCurrency, toCurrency) { from, to ->
       rateFees.value.find { it.fromCurrency == from && it.toCurrency == to }
+    }
+  }
+
+  override fun findXmlRateStream(
+    fromCurrency: Flow<String?>,
+    toCurrency: Flow<String?>
+  ): Flow<XmlRateFee?> {
+    return combine(fromCurrency, toCurrency) { from, to ->
+      xmlRateFees.value.find { it.fromCurrency == from && it.toCurrency == to }
     }
   }
 }

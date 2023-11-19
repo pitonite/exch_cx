@@ -7,6 +7,7 @@ import io.github.pitonite.exch_cx.data.UserSettingsRepository
 import io.github.pitonite.exch_cx.model.api.ErrorResponse
 import io.github.pitonite.exch_cx.model.api.exceptions.ApiException
 import io.github.pitonite.exch_cx.utils.jsonFormat
+import io.github.pitonite.exch_cx.utils.xmlFormat
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.android.Android
@@ -32,13 +33,12 @@ import io.ktor.http.contentType
 import io.ktor.serialization.ContentConvertException
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.serialization.kotlinx.xml.xml
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import nl.adaptivity.xmlutil.serialization.XML
-import javax.inject.Inject
-import javax.inject.Singleton
 
 private const val NORMAL_HOST = "exch.cx"
 private const val ONION_HOST = "hszyoqwrcp7cxlxnqmovp6vjvmnwj33g4wviuxqzq47emieaxjaperyd.onion"
@@ -103,12 +103,7 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
           install(ContentNegotiation) {
             json(jsonFormat)
 
-            xml(
-                format =
-                    XML {
-                      autoPolymorphic = true
-                      repairNamespaces = true
-                    })
+            xml(format = xmlFormat, contentType = ContentType.Text.Html)
           }
 
           HttpResponseValidator {
