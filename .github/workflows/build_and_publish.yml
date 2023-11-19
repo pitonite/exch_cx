@@ -1,0 +1,59 @@
+name: build
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-and-sign:
+    runs-on: ubuntu-latest
+    container:
+      image: cimg/android:2023.11
+      options: --user root
+    
+    steps:
+    - name: install git
+      run: |
+        sudo apt-get update;
+        sudo apt-get -y install git;
+
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: setup JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
+
+    - name: Grant execute perm to gradlew
+      run: chmod +x gradlew
+
+    - name: build
+      run: | 
+        ./gradlew --no-daemon :app:assembleRelease  --stacktrace
+
+    - name: Sign App Apk
+      if: ${{ github.event_name == 'release'}}
+      uses: r0adkll/sign-android-release@v1
+      with:
+        releaseDirectory: app/build/outputs/apk/release
+        signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
+        alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+        keyStorePassword: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
+        keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+      env: 
+        BUILD_TOOLS_VERSION: "33.0.2"
+       
+    - name: Release on GitHub
+      uses: ncipollo/release-action@v1
+      with:
+        prerelease: true
+        omitBody: true
+        omitBodyDuringUpdate: true
+        omitName: true
+        allowUpdates: true
+        replacesArtifacts: true
+        updateOnlyUnreleased: true
+        artifacts: app/build/outputs/apk/release/*signed.apk
