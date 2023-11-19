@@ -73,6 +73,10 @@ constructor(
     exchDatabase.supportMessagesDao().addUserMessage(orderid, message)
   }
 
+  override suspend fun countMessages(orderid: String): Int {
+    return exchDatabase.supportMessagesDao().count(orderid)
+  }
+
   override suspend fun updateMessages(messages: List<SupportMessage>) {
     exchDatabase.supportMessagesDao().upsertMessages(messages)
   }

@@ -21,4 +21,6 @@ interface SupportMessagesRepository {
 
   /** this is for inserting a user message locally, for when sending message is successful, without the need to refresh */
   suspend fun addUserMessage(orderid: String, message: String)
+
+  suspend fun countMessages(orderid: String): Int
 }

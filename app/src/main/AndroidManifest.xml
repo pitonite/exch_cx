@@ -38,6 +38,9 @@
         <data
             android:scheme="exchcx"
             android:host="order" />
+        <data
+            android:scheme="exchcx"
+            android:host="order_support" />
       </intent-filter>
     </activity>
 

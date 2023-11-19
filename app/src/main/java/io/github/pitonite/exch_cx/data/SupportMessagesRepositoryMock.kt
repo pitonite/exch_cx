@@ -79,4 +79,7 @@ class SupportMessagesRepositoryMock : SupportMessagesRepository {
 
   override suspend fun updateMessage(message: SupportMessage) {}
   override suspend fun addUserMessage(orderid: String, message: String) {}
+  override suspend fun countMessages(orderid: String): Int {
+    return 0
+  }
 }

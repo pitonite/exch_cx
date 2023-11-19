@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.compose.runtime.Stable
 import io.github.pitonite.exch_cx.ui.navigation.getOrderDetailUri
+import io.github.pitonite.exch_cx.ui.navigation.getOrderSupportUri
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
@@ -41,6 +42,17 @@ sealed interface Event {
 fun getOrderDeepLinkPendingIntent(context: Context, orderid: String): PendingIntent {
   val routeIntent =
       Intent(Intent.ACTION_VIEW, getOrderDetailUri(orderid)).apply {
+        flags = Intent.FLAG_ACTIVITY_SINGLE_TOP and Intent.FLAG_ACTIVITY_CLEAR_TOP
+      }
+
+  val flags = PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+
+  return PendingIntent.getActivity(context, 0, routeIntent, flags)
+}
+
+fun getOrderSupportDeepLinkPendingIntent(context: Context, orderid: String): PendingIntent {
+  val routeIntent =
+      Intent(Intent.ACTION_VIEW, getOrderSupportUri(orderid)).apply {
         flags = Intent.FLAG_ACTIVITY_SINGLE_TOP and Intent.FLAG_ACTIVITY_CLEAR_TOP
       }
 

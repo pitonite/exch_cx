@@ -205,4 +205,7 @@
   <string name="order_state_complete_delete_data_warning_dialog">Are you sure you want to delete the order data ? this action is irreversible!</string>
   <string name="delete_data">Delete Data</string>
   <string name="accessibility_label_working">Working</string>
+  <string name="channel_id_order_support">channel_id_order_support</string>
+  <string name="you_have_a_new_message_from_support">You have a new message from support</string>
+  <string name="channel_name_order_support">Order Support</string>
 </resources>

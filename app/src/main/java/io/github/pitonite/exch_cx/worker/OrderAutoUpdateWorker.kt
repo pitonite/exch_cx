@@ -16,10 +16,13 @@ import io.github.pitonite.exch_cx.ExchWorkManager
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.TotalWorkItems
 import io.github.pitonite.exch_cx.data.OrderRepository
+import io.github.pitonite.exch_cx.data.SupportMessagesRepository
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
 import io.github.pitonite.exch_cx.data.mappers.toOrderUpdateWithArchiveEntity
 import io.github.pitonite.exch_cx.getOrderDeepLinkPendingIntent
+import io.github.pitonite.exch_cx.getOrderSupportDeepLinkPendingIntent
 import io.github.pitonite.exch_cx.model.api.OrderState
+import io.github.pitonite.exch_cx.model.api.SupportMessageSender
 import io.github.pitonite.exch_cx.utils.codified.enums.toLocalizedString
 import io.github.pitonite.exch_cx.utils.createNotificationChannels
 import io.github.pitonite.exch_cx.utils.isNotificationAllowed
@@ -35,6 +38,7 @@ constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
     private val orderRepository: OrderRepository,
+    private val supportMessagesRepository: SupportMessagesRepository,
     private val userSettingsRepository: UserSettingsRepository,
     private val exchWorkManager: ExchWorkManager,
 ) : CoroutineWorker(context, workerParams) {
@@ -73,7 +77,8 @@ constructor(
           Log.e(TAG, "Trying to update order #${order.id}")
 
           val hasLetterOfGuarantee = !order.letterOfGuarantee.isNullOrEmpty()
-          val hasLetterOfGuaranteeConditions = order.stateError == null && order.state.knownOrNull() != OrderState.CREATED
+          val hasLetterOfGuaranteeConditions =
+              order.stateError == null && order.state.knownOrNull() != OrderState.CREATED
           try {
             val fetchedOrder = orderRepository.fetchOrder(order.id)
 
@@ -91,9 +96,43 @@ constructor(
             val orderUpdate = fetchedOrder.toOrderUpdateWithArchiveEntity(archived = archived)
             orderRepository.updateOrder(orderUpdate)
 
+            // fetch letter of guarantee
             if (!hasLetterOfGuarantee && hasLetterOfGuaranteeConditions) {
               try {
                 orderRepository.fetchAndUpdateLetterOfGuarantee(order.id)
+              } catch (e: Exception) {
+                // no need
+              }
+            }
+
+            // fetch support messages if needed
+            val messagesCount = supportMessagesRepository.countMessages(order.id)
+            if (messagesCount > 0) {
+              try {
+                val messages = supportMessagesRepository.fetchMessages(order.id)
+                if (messages.size > messagesCount &&
+                    messages.lastOrNull()?.let { it.sender == SupportMessageSender.SUPPORT } ==
+                        true) {
+                  supportMessagesRepository.updateMessages(messages)
+                  // tell user about new message from support
+                  if (notifManager != null) {
+                    val notifTag = "order-support:${order.id}"
+
+                    val notifBuilder =
+                        NotificationCompat.Builder(
+                                context, context.getString(R.string.channel_id_order_support))
+                            .setSmallIcon(R.drawable.x_large)
+                            .setContentTitle(context.getString(R.string.order) + " " + order.id)
+                            .setContentText(
+                                context.getString(R.string.you_have_a_new_message_from_support))
+                            .setContentIntent(
+                                getOrderSupportDeepLinkPendingIntent(context, order.id))
+                            .setAutoCancel(true)
+
+                    notifManager.notify(
+                        notifTag, R.id.notif_id_order_state_change, notifBuilder.build())
+                  }
+                }
               } catch (e: Exception) {
                 // no need
               }
