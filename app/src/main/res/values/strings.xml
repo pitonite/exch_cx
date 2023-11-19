@@ -208,4 +208,7 @@
   <string name="channel_id_order_support">channel_id_order_support</string>
   <string name="you_have_a_new_message_from_support">You have a new message from support</string>
   <string name="channel_name_order_support">Order Support</string>
+  <string name="label_delete_remote_order_data_automatically">Request order data to be deleted automatically when the order is complete?</string>
+  <string name="channel_id_order_deletion">channel_id_order_deletion</string>
+  <string name="failed_to_delete_remote_order_data">Failed to automatically delete remote order data, please try again later manually</string>
 </resources>

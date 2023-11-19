@@ -96,6 +96,12 @@ constructor(
         ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE)
   }
 
+  override suspend fun setDeleteRemoteOrderDataAutomatically(value: Boolean) {
+    userSettingsStore.updateData { currentSettings ->
+      currentSettings.toBuilder().setDeleteRemoteOrderDataAutomatically(value).build()
+    }
+  }
+
   override suspend fun saveSettings(userSettings: UserSettings) {
     exchWorkManager.adjustAutoUpdater(
         userSettings,

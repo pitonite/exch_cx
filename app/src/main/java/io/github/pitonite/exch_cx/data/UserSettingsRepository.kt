@@ -30,4 +30,6 @@ interface UserSettingsRepository {
   suspend fun setFirstInitDone(value: Boolean)
 
   suspend fun setOrderAutoUpdatePeriodMinutes(value: Long)
+
+  suspend fun setDeleteRemoteOrderDataAutomatically(value: Boolean)
 }

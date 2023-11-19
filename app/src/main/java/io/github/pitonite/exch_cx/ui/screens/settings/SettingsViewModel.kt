@@ -40,6 +40,10 @@ constructor(
   var archiveOrdersAutomaticallyDraft by mutableStateOf(true)
     private set
 
+  var deleteRemoteOrderDataAutomaticallyDraft by mutableStateOf(false)
+    private set
+
+
   fun updateApiKeyDraft(value: String) {
     apiKeyDraft = value
   }
@@ -60,6 +64,10 @@ constructor(
     archiveOrdersAutomaticallyDraft = value
   }
 
+  fun updateDeleteRemoteOrderDataAutomaticallyDraft(value: Boolean) {
+    deleteRemoteOrderDataAutomaticallyDraft = value
+  }
+
   fun reloadSettings() {
     viewModelScope.launch {
       userSettingsRepository.userSettingsFlow.firstOrNull()?.let {
@@ -68,6 +76,7 @@ constructor(
         isOrderAutoUpdateEnabledDraft = it.isOrderAutoUpdateEnabled
         orderAutoUpdatePeriodMinutesDraft = it.orderAutoUpdatePeriodMinutes
         archiveOrdersAutomaticallyDraft = it.archiveOrdersAutomatically
+        deleteRemoteOrderDataAutomaticallyDraft = it.deleteRemoteOrderDataAutomatically
       }
     }
   }
@@ -89,6 +98,7 @@ constructor(
             isOrderAutoUpdateEnabled = isOrderAutoUpdateEnabledDraft
             orderAutoUpdatePeriodMinutes = orderAutoUpdatePeriodMinutesDraft
             archiveOrdersAutomatically = archiveOrdersAutomaticallyDraft
+            deleteRemoteOrderDataAutomatically = deleteRemoteOrderDataAutomaticallyDraft
           })
     }
   }

@@ -17,4 +17,5 @@ message UserSettings {
   bool has_shown_order_background_update_notice = 6;
   int64 order_auto_update_period_minutes = 7;
   bool archive_orders_automatically = 8;
+  bool delete_remote_order_data_automatically = 9;
 }

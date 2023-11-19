@@ -116,7 +116,7 @@ constructor(
                   supportMessagesRepository.updateMessages(messages)
                   // tell user about new message from support
                   if (notifManager != null) {
-                    val notifTag = "order-support:${order.id}"
+                    val notifTag = "order:${order.id}"
 
                     val notifBuilder =
                         NotificationCompat.Builder(
@@ -130,7 +130,7 @@ constructor(
                             .setAutoCancel(true)
 
                     notifManager.notify(
-                        notifTag, R.id.notif_id_order_state_change, notifBuilder.build())
+                        notifTag, R.id.notif_id_order_support_new_message, notifBuilder.build())
                   }
                 }
               } catch (e: Exception) {
@@ -159,6 +159,28 @@ constructor(
                       .setAutoCancel(true)
 
               notifManager.notify(notifTag, R.id.notif_id_order_state_change, notifBuilder.build())
+            }
+
+            if (stateHasChanged && orderUpdate.state.knownOrNull() == OrderState.COMPLETE && settings.deleteRemoteOrderDataAutomatically) {
+              try {
+                  orderRepository.deleteRemote(order.id)
+              } catch (e: Exception) {
+                if (notifManager != null) {
+                  val notifTag = "order:${order.id}"
+
+                  val notifBuilder =
+                      NotificationCompat.Builder(
+                          context, context.getString(R.string.channel_id_order_deletion))
+                          .setSmallIcon(R.drawable.x_large)
+                          .setContentTitle(context.getString(R.string.order) + " " + order.id)
+                          .setContentText(
+                              context.getString(R.string.failed_to_delete_remote_order_data))
+                          .setContentIntent(getOrderDeepLinkPendingIntent(context, order.id))
+                          .setAutoCancel(true)
+
+                  notifManager.notify(notifTag, R.id.notif_id_order_delete_failed, notifBuilder.build())
+                }
+              }
             }
           } catch (e: Exception) {
             Log.e(TAG, e.message ?: e.toString())

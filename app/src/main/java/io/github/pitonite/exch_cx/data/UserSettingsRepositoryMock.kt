@@ -32,5 +32,7 @@ class UserSettingsRepositoryMock(
 
   override suspend fun setOrderAutoUpdatePeriodMinutes(value: Long) {}
 
+  override suspend fun setDeleteRemoteOrderDataAutomatically(value: Boolean) {}
+
   override suspend fun saveSettings(userSettings: UserSettings) {}
 }
