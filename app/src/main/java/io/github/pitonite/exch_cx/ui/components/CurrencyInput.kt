@@ -27,7 +27,7 @@ fun CurrencyInput(
     onFocusLost: () -> Unit = {},
     currency: String,
     minValue: BigDecimal? = null,
-    maxValue: BigDecimal? = BigDecimal.valueOf(10000),
+    maxValue: BigDecimal? = null,
     onNavigateToRoute: (route: String) -> Unit,
     enabled: Boolean = true,
     imeAction: ImeAction = ImeAction.Next,
