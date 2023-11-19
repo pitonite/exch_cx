@@ -8,7 +8,7 @@ permissions:
   contents: write
 
 jobs:
-  build-and-sign:
+  build:
     runs-on: ubuntu-latest
     container:
       image: cimg/android:2023.11
