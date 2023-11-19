@@ -1,3 +1,7 @@
+import com.android.build.gradle.api.ApplicationVariant
+import com.android.build.gradle.api.BaseVariantOutput
+import com.android.build.gradle.internal.api.BaseVariantOutputImpl
+
 plugins {
   id("com.android.application")
   id("org.jetbrains.kotlin.android")
@@ -40,6 +44,8 @@ android {
   packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
 
   androidResources { generateLocaleConfig = true }
+
+  applicationVariants.all(ApplicationVariantAction())
 }
 
 dependencies {
@@ -144,6 +150,27 @@ protobuf {
         // Lite has smaller code size and is recommended for Android
         create("java") { option("lite") }
         create("kotlin") { option("lite") }
+      }
+    }
+  }
+}
+
+class ApplicationVariantAction : Action<ApplicationVariant> {
+  override fun execute(variant: ApplicationVariant) {
+    val fileName = createFileName(variant)
+    variant.outputs.all(VariantOutputAction(fileName))
+  }
+
+  private fun createFileName(variant: ApplicationVariant): String {
+    return "exch-cx-app-v${variant.versionName}-${variant.versionCode*1000}.apk"
+  }
+
+  class VariantOutputAction(
+    private val fileName: String
+  ) : Action<BaseVariantOutput> {
+    override fun execute(output: BaseVariantOutput) {
+      if (output is BaseVariantOutputImpl) {
+        output.outputFileName = fileName
       }
     }
   }
