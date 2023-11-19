@@ -71,18 +71,18 @@ import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 import io.github.pitonite.exch_cx.utils.isWorking
 import io.github.pitonite.exch_cx.utils.noRippleClickable
 import io.github.pitonite.exch_cx.utils.verticalFadingEdge
+import java.util.Calendar
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderSupport(
-  viewModel: OrderSupportViewModel,
-  upPress: () -> Unit,
-  modifier: Modifier = Modifier
+    viewModel: OrderSupportViewModel,
+    upPress: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
   val orderid by viewModel.orderid.collectAsStateWithLifecycle()
   val messages = viewModel.messagesPagingDataFlow.collectAsLazyPagingItems()
@@ -114,14 +114,18 @@ fun OrderSupport(
 
   Scaffold(
       modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-      snackbarHost = { SnackbarHost(hostState = SnackbarManager.snackbarHostState) },
+      snackbarHost = {
+        SnackbarHost(
+            hostState = SnackbarManager.snackbarHostState,
+            modifier = Modifier.navigationBarsPadding().imePadding().padding(bottom = 60.dp))
+      },
       topBar = {
         CenterAlignedTopAppBar(
             scrollBehavior = scrollBehavior,
             colors =
-            TopAppBarDefaults.centerAlignedTopAppBarColors(
-                scrolledContainerColor = MaterialTheme.colorScheme.inverseOnSurface,
-            ),
+                TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    scrolledContainerColor = MaterialTheme.colorScheme.inverseOnSurface,
+                ),
             title = {
               Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(stringResource(R.string.support_chat))
@@ -155,41 +159,30 @@ fun OrderSupport(
         )
       },
       // Exclude ime and navigation bar padding so this can be added by the UserInput composable
-      contentWindowInsets = ScaffoldDefaults
-          .contentWindowInsets
-          .exclude(WindowInsets.navigationBars)
-          .exclude(WindowInsets.ime),
+      contentWindowInsets =
+          ScaffoldDefaults.contentWindowInsets
+              .exclude(WindowInsets.navigationBars)
+              .exclude(WindowInsets.ime),
   ) { padding ->
     Column(
-        modifier
-            .fillMaxSize()
-            .padding(padding)
-            .noRippleClickable { focusManager.clearFocus() },
+        modifier.fillMaxSize().padding(padding).noRippleClickable { focusManager.clearFocus() },
     ) {
       Messages(
           messages = messages,
           scrollState = scrollState,
-          modifier = Modifier
-              .weight(1f),
+          modifier = Modifier.weight(1f),
       )
       UserInput(
           value = viewModel.messageDraft,
           onValueChanged = viewModel::updateMessageDraft,
           onSendMessage = {
-            viewModel.sendMessage {
-              scope.launch {
-                scrollState.scrollToItem(0)
-              }
-            }
+            viewModel.sendMessage { scope.launch { scrollState.scrollToItem(0) } }
           },
           sendingMessage = viewModel.sendingWorkState.isWorking(),
-          modifier = Modifier
-              .navigationBarsPadding()
-              .imePadding(),
+          modifier = Modifier.navigationBarsPadding().imePadding(),
       )
     }
   }
-
 }
 
 fun areSameDay(timeInMillis1: Long, timeInMillis2: Long): Boolean {
@@ -202,51 +195,42 @@ fun areSameDay(timeInMillis1: Long, timeInMillis2: Long): Boolean {
 
 @Composable
 private fun Messages(
-  messages: LazyPagingItems<SupportMessage>,
-  scrollState: LazyListState,
-  modifier: Modifier = Modifier
+    messages: LazyPagingItems<SupportMessage>,
+    scrollState: LazyListState,
+    modifier: Modifier = Modifier
 ) {
   val scope = rememberCoroutineScope()
   Box(modifier = modifier) {
     when (messages.loadState.refresh) {
-
       is LoadState.Error ->
-        Card {
-          Column(Modifier.padding(vertical = 70.dp, horizontal = 20.dp)) {
-            Text(stringResource(R.string.unknown_error))
+          Card {
+            Column(Modifier.padding(vertical = 70.dp, horizontal = 20.dp)) {
+              Text(stringResource(R.string.unknown_error))
+            }
           }
-        }
-
       else -> {
         LazyColumn(
             reverseLayout = true,
             state = scrollState,
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalFadingEdge(scrollState, dimensionResource(R.dimen.fading_edge)),
+            modifier =
+                Modifier.fillMaxSize()
+                    .verticalFadingEdge(scrollState, dimensionResource(R.dimen.fading_edge)),
             horizontalAlignment = Alignment.CenterHorizontally,
-
-            ) {
-
+        ) {
           if (messages.itemCount == 0) {
             if (messages.loadState.refresh is LoadState.Loading) {
               item {
                 CircularProgressIndicator(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .size(50.dp),
+                    modifier = Modifier.align(Alignment.Center).size(50.dp),
                 )
               }
             } else {
               item {
                 Column(
-                    Modifier
-                        .fillParentMaxHeight()
-                        .padding(dimensionResource(R.dimen.page_padding)),
+                    Modifier.fillParentMaxHeight().padding(dimensionResource(R.dimen.page_padding)),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                 ) {
-
                   Surface(
                       color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                       shape = MaterialTheme.shapes.large,
@@ -254,20 +238,18 @@ private fun Messages(
                     Text(
                         text = stringResource(R.string.notice_empty_support_chat),
                         style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(
-                            horizontal = dimensionResource(R.dimen.padding_md),
-                            vertical = dimensionResource(R.dimen.padding_xs),
-                        ),
+                        modifier =
+                            Modifier.padding(
+                                horizontal = dimensionResource(R.dimen.padding_md),
+                                vertical = dimensionResource(R.dimen.padding_xs),
+                            ),
                     )
                   }
                 }
               }
             }
-
           } else {
-            item {
-              Spacer(Modifier.height(8.dp))
-            }
+            item { Spacer(Modifier.height(8.dp)) }
           }
           items(
               count = messages.itemCount,
@@ -280,12 +262,14 @@ private fun Messages(
               // so rendering is a bit tricky
               val nextItem = if (index > 0) messages[index - 1] else null
               val prevItem = if (index < messages.itemCount - 1) messages[index + 1] else null
-              val shouldUngroupMessage = prevItem?.sender != item.sender || prevItem?.let {
-                areSameDay(
-                    item.createdAt.time,
-                    it.createdAt.time,
-                )
-              } == false
+              val shouldUngroupMessage =
+                  prevItem?.sender != item.sender ||
+                      prevItem?.let {
+                        areSameDay(
+                            item.createdAt.time,
+                            it.createdAt.time,
+                        )
+                      } == false
               MessageItem(item, shouldUngroupMessage)
 
               if (nextItem?.sender != item.sender) {
@@ -306,9 +290,7 @@ private fun Messages(
 
     // Jump to bottom button shows up when user scrolls past a threshold.
     // Convert to pixels:
-    val jumpThreshold = with(LocalDensity.current) {
-      jumpToBottomThreshold.toPx()
-    }
+    val jumpThreshold = with(LocalDensity.current) { jumpToBottomThreshold.toPx() }
 
     // Show the button if the first visible item is not the first one or if the offset is
     // greater than the threshold.
@@ -322,16 +304,11 @@ private fun Messages(
     JumpToBottom(
         // Only show if the scroller is not at the bottom
         enabled = jumpToBottomButtonEnabled,
-        onClicked = {
-          scope.launch {
-            scrollState.animateScrollToItem(0)
-          }
-        },
+        onClicked = { scope.launch { scrollState.animateScrollToItem(0) } },
         modifier = Modifier.align(Alignment.BottomCenter),
     )
   }
 }
-
 
 @Preview("default")
 @Composable
@@ -341,10 +318,10 @@ fun OrderSupportPreview() {
   ExchTheme {
     OrderSupport(
         viewModel =
-        OrderSupportViewModel(
-            savedStateHandle,
-            SupportMessagesRepositoryMock(),
-        ),
+            OrderSupportViewModel(
+                savedStateHandle,
+                SupportMessagesRepositoryMock(),
+            ),
         upPress = {},
     )
   }
