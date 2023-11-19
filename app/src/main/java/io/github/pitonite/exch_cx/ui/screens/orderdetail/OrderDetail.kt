@@ -432,8 +432,8 @@ fun OrderColumn(
 
       if (order.refundAddress != null) {
         Column {
-          Text(stringResource(R.string.label_your_refund_address, order.toCurrency))
-          CopyableText(order.toAddress, copyConfirmationMessage = R.string.snack_address_copied)
+          Text(stringResource(R.string.label_your_refund_address, order.fromCurrency))
+          CopyableText(order.refundAddress, copyConfirmationMessage = R.string.snack_address_copied)
         }
       }
     }
