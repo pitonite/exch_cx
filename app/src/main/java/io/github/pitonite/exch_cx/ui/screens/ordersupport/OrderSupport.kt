@@ -272,7 +272,7 @@ private fun Messages(
                       } == false
               MessageItem(item, shouldUngroupMessage)
 
-              if (nextItem?.sender != item.sender) {
+              if (prevItem?.sender != item.sender) {
                 Spacer(Modifier.height(dimensionResource(R.dimen.padding_md)))
               } else {
                 Spacer(Modifier.height(dimensionResource(R.dimen.padding_xs)))
