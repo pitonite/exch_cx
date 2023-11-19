@@ -5,7 +5,7 @@ import io.github.pitonite.exch_cx.di.ExchHttpClient
 import io.github.pitonite.exch_cx.model.api.OrderResponse
 import io.github.pitonite.exch_cx.model.api.RateFeeResponse
 import io.github.pitonite.exch_cx.model.api.RateFeesObjectTransformer
-import io.github.pitonite.exch_cx.model.api.RatesResponse
+import io.github.pitonite.exch_cx.model.api.XmlRateFeesResponse
 import io.github.pitonite.exch_cx.model.api.SupportMessagesArrayTransformer
 import io.ktor.client.call.body
 import kotlinx.coroutines.Dispatchers
@@ -139,9 +139,9 @@ class ParsingUnitTest {
       """
             .trimIndent()
 
-    val ratesResponse = formatXML.decodeFromString(RatesResponse.serializer(), resp)
+    val xmlRateFeesResponse = formatXML.decodeFromString(XmlRateFeesResponse.serializer(), resp)
 
-    assertNotNull(ratesResponse)
+    assertNotNull(xmlRateFeesResponse)
   }
 
   @Test

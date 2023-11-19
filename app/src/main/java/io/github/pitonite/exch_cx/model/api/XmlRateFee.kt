@@ -11,7 +11,7 @@ import java.math.BigDecimal
 
 @Serializable
 @Immutable
-data class Rate(
+data class XmlRateFee(
     @XmlElement(true) @XmlSerialName("from", "", "") val fromCurrency: String,
     @XmlElement(true) @XmlSerialName("to", "", "") val toCurrency: String,
 
@@ -52,6 +52,6 @@ data class Rate(
 @Serializable
 @XmlSerialName("rates")
 @Immutable
-data class RatesResponse(
-    @XmlSerialName("item") val rates: List<Rate>,
+data class XmlRateFeesResponse(
+  @XmlSerialName("item") val rateFees: List<XmlRateFee>,
 )
