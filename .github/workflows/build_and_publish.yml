@@ -1,8 +1,11 @@
-name: build
+name: build and publish
 
 on:
   release:
     types: [published]
+
+permissions:
+  contents: write
 
 jobs:
   build-and-sign:
