@@ -105,7 +105,7 @@ constructor(
         if (!hasLetterOfGuarantee && hasLetterOfGuaranteeConditions) {
             try {
               orderRepository.fetchAndUpdateLetterOfGuarantee(id)
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
               // no need
             }
         }

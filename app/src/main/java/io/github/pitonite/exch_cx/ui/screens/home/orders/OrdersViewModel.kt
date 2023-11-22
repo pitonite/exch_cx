@@ -139,8 +139,8 @@ constructor(
         }
         showImportDialog = false
         importOrderWork = WorkState.NotWorking
-      } catch (err: Throwable) {
-        importOrderWork = WorkState.Error(err)
+      } catch (e: Throwable) {
+        importOrderWork = WorkState.Error(e)
       }
     }
   }

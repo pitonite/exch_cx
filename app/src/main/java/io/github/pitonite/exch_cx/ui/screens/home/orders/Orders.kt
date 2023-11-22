@@ -54,6 +54,7 @@ import androidx.paging.compose.itemKey
 import io.github.pitonite.exch_cx.ExchWorkManager
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock
+import io.github.pitonite.exch_cx.data.SupportMessagesRepositoryMock
 import io.github.pitonite.exch_cx.data.UserSettingsRepositoryMock
 import io.github.pitonite.exch_cx.exceptions.toUserMessage
 import io.github.pitonite.exch_cx.model.SnackbarMessage
@@ -274,6 +275,7 @@ fun OrdersPreview() {
         OrdersViewModel(
             SavedStateHandle(),
             OrderRepositoryMock(),
+            SupportMessagesRepositoryMock(),
             UserSettingsRepositoryMock(),
             ExchWorkManager(LocalContext.current),
         ),

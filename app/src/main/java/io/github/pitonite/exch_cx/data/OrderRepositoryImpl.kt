@@ -139,7 +139,7 @@ constructor(
           userSettings) // start the auto update again if user settings allows
 
       return resp.orderid
-    } catch (e: Exception) {
+    } catch (e: Throwable) {
       val error = e.message ?: e.toString()
       if (error.contains("address is required")) {
         throw ToAddressRequiredException()

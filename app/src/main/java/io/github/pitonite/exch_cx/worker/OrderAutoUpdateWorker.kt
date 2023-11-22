@@ -100,7 +100,7 @@ constructor(
             if (!hasLetterOfGuarantee && hasLetterOfGuaranteeConditions) {
               try {
                 orderRepository.fetchAndUpdateLetterOfGuarantee(order.id)
-              } catch (e: Exception) {
+              } catch (e: Throwable) {
                 // no need
               }
             }
@@ -133,7 +133,7 @@ constructor(
                         notifTag, R.id.notif_id_order_support_new_message, notifBuilder.build())
                   }
                 }
-              } catch (e: Exception) {
+              } catch (e: Throwable) {
                 // no need
               }
             }
@@ -164,7 +164,7 @@ constructor(
             if (stateHasChanged && orderUpdate.state.knownOrNull() == OrderState.COMPLETE && settings.deleteRemoteOrderDataAutomatically) {
               try {
                   orderRepository.deleteRemote(order.id)
-              } catch (e: Exception) {
+              } catch (e: Throwable) {
                 if (notifManager != null) {
                   val notifTag = "order:${order.id}"
 
@@ -182,7 +182,7 @@ constructor(
                 }
               }
             }
-          } catch (e: Exception) {
+          } catch (e: Throwable) {
             Log.e(TAG, e.message ?: e.toString())
             if (e.message?.contains("not found") == true && settings.archiveOrdersAutomatically) {
               // order needs to be archived

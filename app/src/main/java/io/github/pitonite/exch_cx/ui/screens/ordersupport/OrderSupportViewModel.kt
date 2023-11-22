@@ -99,7 +99,7 @@ constructor(
         supportMessagesRepository.sendMessage(orderid, message)
         try {
           supportMessagesRepository.addUserMessage(orderid, message)
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
           // no need
         }
         sendingWorkState = WorkState.NotWorking

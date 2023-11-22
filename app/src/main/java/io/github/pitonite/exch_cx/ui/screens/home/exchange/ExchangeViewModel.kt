@@ -139,7 +139,7 @@ constructor(
       rateFeeRepository.updateRateFees(_rateFeeMode.value)
       updateConversionAmounts(CurrencySelection.FROM)
       workState = WorkState.NotWorking
-    } catch (e: Exception) {
+    } catch (e: Throwable) {
       workState = WorkState.Error(e)
       SnackbarManager.showMessage(
           SnackbarMessage.from(
@@ -360,7 +360,7 @@ constructor(
         onOrderCreated(orderid)
         workState = WorkState.NotWorking
         reset()
-      } catch (e: Exception) {
+      } catch (e: Throwable) {
         Log.d(TAG, e.message ?: e.toString())
 
         if (e is ToAddressRequiredException) {
