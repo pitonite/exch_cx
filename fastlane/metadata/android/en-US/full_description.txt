@@ -2,7 +2,7 @@ The official app for exch.cx website.
 
 App features:
 - Use in-order support chat easily
-- Automatically check for order updates in background periodically, sending you a notification of the new state or errors
+- Automatically check for order updates in background periodically, sending you a notification of the new state or error
 - Automatically check for order support chat messages, sending you a notification when there's a new message
 - Automatically request for order data to be deleted when the order is completed
 - Allows you to keep the order data locally on your phone indefinitely
