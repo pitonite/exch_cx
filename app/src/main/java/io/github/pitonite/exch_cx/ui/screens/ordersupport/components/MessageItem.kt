@@ -59,10 +59,10 @@ fun MessageItem(msg: SupportMessage, isPrevMessageByAnother: Boolean) {
   }
 
   val spaceBetweenAuthors = if (isPrevMessageByAnother) Modifier.padding(top = 8.dp) else Modifier
-  val currentLayoutDirection = LocalLayoutDirection.current
+  val originalLayoutDirection = LocalLayoutDirection.current
   var oppositeDirection =
-      if (currentLayoutDirection == LayoutDirection.Ltr) LayoutDirection.Rtl else LayoutDirection.Ltr
-  val layoutDirection = if (isUserMe) currentLayoutDirection else oppositeDirection
+      if (originalLayoutDirection == LayoutDirection.Ltr) LayoutDirection.Rtl else LayoutDirection.Ltr
+  val layoutDirection = if (isUserMe) originalLayoutDirection else oppositeDirection
   CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
     Row(modifier = spaceBetweenAuthors) {
       if (isPrevMessageByAnother) {
@@ -86,6 +86,7 @@ fun MessageItem(msg: SupportMessage, isPrevMessageByAnother: Boolean) {
       AuthorAndTextMessage(
           msg = msg,
           isPrevMessageByAnother = isPrevMessageByAnother,
+          originalLayoutDirection = originalLayoutDirection,
           isUserMe = isUserMe,
           modifier = Modifier
               .padding(end = 16.dp)
@@ -101,14 +102,14 @@ fun AuthorAndTextMessage(
   msg: SupportMessage,
   isUserMe: Boolean,
   isPrevMessageByAnother: Boolean,
+  originalLayoutDirection: LayoutDirection,
   modifier: Modifier = Modifier
 ) {
   Column(modifier = modifier) {
     if (isPrevMessageByAnother) {
       AuthorNameTimestamp(msg)
     }
-    ChatItemBubble(msg, isUserMe)
-
+    ChatItemBubble(msg, isUserMe, originalLayoutDirection)
   }
 }
 
@@ -141,6 +142,7 @@ private val ChatBubbleShape = RoundedCornerShape(4.dp, 15.dp, 15.dp, 15.dp)
 private fun ChatItemBubble(
   message: SupportMessage,
   isUserMe: Boolean,
+  originalLayoutDirection: LayoutDirection,
 ) {
 
   val backgroundBubbleColor = if (isUserMe) {
@@ -159,13 +161,15 @@ private fun ChatItemBubble(
           shape = ChatBubbleShape,
       ) {
         Box {
-          ClickableMessage(
-              message = message,
-              isUserMe = isUserMe,
-              modifier = Modifier.let {
-                if (isUserMe) it.padding(end = 14.dp) else it
-              },
-          )
+          CompositionLocalProvider(LocalLayoutDirection provides originalLayoutDirection) {
+            ClickableMessage(
+                message = message,
+                isUserMe = isUserMe,
+                modifier = Modifier.let {
+                  if (isUserMe) it.padding(end = 14.dp) else it
+                },
+            )
+          }
 
           if (isUserMe) {
             if (message.readBySupport) {
