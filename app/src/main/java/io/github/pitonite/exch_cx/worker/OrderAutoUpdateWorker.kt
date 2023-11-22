@@ -146,7 +146,7 @@ constructor(
               val notifTag = "order:${order.id}"
               val stateTranslation =
                   if (stateHasChanged) orderUpdate.state.toLocalizedString(context)
-                  else orderUpdate.stateError!!.toLocalizedString(context)
+                  else "\"${orderUpdate.stateError!!.toLocalizedString(context)}\""
 
               val notifBuilder =
                   NotificationCompat.Builder(
