@@ -17,6 +17,7 @@ import io.github.pitonite.exch_cx.ExchWorkManager
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.TotalWorkItems
 import io.github.pitonite.exch_cx.data.OrderRepository
+import io.github.pitonite.exch_cx.data.SupportMessagesRepository
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
 import io.github.pitonite.exch_cx.data.room.Order
 import io.github.pitonite.exch_cx.model.SnackbarMessage
@@ -38,6 +39,7 @@ class OrdersViewModel
 constructor(
     private val savedStateHandle: SavedStateHandle,
     private val orderRepository: OrderRepository,
+    private val supportMessagesRepository: SupportMessagesRepository,
     private val userSettingsRepository: UserSettingsRepository,
     private val workManager: ExchWorkManager
 ) : ViewModel() {
@@ -126,6 +128,14 @@ constructor(
           SnackbarManager.showMessage(
               snackbarMessage =
                   SnackbarMessage.from(message = UserMessage.from(R.string.import_order_existed)))
+        } else {
+          viewModelScope.launch {
+            try {
+              supportMessagesRepository.fetchAndUpdateMessages(orderid)
+            } catch(e: Throwable) {
+              // no need
+            }
+          }
         }
         showImportDialog = false
         importOrderWork = WorkState.NotWorking
