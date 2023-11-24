@@ -1,6 +1,6 @@
 import com.android.build.gradle.api.ApplicationVariant
 import com.android.build.gradle.api.BaseVariantOutput
-import com.android.build.gradle.internal.api.BaseVariantOutputImpl
+import com.android.build.gradle.internal.api.ApkVariantOutputImpl
 
 plugins {
   id("com.android.application")
@@ -172,7 +172,7 @@ class ApplicationVariantAction : Action<ApplicationVariant> {
 
   class VariantOutputAction(private val variant: ApplicationVariant) : Action<BaseVariantOutput> {
     override fun execute(output: BaseVariantOutput) {
-      if (output is BaseVariantOutputImpl) {
+      if (output is ApkVariantOutputImpl) {
         val abi =
             output.getFilter(com.android.build.api.variant.FilterConfiguration.FilterType.ABI.name)
         val abiVersionCode =
@@ -186,6 +186,7 @@ class ApplicationVariantAction : Action<ApplicationVariant> {
         val arch = abi ?: "universal"
         val versionCode = variant.versionCode * 1000 + abiVersionCode
         output.outputFileName = "exch-cx-app-v${variant.versionName}-${versionCode}-${arch}.apk"
+        output.versionCodeOverride = versionCode
       }
     }
   }
