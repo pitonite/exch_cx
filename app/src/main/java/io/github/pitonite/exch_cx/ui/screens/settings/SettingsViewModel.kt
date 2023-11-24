@@ -21,7 +21,6 @@ import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import javax.inject.Inject
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 @Stable
