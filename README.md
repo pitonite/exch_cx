@@ -1,6 +1,6 @@
 # eXch.cx android app
 
-The official app for eXch.cx website.
+The official app for exch.cx website.
 
 App features:
 
@@ -10,7 +10,7 @@ App features:
 - Automatically request for order data to be deleted when the order is completed
 - Allows you to keep the order data locally on your phone indefinitely
 - Allows you to set an api key for requests (if you have one)
-- Allows you to choose whether to use the onion address for connections or not
+- Allows you to use proxy for connections
 - The app is completely open source
 
 eXch.cx features:
