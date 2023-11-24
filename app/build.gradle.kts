@@ -21,8 +21,8 @@ android {
     applicationId = "io.github.pitonite.exch_cx"
     minSdk = 24
     targetSdk = 34
-    versionCode = 3
-    versionName = "1.0.1"
+    versionCode = 4
+    versionName = "1.0.2"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     vectorDrawables { useSupportLibrary = true }
@@ -44,6 +44,16 @@ android {
   packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
 
   androidResources { generateLocaleConfig = true }
+
+  splits {
+    // Configures multiple APKs based on ABI.
+    abi {
+      // Enables building multiple APKs per ABI.
+      isEnable = true
+      // Specifies that you don't want to also generate a universal APK that includes all ABIs.
+      isUniversalApk = true
+    }
+  }
 
   applicationVariants.all(ApplicationVariantAction())
 }
@@ -157,20 +167,25 @@ protobuf {
 
 class ApplicationVariantAction : Action<ApplicationVariant> {
   override fun execute(variant: ApplicationVariant) {
-    val fileName = createFileName(variant)
-    variant.outputs.all(VariantOutputAction(fileName))
+    variant.outputs.all(VariantOutputAction(variant))
   }
 
-  private fun createFileName(variant: ApplicationVariant): String {
-    return "exch-cx-app-v${variant.versionName}-${variant.versionCode*1000}.apk"
-  }
-
-  class VariantOutputAction(
-    private val fileName: String
-  ) : Action<BaseVariantOutput> {
+  class VariantOutputAction(private val variant: ApplicationVariant) : Action<BaseVariantOutput> {
     override fun execute(output: BaseVariantOutput) {
       if (output is BaseVariantOutputImpl) {
-        output.outputFileName = fileName
+        val abi =
+            output.getFilter(com.android.build.api.variant.FilterConfiguration.FilterType.ABI.name)
+        val abiVersionCode =
+            when (abi) {
+              "armeabi-v7a" -> 1
+              "arm64-v8a" -> 2
+              "x86" -> 3
+              "x86_64" -> 4
+              else -> 0
+            }
+        val arch = abi ?: "universal"
+        val versionCode = variant.versionCode * 1000 + abiVersionCode
+        output.outputFileName = "exch-cx-app-v${variant.versionName}-${versionCode}-${arch}.apk"
       }
     }
   }
