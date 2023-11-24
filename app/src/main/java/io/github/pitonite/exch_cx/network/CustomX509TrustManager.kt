@@ -24,7 +24,7 @@ class CustomX509TrustManager(
 
     if (sha256Fingerprint != expectedSha256Fingerprint ||
         sha1Fingerprint != expectedSha1Fingerprint) {
-      throw IllegalArgumentException("Certificate fingerprint or hostname not matched")
+      throw IllegalArgumentException("Certificate fingerprint not matched")
     }
   }
 
