@@ -69,7 +69,6 @@ import io.github.pitonite.exch_cx.data.room.Order
 import io.github.pitonite.exch_cx.network.getExchDomain
 import io.github.pitonite.exch_cx.model.api.OrderState
 import io.github.pitonite.exch_cx.model.getTranslation
-import io.github.pitonite.exch_cx.network.getExchProtocol
 import io.github.pitonite.exch_cx.ui.components.Card
 import io.github.pitonite.exch_cx.ui.components.CopyableText
 import io.github.pitonite.exch_cx.ui.components.RefreshButton
@@ -198,7 +197,7 @@ fun OrderDetail(
                       text = { Text(stringResource(R.string.label_open_in_browser)) },
                       onClick = {
                         uriHandler.openUri(
-                            "${getExchProtocol(settings.preferredDomainType).name}://${getExchDomain(settings.preferredDomainType)}/order/${order!!.id}")
+                            "https://${getExchDomain(settings.preferredDomainType)}/order/${order!!.id}")
                       },
                   )
 

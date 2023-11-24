@@ -52,9 +52,12 @@ import okhttp3.Dns
 import okhttp3.internal.closeQuietly
 import okhttp3.internal.tls.OkHostnameVerifier
 import java.net.InetAddress
+import javax.net.ssl.SSLContext
 
 private const val NORMAL_HOST = "exch.cx"
 private const val ONION_HOST = "hszyoqwrcp7cxlxnqmovp6vjvmnwj33g4wviuxqzq47emieaxjaperyd.onion"
+private const val ONION_SSL_FINGERPRINT_SHA256 = "1EA14F31FD8A5E2EE1701048CCBC2E01A972BD6FBC3137249539BA5A7A9D2533"
+private const val ONION_SSL_FINGERPRINT_SHA1 = "6F7C160C6B5516E4C2E4E648E5636C2D2BFC7309"
 
 fun getExchDomain(preferredDomainType: PreferredDomainType) =
     if (preferredDomainType == PreferredDomainType.ONION) ONION_HOST else NORMAL_HOST
@@ -81,7 +84,7 @@ private val connectionSpecs = listOf(
 private const val TIMEOUT_MILLIS_HIGH = 30_000L
 private const val TIMEOUT_MILLIS_LOW = 8_000L
 
-private fun createHttpClient(proxyConfig: ProxyConfig?): HttpClient {
+private fun createHttpClient(proxyConfig: ProxyConfig?, preferredDomainType: PreferredDomainType): HttpClient {
   return HttpClient(OkHttp) {
     expectSuccess = true // throw on non-2xx
 
@@ -97,6 +100,14 @@ private fun createHttpClient(proxyConfig: ProxyConfig?): HttpClient {
           OkHostnameVerifier.verify(hostname, session)
         }
         connectionSpecs(connectionSpecs)
+
+        if (preferredDomainType == PreferredDomainType.ONION){
+          val trustManager = CustomX509TrustManager(ONION_SSL_FINGERPRINT_SHA256, ONION_SSL_FINGERPRINT_SHA1)
+          val sslContext = SSLContext.getInstance("TLS")
+          sslContext.init(null, arrayOf(trustManager), null)
+          sslSocketFactory(sslContext.socketFactory, trustManager)
+          hostnameVerifier { hostname, _ -> hostname == ONION_HOST }
+        }
       }
     }
 
@@ -179,19 +190,20 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
       apiKey = settings.apiKey
       preferredDomainType = settings.preferredDomainType
       proxyConfig = getProxyConfig(settings)
-      _client = createHttpClient(proxyConfig)
+      _client = createHttpClient(proxyConfig, preferredDomainType)
     }
 
     CoroutineScope(Dispatchers.IO).launch {
       // for subsequent updates to settings
       userSettingsRepository.userSettingsFlow.collect {
         apiKey = it.apiKey
+        val newPreferredDomainType = it.preferredDomainType != preferredDomainType
         preferredDomainType = it.preferredDomainType
         val newProxyConfig = getProxyConfig(it)
-        if (proxyConfig != newProxyConfig) {
+        if (proxyConfig != newProxyConfig || newPreferredDomainType) {
           proxyConfig = newProxyConfig
           _client.closeQuietly()
-          _client = createHttpClient(proxyConfig)
+          _client = createHttpClient(proxyConfig, preferredDomainType)
         }
       }
     }
@@ -199,7 +211,7 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
 
   fun HttpRequestBuilder.applyDefaultConfigurations() {
     url {
-      protocol = getExchProtocol(preferredDomainType)
+      protocol = URLProtocol.HTTPS
       host = getExchDomain(preferredDomainType)
       if (apiKey.isNotEmpty()) {
         parameters["api_key"] = apiKey
