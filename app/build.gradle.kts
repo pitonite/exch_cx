@@ -173,9 +173,10 @@ class ApplicationVariantAction : Action<ApplicationVariant> {
               "x86_64" -> 4
               else -> 0
             }
+        // currently splitting is disabled, but if enabled, please add arch name to the file name as well.
         val arch = abi ?: "universal"
         val versionCode = variant.versionCode * 1000 + abiVersionCode
-        output.outputFileName = "exch-cx-app-v${variant.versionName}-${versionCode}-${arch}.apk"
+        output.outputFileName = "exch-cx-v${variant.versionName}-${versionCode}.apk"
         output.versionCodeOverride = versionCode
       }
     }
