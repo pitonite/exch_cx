@@ -45,16 +45,6 @@ android {
 
   androidResources { generateLocaleConfig = true }
 
-  splits {
-    // Configures multiple APKs based on ABI.
-    abi {
-      // Enables building multiple APKs per ABI.
-      isEnable = true
-      // Specifies that you don't want to also generate a universal APK that includes all ABIs.
-      isUniversalApk = true
-    }
-  }
-
   applicationVariants.all(ApplicationVariantAction())
 }
 
