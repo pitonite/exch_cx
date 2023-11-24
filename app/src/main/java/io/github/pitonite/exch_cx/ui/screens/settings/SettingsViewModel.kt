@@ -1,5 +1,6 @@
 package io.github.pitonite.exch_cx.ui.screens.settings
 
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -10,8 +11,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.pitonite.exch_cx.PreferredProxyType
+import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.copy
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
+import io.github.pitonite.exch_cx.model.SnackbarMessage
+import io.github.pitonite.exch_cx.model.UserMessage
+import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import javax.inject.Inject
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -108,6 +113,7 @@ constructor(
     viewModelScope.launch {
       userSettingsRepository.saveSettings(
           userSettingsRepository.fetchSettings().copy { apiKey = apiKeyDraft })
+      showSuccessSnack()
     }
   }
 
@@ -120,6 +126,7 @@ constructor(
             archiveOrdersAutomatically = archiveOrdersAutomaticallyDraft
             deleteRemoteOrderDataAutomatically = deleteRemoteOrderDataAutomaticallyDraft
           })
+      showSuccessSnack()
     }
   }
 
@@ -132,6 +139,17 @@ constructor(
             proxyPort = proxyPortDraft
             preferredProxyType = preferredProxyTypeDraft
           })
+      showSuccessSnack()
     }
+  }
+
+  private fun showSuccessSnack() {
+    SnackbarManager.showMessage(
+        SnackbarMessage.from(
+            UserMessage.from(
+                R.string.snack_saved_changes_successfully),
+            duration = SnackbarDuration.Short,
+            withDismissAction = true,
+        ))
   }
 }

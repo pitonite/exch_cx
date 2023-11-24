@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -44,8 +45,8 @@ import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.UserSettingsRepositoryMock
 import io.github.pitonite.exch_cx.ui.components.Card
 import io.github.pitonite.exch_cx.ui.components.NumericInputField
-import io.github.pitonite.exch_cx.ui.components.RadioGroup
 import io.github.pitonite.exch_cx.ui.components.RadioGroupRow
+import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import io.github.pitonite.exch_cx.ui.components.UpBtn
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 import io.github.pitonite.exch_cx.utils.noRippleClickable
@@ -73,6 +74,11 @@ fun Settings(viewModel: SettingsViewModel, upPress: () -> Unit, modifier: Modifi
 
   Scaffold(
       modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+      snackbarHost = {
+        SnackbarHost(
+            hostState = SnackbarManager.snackbarHostState,
+            modifier = Modifier.navigationBarsPadding().imePadding())
+      },
       topBar = {
         TopAppBar(
             scrollBehavior = scrollBehavior,

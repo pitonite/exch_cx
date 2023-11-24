@@ -220,4 +220,5 @@
   <string name="label_proxy_type_http">HTTP</string>
   <string name="label_preferred_proxy_type">Type</string>
   <string name="label_is_proxy_enabled">Enabled ?</string>
+  <string name="snack_saved_changes_successfully">Saved changes successfully!</string>
 </resources>
