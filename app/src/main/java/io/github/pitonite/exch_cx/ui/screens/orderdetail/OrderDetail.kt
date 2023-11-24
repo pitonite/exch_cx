@@ -66,9 +66,9 @@ import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderCreate
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderUnknownState
 import io.github.pitonite.exch_cx.data.UserSettingsRepositoryMock
 import io.github.pitonite.exch_cx.data.room.Order
+import io.github.pitonite.exch_cx.network.getExchDomain
 import io.github.pitonite.exch_cx.model.api.OrderState
 import io.github.pitonite.exch_cx.model.getTranslation
-import io.github.pitonite.exch_cx.network.EXCH_CLEAR_DOMAIN
 import io.github.pitonite.exch_cx.ui.components.Card
 import io.github.pitonite.exch_cx.ui.components.CopyableText
 import io.github.pitonite.exch_cx.ui.components.RefreshButton
@@ -197,7 +197,7 @@ fun OrderDetail(
                       text = { Text(stringResource(R.string.label_open_in_browser)) },
                       onClick = {
                         uriHandler.openUri(
-                            "https://$EXCH_CLEAR_DOMAIN/order/${order!!.id}")
+                            "https://${getExchDomain(settings.preferredDomainType)}/order/${order!!.id}")
                       },
                   )
 

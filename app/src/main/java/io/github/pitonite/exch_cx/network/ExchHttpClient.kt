@@ -2,6 +2,7 @@ package io.github.pitonite.exch_cx.network
 
 import androidx.compose.runtime.Stable
 import io.github.pitonite.exch_cx.BuildConfig
+import io.github.pitonite.exch_cx.PreferredDomainType
 import io.github.pitonite.exch_cx.PreferredProxyType
 import io.github.pitonite.exch_cx.UserSettings
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
@@ -14,8 +15,8 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.ProxyBuilder
 import io.ktor.client.engine.ProxyConfig
-import io.ktor.client.engine.http
 import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.engine.http
 import io.ktor.client.plugins.BrowserUserAgent
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpResponseValidator
@@ -38,7 +39,6 @@ import io.ktor.http.contentType
 import io.ktor.serialization.ContentConvertException
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.serialization.kotlinx.xml.xml
-import java.net.InetAddress
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
@@ -51,8 +51,13 @@ import okhttp3.ConnectionSpec.Companion.RESTRICTED_TLS
 import okhttp3.Dns
 import okhttp3.internal.closeQuietly
 import okhttp3.internal.tls.OkHostnameVerifier
+import java.net.InetAddress
 
-const val EXCH_CLEAR_DOMAIN = "exch.cx"
+private const val NORMAL_HOST = "exch.cx"
+private const val ONION_HOST = "hszyoqwrcp7cxlxnqmovp6vjvmnwj33g4wviuxqzq47emieaxjaperyd.onion"
+
+fun getExchDomain(preferredDomainType: PreferredDomainType) =
+    if (preferredDomainType == PreferredDomainType.ONION) ONION_HOST else NORMAL_HOST
 
 private fun getProxyConfig(settings: UserSettings): ProxyConfig? {
   return if (settings.isProxyEnabled) {
@@ -64,12 +69,11 @@ private fun getProxyConfig(settings: UserSettings): ProxyConfig? {
   } else null
 }
 
-private val connectionSpecs =
-    listOf(
-        RESTRICTED_TLS, // order matters here, so we put restricted before modern
-        MODERN_TLS,
-        CLEARTEXT,
-    )
+private val connectionSpecs = listOf(
+    RESTRICTED_TLS, // order matters here, so we put restricted before modern
+    MODERN_TLS,
+    CLEARTEXT,
+)
 
 private const val TIMEOUT_MILLIS_HIGH = 30_000L
 private const val TIMEOUT_MILLIS_LOW = 8_000L
@@ -114,10 +118,6 @@ private fun createHttpClient(proxyConfig: ProxyConfig?): HttpClient {
       if (!headers.contains("X-Requested-With")) {
         headers["X-Requested-With"] = "XMLHttpRequest"
         accept(ContentType.Application.Json)
-      }
-      url {
-        protocol = URLProtocol.HTTPS
-        host = EXCH_CLEAR_DOMAIN
       }
     }
 
@@ -165,6 +165,7 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
   /** Don't use this client directly. Use the provided wrappers to set the required defaults. */
   var _client: HttpClient
   private var apiKey: String
+  private var preferredDomainType: PreferredDomainType
   private var proxyConfig: ProxyConfig? = null
 
   init {
@@ -173,6 +174,7 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
       // for initial load
       val settings = userSettingsRepository.fetchSettings()
       apiKey = settings.apiKey
+      preferredDomainType = settings.preferredDomainType
       proxyConfig = getProxyConfig(settings)
       _client = createHttpClient(proxyConfig)
     }
@@ -181,6 +183,7 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
       // for subsequent updates to settings
       userSettingsRepository.userSettingsFlow.collect {
         apiKey = it.apiKey
+        preferredDomainType = it.preferredDomainType
         val newProxyConfig = getProxyConfig(it)
         if (proxyConfig != newProxyConfig) {
           proxyConfig = newProxyConfig
@@ -193,6 +196,8 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
 
   fun HttpRequestBuilder.applyDefaultConfigurations() {
     url {
+      protocol = URLProtocol.HTTPS
+      host = getExchDomain(preferredDomainType)
       if (apiKey.isNotEmpty()) {
         parameters["api_key"] = apiKey
       }
@@ -227,7 +232,12 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
   }
 }
 
-/** Prevent DNS requests. Important when proxying all requests over Tor to not leak DNS queries. */
+
+
+/**
+ * Prevent DNS requests.
+ * Important when proxying all requests over Tor to not leak DNS queries.
+ */
 private class NoDns : Dns {
   override fun lookup(hostname: String): List<InetAddress> {
     return listOf(InetAddress.getByAddress(hostname, ByteArray(4)))
