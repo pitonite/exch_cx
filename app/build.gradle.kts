@@ -93,7 +93,7 @@ dependencies {
   // for json serialization
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
   // for requesting network and parsing json responses into data class
-  val ktorVersion = "3.0.0-eap-841"
+  val ktorVersion = "3.0.0-eap-850"
   implementation("io.ktor:ktor-client-core:$ktorVersion")
   implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
   implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")

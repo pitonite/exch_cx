@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.pitonite.exch_cx.PreferredDomainType
+import io.github.pitonite.exch_cx.PreferredProxyType
 import io.github.pitonite.exch_cx.copy
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
 import kotlinx.coroutines.flow.firstOrNull
@@ -43,6 +44,18 @@ constructor(
   var deleteRemoteOrderDataAutomaticallyDraft by mutableStateOf(false)
     private set
 
+  var isProxyEnabledDraft by mutableStateOf(false)
+    private set
+
+  var proxyHostDraft by mutableStateOf("")
+    private set
+
+  var proxyPortDraft by mutableStateOf("")
+    private set
+
+  var preferredProxyTypeDraft by mutableStateOf(PreferredProxyType.SOCKS5)
+    private set
+
 
   fun updateApiKeyDraft(value: String) {
     apiKeyDraft = value
@@ -68,6 +81,22 @@ constructor(
     deleteRemoteOrderDataAutomaticallyDraft = value
   }
 
+  fun updateIsProxyEnabledDraft(value: Boolean) {
+    isProxyEnabledDraft = value
+  }
+
+  fun updateProxyHostDraft(value: String) {
+    proxyHostDraft = value
+  }
+
+  fun updateProxyPortDraft(value: String) {
+    proxyPortDraft = value
+  }
+
+  fun updatePreferredProxyTypeDraft(value: PreferredProxyType) {
+    preferredProxyTypeDraft = value
+  }
+
   fun reloadSettings() {
     viewModelScope.launch {
       userSettingsRepository.userSettingsFlow.firstOrNull()?.let {
@@ -77,6 +106,10 @@ constructor(
         orderAutoUpdatePeriodMinutesDraft = it.orderAutoUpdatePeriodMinutes
         archiveOrdersAutomaticallyDraft = it.archiveOrdersAutomatically
         deleteRemoteOrderDataAutomaticallyDraft = it.deleteRemoteOrderDataAutomatically
+        isProxyEnabledDraft = it.isProxyEnabled
+        proxyHostDraft = it.proxyHost
+        proxyPortDraft = it.proxyPort
+        preferredProxyTypeDraft = it.preferredProxyType
       }
     }
   }
@@ -99,6 +132,18 @@ constructor(
             orderAutoUpdatePeriodMinutes = orderAutoUpdatePeriodMinutesDraft
             archiveOrdersAutomatically = archiveOrdersAutomaticallyDraft
             deleteRemoteOrderDataAutomatically = deleteRemoteOrderDataAutomaticallyDraft
+          })
+    }
+  }
+
+  fun saveProxySettings() {
+    viewModelScope.launch {
+      userSettingsRepository.saveSettings(
+          userSettingsRepository.fetchSettings().copy {
+            isProxyEnabled = isProxyEnabledDraft
+            proxyHost = proxyHostDraft
+            proxyPort = proxyPortDraft
+            preferredProxyType = preferredProxyTypeDraft
           })
     }
   }

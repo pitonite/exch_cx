@@ -44,6 +44,8 @@ class MainActivity : AppCompatActivity() {
             settings.copy {
               firstInitDone = true
               archiveOrdersAutomatically = true
+              proxyHost = "127.0.0.1"
+              proxyPort = "9050"
             },
         )
       }

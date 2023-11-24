@@ -10,14 +10,15 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.pitonite.exch_cx.ExchWorkManager
 import io.github.pitonite.exch_cx.PreferredDomainType
+import io.github.pitonite.exch_cx.PreferredProxyType
 import io.github.pitonite.exch_cx.UserSettings
 import io.github.pitonite.exch_cx.copy
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.first
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 
 @Singleton
 @Stable
@@ -43,6 +44,16 @@ constructor(
       }
 
   override suspend fun fetchSettings() = userSettingsFlow.first()
+
+  override suspend fun saveSettings(userSettings: UserSettings) {
+    exchWorkManager.adjustAutoUpdater(
+        userSettings,
+        if (userSettings.orderAutoUpdatePeriodMinutes !=
+            fetchSettings().orderAutoUpdatePeriodMinutes)
+            ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE
+        else ExistingPeriodicWorkPolicy.UPDATE)
+    userSettingsStore.updateData { it.toBuilder().clear().mergeFrom(userSettings).build() }
+  }
 
   override suspend fun setApiKey(newKey: String) {
     userSettingsStore.updateData { currentSettings ->
@@ -102,14 +113,28 @@ constructor(
     }
   }
 
-  override suspend fun saveSettings(userSettings: UserSettings) {
-    exchWorkManager.adjustAutoUpdater(
-        userSettings,
-        if (userSettings.orderAutoUpdatePeriodMinutes !=
-            fetchSettings().orderAutoUpdatePeriodMinutes)
-            ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE
-        else ExistingPeriodicWorkPolicy.UPDATE)
-    userSettingsStore.updateData { it.toBuilder().clear().mergeFrom(userSettings).build() }
+  override suspend fun setIsProxyEnabled(value: Boolean) {
+    userSettingsStore.updateData { currentSettings ->
+      currentSettings.toBuilder().setIsProxyEnabled(value).build()
+    }
+  }
+
+  override suspend fun setProxyHost(value: String) {
+    userSettingsStore.updateData { currentSettings ->
+      currentSettings.toBuilder().setProxyHost(value).build()
+    }
+  }
+
+  override suspend fun setProxyPort(value: String) {
+    userSettingsStore.updateData { currentSettings ->
+      currentSettings.toBuilder().setProxyPort(value).build()
+    }
+  }
+
+  override suspend fun setPreferredProxyType(value: PreferredProxyType) {
+    userSettingsStore.updateData { currentSettings ->
+      currentSettings.toBuilder().setPreferredProxyType(value).build()
+    }
   }
 }
 

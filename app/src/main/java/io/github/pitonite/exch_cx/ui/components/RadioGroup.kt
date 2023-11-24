@@ -27,12 +27,14 @@ fun RadioGroup(
     options: ImmutableList<String>,
     selectedOption: String,
     onOptionSelected: (String) -> Unit,
+    enabled: Boolean = true,
 ) =
     RadioGroup(
         options = options,
         selectedOption = selectedOption,
         onOptionSelected = onOptionSelected,
         label = { Text(it) },
+        enabled= enabled,
     )
 
 @Composable
@@ -41,6 +43,7 @@ fun <T> RadioGroup(
   selectedOption: T,
   onOptionSelected: (T) -> Unit,
   label: @Composable (T) -> Unit,
+  enabled: Boolean = true,
 ) {
   Column(
       verticalArrangement = Arrangement.spacedBy(5.dp)
@@ -50,13 +53,57 @@ fun <T> RadioGroup(
           modifier =
               Modifier.fillMaxWidth()
                   .selectable(
+                      enabled = enabled,
                       selected = (option == selectedOption),
                       onClick = { onOptionSelected(option) }),
           verticalAlignment = Alignment.CenterVertically) {
-            RadioButton(selected = option == selectedOption, onClick = { onOptionSelected(option) })
+            RadioButton(enabled = enabled,selected = option == selectedOption, onClick = { onOptionSelected(option) })
             Spacer(modifier = Modifier.width(6.dp))
             label(option)
           }
+    }
+  }
+}
+
+@Composable
+fun RadioGroupRow(
+  options: ImmutableList<String>,
+  selectedOption: String,
+  onOptionSelected: (String) -> Unit,
+  enabled: Boolean = true,
+) =
+    RadioGroupRow(
+        options = options,
+        selectedOption = selectedOption,
+        onOptionSelected = onOptionSelected,
+        label = { Text(it) },
+        enabled= enabled,
+    )
+
+@Composable
+fun <T> RadioGroupRow(
+  options: ImmutableList<T>,
+  selectedOption: T,
+  onOptionSelected: (T) -> Unit,
+  label: @Composable (T) -> Unit,
+  enabled: Boolean = true,
+) {
+  Row(
+      horizontalArrangement = Arrangement.spacedBy(5.dp)
+  ) {
+    options.forEach { option ->
+      Row(
+          modifier =
+          Modifier.weight(1f)
+              .selectable(
+                  enabled = enabled,
+                  selected = (option == selectedOption),
+                  onClick = { onOptionSelected(option) }),
+          verticalAlignment = Alignment.CenterVertically) {
+        RadioButton(enabled = enabled, selected = option == selectedOption, onClick = { onOptionSelected(option) })
+        Spacer(modifier = Modifier.width(6.dp))
+        label(option)
+      }
     }
   }
 }
@@ -73,3 +120,17 @@ fun RadioGroupPreview() {
     )
   }
 }
+
+@Preview("default")
+@Preview("large font", fontScale = 2f)
+@Composable
+fun RadioGroupRowPreview() {
+  ExchTheme {
+    RadioGroupRow(
+        options = persistentListOf("option 1", "option 2"),
+        selectedOption = "option 1",
+        onOptionSelected = {},
+    )
+  }
+}
+

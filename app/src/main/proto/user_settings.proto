@@ -8,6 +8,11 @@ enum PreferredDomainType {
   ONION = 1;
 }
 
+enum PreferredProxyType {
+  SOCKS5 = 0;
+  HTTP = 1;
+}
+
 message UserSettings {
   bool first_init_done = 1;
   string api_key = 2;
@@ -18,4 +23,8 @@ message UserSettings {
   int64 order_auto_update_period_minutes = 7;
   bool archive_orders_automatically = 8;
   bool delete_remote_order_data_automatically = 9;
+  bool is_proxy_enabled = 10;
+  PreferredProxyType preferred_proxy_type = 11;
+  string proxy_host = 12;
+  string proxy_port = 13;
 }

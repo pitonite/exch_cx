@@ -2,6 +2,7 @@ package io.github.pitonite.exch_cx.data
 
 import androidx.compose.runtime.Stable
 import io.github.pitonite.exch_cx.PreferredDomainType
+import io.github.pitonite.exch_cx.PreferredProxyType
 import io.github.pitonite.exch_cx.UserSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -15,6 +16,8 @@ class UserSettingsRepositoryMock(
   override val userSettingsFlow: Flow<UserSettings> = flow { emit(userSettings) }
 
   override suspend fun fetchSettings() = userSettingsFlow.first()
+
+  override suspend fun saveSettings(userSettings: UserSettings) {}
 
   override suspend fun setApiKey(newKey: String) {}
 
@@ -34,5 +37,11 @@ class UserSettingsRepositoryMock(
 
   override suspend fun setDeleteRemoteOrderDataAutomatically(value: Boolean) {}
 
-  override suspend fun saveSettings(userSettings: UserSettings) {}
+  override suspend fun setIsProxyEnabled(value: Boolean) {}
+
+  override suspend fun setProxyHost(value: String) {}
+
+  override suspend fun setProxyPort(value: String) {}
+
+  override suspend fun setPreferredProxyType(value: PreferredProxyType) {}
 }
