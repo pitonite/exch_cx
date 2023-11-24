@@ -5,7 +5,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.github.pitonite.exch_cx.di.ExchHttpClient
+import io.github.pitonite.exch_cx.network.ExchHttpClient
 import io.github.pitonite.exch_cx.model.CurrencyDetail
 import io.github.pitonite.exch_cx.model.api.RateFee
 import io.github.pitonite.exch_cx.model.api.RateFeeMode

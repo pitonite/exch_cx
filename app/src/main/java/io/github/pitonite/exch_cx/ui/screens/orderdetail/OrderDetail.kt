@@ -66,7 +66,7 @@ import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderCreate
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderUnknownState
 import io.github.pitonite.exch_cx.data.UserSettingsRepositoryMock
 import io.github.pitonite.exch_cx.data.room.Order
-import io.github.pitonite.exch_cx.di.getExchDomain
+import io.github.pitonite.exch_cx.network.getExchDomain
 import io.github.pitonite.exch_cx.model.api.OrderState
 import io.github.pitonite.exch_cx.model.getTranslation
 import io.github.pitonite.exch_cx.ui.components.Card

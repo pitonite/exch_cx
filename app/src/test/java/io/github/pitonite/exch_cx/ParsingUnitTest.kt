@@ -1,7 +1,7 @@
 package io.github.pitonite.exch_cx
 
 import io.github.pitonite.exch_cx.data.UserSettingsRepositoryMock
-import io.github.pitonite.exch_cx.di.ExchHttpClient
+import io.github.pitonite.exch_cx.network.ExchHttpClient
 import io.github.pitonite.exch_cx.model.api.OrderResponse
 import io.github.pitonite.exch_cx.model.api.RateFeeResponse
 import io.github.pitonite.exch_cx.model.api.RateFeesObjectTransformer
@@ -17,8 +17,6 @@ import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
-import kotlinx.serialization.json.Json
-import nl.adaptivity.xmlutil.serialization.XML
 import org.junit.After
 import org.junit.Assert.assertNotNull
 import org.junit.Before

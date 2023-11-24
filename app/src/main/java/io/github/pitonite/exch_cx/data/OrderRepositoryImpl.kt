@@ -20,7 +20,7 @@ import io.github.pitonite.exch_cx.data.room.OrderRefundAddress
 import io.github.pitonite.exch_cx.data.room.OrderToAddress
 import io.github.pitonite.exch_cx.data.room.OrderUpdate
 import io.github.pitonite.exch_cx.data.room.OrderUpdateWithArchive
-import io.github.pitonite.exch_cx.di.ExchHttpClient
+import io.github.pitonite.exch_cx.network.ExchHttpClient
 import io.github.pitonite.exch_cx.model.api.BooleanResult
 import io.github.pitonite.exch_cx.model.api.OrderCreateRequest
 import io.github.pitonite.exch_cx.model.api.OrderCreateResponse

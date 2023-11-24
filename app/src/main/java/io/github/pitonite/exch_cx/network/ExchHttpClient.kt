@@ -1,4 +1,4 @@
-package io.github.pitonite.exch_cx.di
+package io.github.pitonite.exch_cx.network
 
 import androidx.compose.runtime.Stable
 import io.github.pitonite.exch_cx.BuildConfig

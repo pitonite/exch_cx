@@ -11,7 +11,7 @@ import dagger.hilt.components.SingletonComponent
 import io.github.pitonite.exch_cx.data.mappers.toSupportMessages
 import io.github.pitonite.exch_cx.data.room.ExchDatabase
 import io.github.pitonite.exch_cx.data.room.SupportMessage
-import io.github.pitonite.exch_cx.di.ExchHttpClient
+import io.github.pitonite.exch_cx.network.ExchHttpClient
 import io.github.pitonite.exch_cx.model.api.BooleanResult
 import io.github.pitonite.exch_cx.model.api.SupportMessagesResponse
 import io.github.pitonite.exch_cx.model.api.exceptions.FailedToSendSupportMessageException
