@@ -8,13 +8,14 @@ import io.github.pitonite.exch_cx.UserSettings
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
 import io.github.pitonite.exch_cx.model.api.ErrorResponse
 import io.github.pitonite.exch_cx.model.api.exceptions.ApiException
+import io.github.pitonite.exch_cx.utils.isTor
 import io.github.pitonite.exch_cx.utils.jsonFormat
 import io.github.pitonite.exch_cx.utils.xmlFormat
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.ProxyBuilder
 import io.ktor.client.engine.ProxyConfig
-import io.ktor.client.engine.android.Android
+import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.engine.http
 import io.ktor.client.plugins.BrowserUserAgent
 import io.ktor.client.plugins.HttpRequestRetry
@@ -44,6 +45,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import okhttp3.ConnectionSpec.Companion.CLEARTEXT
+import okhttp3.ConnectionSpec.Companion.MODERN_TLS
+import okhttp3.ConnectionSpec.Companion.RESTRICTED_TLS
+import okhttp3.Dns
+import okhttp3.internal.closeQuietly
+import okhttp3.internal.tls.OkHostnameVerifier
+import java.net.InetAddress
 
 private const val NORMAL_HOST = "exch.cx"
 private const val ONION_HOST = "hszyoqwrcp7cxlxnqmovp6vjvmnwj33g4wviuxqzq47emieaxjaperyd.onion"
@@ -61,18 +69,44 @@ private fun getProxyConfig(settings: UserSettings): ProxyConfig? {
   } else null
 }
 
+private val connectionSpecs = listOf(
+    RESTRICTED_TLS, // order matters here, so we put restricted before modern
+    MODERN_TLS,
+    CLEARTEXT,
+)
+
+private const val TIMEOUT_MILLIS_HIGH = 30_000L
+private const val TIMEOUT_MILLIS_LOW = 8_000L
+
 private fun createHttpClient(proxyConfig: ProxyConfig?): HttpClient {
-  return HttpClient(Android) {
+  return HttpClient(OkHttp) {
     expectSuccess = true // throw on non-2xx
 
     engine {
       proxy = proxyConfig
+      config {
+        if (proxyConfig.isTor()) {
+          dns(NoDns())
+        }
+        hostnameVerifier { hostname, session ->
+          session?.sessionContext?.sessionTimeout = 60
+          // use default hostname verifier
+          OkHostnameVerifier.verify(hostname, session)
+        }
+        connectionSpecs(connectionSpecs)
+      }
     }
 
     install(HttpTimeout) {
-      requestTimeoutMillis = 8_000
-      connectTimeoutMillis = 8_000
-      socketTimeoutMillis = 8_000
+      if (proxyConfig.isTor()) {
+        requestTimeoutMillis = TIMEOUT_MILLIS_HIGH
+        connectTimeoutMillis = TIMEOUT_MILLIS_HIGH
+        socketTimeoutMillis = TIMEOUT_MILLIS_HIGH
+      } else {
+        requestTimeoutMillis = TIMEOUT_MILLIS_LOW
+        connectTimeoutMillis = TIMEOUT_MILLIS_LOW
+        socketTimeoutMillis = TIMEOUT_MILLIS_LOW
+      }
     }
 
     //      install(UserAgent) {
@@ -153,6 +187,7 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
         val newProxyConfig = getProxyConfig(it)
         if (proxyConfig != newProxyConfig) {
           proxyConfig = newProxyConfig
+          _client.closeQuietly()
           _client = createHttpClient(proxyConfig)
         }
       }
@@ -194,5 +229,17 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
       applyDefaultConfigurations()
       this.apply(block)
     }
+  }
+}
+
+
+
+/**
+ * Prevent DNS requests.
+ * Important when proxying all requests over Tor to not leak DNS queries.
+ */
+private class NoDns : Dns {
+  override fun lookup(hostname: String): List<InetAddress> {
+    return listOf(InetAddress.getByAddress(hostname, ByteArray(4)))
   }
 }
