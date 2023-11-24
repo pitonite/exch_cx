@@ -59,6 +59,9 @@ private const val ONION_HOST = "hszyoqwrcp7cxlxnqmovp6vjvmnwj33g4wviuxqzq47emiea
 fun getExchDomain(preferredDomainType: PreferredDomainType) =
     if (preferredDomainType == PreferredDomainType.ONION) ONION_HOST else NORMAL_HOST
 
+inline fun getExchProtocol(preferredDomainType: PreferredDomainType) =
+    if (preferredDomainType == PreferredDomainType.ONION) URLProtocol.HTTP else URLProtocol.HTTPS
+
 private fun getProxyConfig(settings: UserSettings): ProxyConfig? {
   return if (settings.isProxyEnabled) {
     if (settings.preferredProxyType == PreferredProxyType.HTTP) {
@@ -196,7 +199,7 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
 
   fun HttpRequestBuilder.applyDefaultConfigurations() {
     url {
-      protocol = URLProtocol.HTTPS
+      protocol = getExchProtocol(preferredDomainType)
       host = getExchDomain(preferredDomainType)
       if (apiKey.isNotEmpty()) {
         parameters["api_key"] = apiKey
