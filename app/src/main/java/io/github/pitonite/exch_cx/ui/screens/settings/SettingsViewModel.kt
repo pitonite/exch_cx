@@ -9,13 +9,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.pitonite.exch_cx.PreferredDomainType
 import io.github.pitonite.exch_cx.PreferredProxyType
 import io.github.pitonite.exch_cx.copy
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
+import javax.inject.Inject
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 @Stable
@@ -27,9 +26,6 @@ constructor(
 ) : ViewModel() {
 
   var apiKeyDraft by mutableStateOf("")
-    private set
-
-  var preferredDomainTypeDraft by mutableStateOf(PreferredDomainType.NORMAL)
     private set
 
   var isOrderAutoUpdateEnabledDraft by mutableStateOf(false)
@@ -56,13 +52,8 @@ constructor(
   var preferredProxyTypeDraft by mutableStateOf(PreferredProxyType.SOCKS5)
     private set
 
-
   fun updateApiKeyDraft(value: String) {
     apiKeyDraft = value
-  }
-
-  fun updatePreferredDomainDraft(value: PreferredDomainType) {
-    preferredDomainTypeDraft = value
   }
 
   fun updateIsOrderAutoUpdateEnabledDraft(value: Boolean) {
@@ -101,7 +92,6 @@ constructor(
     viewModelScope.launch {
       userSettingsRepository.userSettingsFlow.firstOrNull()?.let {
         apiKeyDraft = it.apiKey
-        preferredDomainTypeDraft = it.preferredDomainType
         isOrderAutoUpdateEnabledDraft = it.isOrderAutoUpdateEnabled
         orderAutoUpdatePeriodMinutesDraft = it.orderAutoUpdatePeriodMinutes
         archiveOrdersAutomaticallyDraft = it.archiveOrdersAutomatically
@@ -117,10 +107,7 @@ constructor(
   fun saveRequestSettings() {
     viewModelScope.launch {
       userSettingsRepository.saveSettings(
-          userSettingsRepository.fetchSettings().copy {
-            apiKey = apiKeyDraft
-            preferredDomainType = preferredDomainTypeDraft
-          })
+          userSettingsRepository.fetchSettings().copy { apiKey = apiKeyDraft })
     }
   }
 

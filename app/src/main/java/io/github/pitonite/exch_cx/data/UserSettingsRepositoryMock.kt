@@ -1,7 +1,6 @@
 package io.github.pitonite.exch_cx.data
 
 import androidx.compose.runtime.Stable
-import io.github.pitonite.exch_cx.PreferredDomainType
 import io.github.pitonite.exch_cx.PreferredProxyType
 import io.github.pitonite.exch_cx.UserSettings
 import kotlinx.coroutines.flow.Flow
@@ -20,8 +19,6 @@ class UserSettingsRepositoryMock(
   override suspend fun saveSettings(userSettings: UserSettings) {}
 
   override suspend fun setApiKey(newKey: String) {}
-
-  override suspend fun setDomainOption(newDomainType: PreferredDomainType) {}
 
   override suspend fun setExchangeTipDismissed(value: Boolean) {}
 

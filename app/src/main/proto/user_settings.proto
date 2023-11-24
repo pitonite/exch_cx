@@ -3,20 +3,15 @@ syntax = "proto3";
 option java_package = "io.github.pitonite.exch_cx";
 option java_multiple_files = true;
 
-enum PreferredDomainType {
-  NORMAL = 0;
-  ONION = 1;
-}
-
 enum PreferredProxyType {
   SOCKS5 = 0;
   HTTP = 1;
 }
 
 message UserSettings {
+  reserved 3;
   bool first_init_done = 1;
   string api_key = 2;
-  PreferredDomainType preferred_domain_type = 3;
   bool is_exchange_tip_dismissed = 4;
   bool is_order_auto_update_enabled = 5;
   bool has_shown_order_background_update_notice = 6;

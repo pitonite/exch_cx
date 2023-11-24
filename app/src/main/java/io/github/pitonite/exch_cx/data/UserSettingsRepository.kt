@@ -1,7 +1,6 @@
 package io.github.pitonite.exch_cx.data
 
 import androidx.compose.runtime.Stable
-import io.github.pitonite.exch_cx.PreferredDomainType
 import io.github.pitonite.exch_cx.PreferredProxyType
 import io.github.pitonite.exch_cx.UserSettings
 import kotlinx.coroutines.flow.Flow
@@ -16,9 +15,6 @@ interface UserSettingsRepository {
   suspend fun saveSettings(userSettings: UserSettings)
 
   suspend fun setApiKey(newKey: String)
-
-  /** sets the preferred domain for accessing exch.cx website */
-  suspend fun setDomainOption(newDomainType: PreferredDomainType)
 
   suspend fun setExchangeTipDismissed(value: Boolean)
 

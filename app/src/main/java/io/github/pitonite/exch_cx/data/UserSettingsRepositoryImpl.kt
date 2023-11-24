@@ -9,7 +9,6 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.pitonite.exch_cx.ExchWorkManager
-import io.github.pitonite.exch_cx.PreferredDomainType
 import io.github.pitonite.exch_cx.PreferredProxyType
 import io.github.pitonite.exch_cx.UserSettings
 import io.github.pitonite.exch_cx.copy
@@ -58,12 +57,6 @@ constructor(
   override suspend fun setApiKey(newKey: String) {
     userSettingsStore.updateData { currentSettings ->
       currentSettings.toBuilder().setApiKey(newKey).build()
-    }
-  }
-
-  override suspend fun setDomainOption(newDomainType: PreferredDomainType) {
-    userSettingsStore.updateData { currentSettings ->
-      currentSettings.toBuilder().setPreferredDomainType(newDomainType).build()
     }
   }
 
