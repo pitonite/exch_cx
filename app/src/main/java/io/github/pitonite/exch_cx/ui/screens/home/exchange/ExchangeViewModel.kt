@@ -245,8 +245,9 @@ constructor(
             updateConversionAmounts(edited)
             return@let
           }
+
           // check against maximum input
-          if (xmlRate?.maxAmount?.compareTo(it) == -1) {
+          if (fee.reserve.compareTo(BigDecimal.ZERO) != 0 && xmlRate?.maxAmount?.compareTo(it) == -1) {
             updateFromAmount(xmlRate.maxAmount.toString())
             SnackbarManager.showMessage(
                 SnackbarMessage.from(
