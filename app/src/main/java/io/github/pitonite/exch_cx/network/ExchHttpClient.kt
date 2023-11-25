@@ -3,8 +3,6 @@ package io.github.pitonite.exch_cx.network
 import androidx.compose.runtime.Stable
 import io.github.pitonite.exch_cx.BuildConfig
 import io.github.pitonite.exch_cx.PreferredDomainType
-import io.github.pitonite.exch_cx.PreferredProxyType
-import io.github.pitonite.exch_cx.UserSettings
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
 import io.github.pitonite.exch_cx.model.api.ErrorResponse
 import io.github.pitonite.exch_cx.model.api.exceptions.ApiException
@@ -12,10 +10,8 @@ import io.github.pitonite.exch_cx.utils.jsonFormat
 import io.github.pitonite.exch_cx.utils.xmlFormat
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.engine.ProxyBuilder
 import io.ktor.client.engine.ProxyConfig
 import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.engine.http
 import io.ktor.client.plugins.BrowserUserAgent
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpResponseValidator
@@ -38,8 +34,10 @@ import io.ktor.http.contentType
 import io.ktor.serialization.ContentConvertException
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.serialization.kotlinx.xml.xml
+import java.net.InetAddress
 import javax.inject.Inject
 import javax.inject.Singleton
+import javax.net.ssl.SSLContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -50,27 +48,30 @@ import okhttp3.ConnectionSpec.Companion.RESTRICTED_TLS
 import okhttp3.Dns
 import okhttp3.internal.closeQuietly
 import okhttp3.internal.tls.OkHostnameVerifier
-import java.net.InetAddress
-import javax.net.ssl.SSLContext
 
 private const val NORMAL_HOST = "exch.cx"
 private const val ONION_HOST = "hszyoqwrcp7cxlxnqmovp6vjvmnwj33g4wviuxqzq47emieaxjaperyd.onion"
-private const val ONION_SSL_FINGERPRINT_SHA256 = "1EA14F31FD8A5E2EE1701048CCBC2E01A972BD6FBC3137249539BA5A7A9D2533"
+private const val ONION_SSL_FINGERPRINT_SHA256 =
+    "1EA14F31FD8A5E2EE1701048CCBC2E01A972BD6FBC3137249539BA5A7A9D2533"
 private const val ONION_SSL_FINGERPRINT_SHA1 = "6F7C160C6B5516E4C2E4E648E5636C2D2BFC7309"
 
 fun getExchDomain(preferredDomainType: PreferredDomainType) =
     if (preferredDomainType == PreferredDomainType.ONION) ONION_HOST else NORMAL_HOST
 
-private val connectionSpecs = listOf(
-    RESTRICTED_TLS, // order matters here, so we put restricted before modern
-    MODERN_TLS,
-    CLEARTEXT,
-)
+private val connectionSpecs =
+    listOf(
+        RESTRICTED_TLS, // order matters here, so we put restricted before modern
+        MODERN_TLS,
+        CLEARTEXT,
+    )
 
 private const val TIMEOUT_MILLIS_HIGH = 30_000L
 private const val TIMEOUT_MILLIS_LOW = 8_000L
 
-private fun createHttpClient(proxyConfig: ProxyConfig?, preferredDomainType: PreferredDomainType): HttpClient {
+private fun createHttpClient(
+    proxyConfig: ProxyConfig?,
+    preferredDomainType: PreferredDomainType
+): HttpClient {
   return HttpClient(OkHttp) {
     expectSuccess = true // throw on non-2xx
 
@@ -87,12 +88,16 @@ private fun createHttpClient(proxyConfig: ProxyConfig?, preferredDomainType: Pre
         }
         connectionSpecs(connectionSpecs)
 
-        if (preferredDomainType == PreferredDomainType.ONION){
-          val trustManager = CustomX509TrustManager(ONION_SSL_FINGERPRINT_SHA256, ONION_SSL_FINGERPRINT_SHA1)
+        if (preferredDomainType == PreferredDomainType.ONION) {
+          val trustManager =
+              CustomX509TrustManager(ONION_SSL_FINGERPRINT_SHA256, ONION_SSL_FINGERPRINT_SHA1)
           val sslContext = SSLContext.getInstance("TLS")
           sslContext.init(null, arrayOf(trustManager), null)
           sslSocketFactory(sslContext.socketFactory, trustManager)
-          hostnameVerifier { hostname, _ -> hostname == ONION_HOST }
+          hostnameVerifier { hostname, session ->
+            session?.sessionContext?.sessionTimeout = 60
+            hostname == ONION_HOST
+          }
         }
       }
     }
@@ -233,12 +238,7 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
   }
 }
 
-
-
-/**
- * Prevent DNS requests.
- * Important when proxying all requests over Tor to not leak DNS queries.
- */
+/** Prevent DNS requests. Important when proxying all requests over Tor to not leak DNS queries. */
 private class NoDns : Dns {
   override fun lookup(hostname: String): List<InetAddress> {
     return listOf(InetAddress.getByAddress(hostname, ByteArray(4)))
