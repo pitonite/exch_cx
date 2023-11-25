@@ -32,12 +32,12 @@ fun OrderRefunded(
         style = MaterialTheme.typography.headlineSmall,
     )
 
-    if (order.fromAmountReceived != null) {
-      SelectionContainer {
-        Text(
-            stringResource(
-                R.string.you_have_sent_us_amount, order.fromAmountReceived, order.fromCurrency))
-      }
+    if (order.fromAmountReceived  == null) return@OrderStateCard
+
+    SelectionContainer {
+      Text(
+          stringResource(
+              R.string.you_have_sent_us_amount, order.fromAmountReceived, order.fromCurrency))
     }
 
     if (!order.transactionIdReceived.isNullOrBlank()) {
@@ -49,13 +49,26 @@ fun OrderRefunded(
       }
     }
 
-    if (order.refundPrivateKey != null) {
+    val refundMsg = if (order.refundFeeAmount == null) {
+      stringResource(R.string.you_have_been_refunded_amount, order.fromAmountReceived, order.fromCurrency)
+    } else {
+      stringResource(R.string.you_have_been_refunded_amount_with_fee, order.fromAmountReceived, order.fromCurrency, order.refundFeeAmount)
+    }
 
-      if (order.toAmount != null) {
-        Text(
-            stringResource(R.string.you_have_been_given_amount, order.toAmount, order.fromCurrency))
+    SelectionContainer {
+      Text(refundMsg)
+    }
+
+    if (!order.refundTransactionId.isNullOrBlank()) {
+      Column {
+        Text(stringResource(R.string.label_refund_transaction_id))
+        SelectionContainer {
+          TransactionText(currency = order.fromCurrency, txid = order.refundTransactionId)
+        }
       }
+    }
 
+    if (order.refundPrivateKey != null) {
       Text(stringResource(R.string.order_state_refunded_private_key_desc))
 
       var showPrivateKey by remember { mutableStateOf(false) }
@@ -69,8 +82,6 @@ fun OrderRefunded(
           title = stringResource(R.string.title_private_key),
           content = order.refundPrivateKey,
           onDismissRequest = { showPrivateKey = false })
-    } else {
-      Text(stringResource(R.string.order_state_refunded_desc))
     }
   }
 }

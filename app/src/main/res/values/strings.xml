@@ -198,7 +198,8 @@
   <string name="order_state_refunded_private_key_desc">Your refund is available through a private key that is provided below:</string>
   <string name="show_private_key">Show Private Key</string>
   <string name="title_private_key">Private Key</string>
-  <string name="you_have_been_given_amount">You have been given %1$s %2$S</string>
+  <string name="you_have_been_refunded_amount">You have been refunded %1$s %2$S</string>
+  <string name="you_have_been_refunded_amount_with_fee">You have been refunded %1$s %2$S (incl. network fee %3$s %2$S)</string>
   <string name="order_state_complete_title">Order Completed</string>
   <string name="order_state_complete_desc">You can request order data to be delete from our servers:</string>
   <string name="orderstate_complete_data_deleted">Your data has been deleted from our servers</string>
@@ -221,4 +222,5 @@
   <string name="label_preferred_proxy_type">Type</string>
   <string name="label_is_proxy_enabled">Enabled ?</string>
   <string name="snack_saved_changes_successfully">Saved changes successfully!</string>
+  <string name="label_refund_transaction_id">Refund Transaction ID:</string>
 </resources>

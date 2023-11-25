@@ -316,6 +316,8 @@ class OrderRepositoryMock : OrderRepository {
         letterOfGuarantee = letterOfGuaranteeExample,
         transactionIdReceived = "zzww481d0d50298eba3bf924354cfb77abf10399cc0704ac72a18d41037feb58",
         transactionIdSent = "0xzzcb5154bbb0d9d8b6919e989d65f87ca4b536bf6b80f4c9a2b0de25ff26fd70",
+        refundTransactionId = "0xzzcb5154bbb0d9d8b6919e989d65f87ca4b536bf6b80f4c9a2b0de25ff26fd70",
+        refundFeeAmount = "0.0000131".toBigDecimal(),
         fromAmountReceived = "0.078380831366853865".toBigDecimal(),
         toAmount = "1.078380831366853865".toBigDecimal(),
         refundAddress = "btcbtcbtcbtcbtcbtcbtcbtcbtcbtcbtcbtcbtcbtcbtc"

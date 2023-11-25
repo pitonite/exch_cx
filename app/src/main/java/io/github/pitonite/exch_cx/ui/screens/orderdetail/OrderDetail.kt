@@ -408,25 +408,15 @@ fun OrderColumn(
         CopyableText(order.toAddress, copyConfirmationMessage = R.string.snack_address_copied)
       }
 
-
-
       if (!order.transactionIdSent.isNullOrBlank()) {
-        val isRefund = order.state.code().lowercase().startsWith("refund")
-        val currency = if (isRefund) order.fromCurrency else order.toCurrency
-
         if (order.toAmount != null) {
-          val msg =  if (isRefund) {
-            R.string.order_refund_amount
-          } else {
-            R.string.order_sent_amount
-          }
-          Text(stringResource(msg, order.toAmount, currency))
+          Text(stringResource(R.string.order_sent_amount, order.toAmount, order.toCurrency))
         }
 
         Column {
           Text(stringResource(R.string.label_transaction_id))
           SelectionContainer {
-            TransactionText(currency = currency, txid = order.transactionIdSent)
+            TransactionText(currency = order.toCurrency, txid = order.transactionIdSent)
           }
         }
       }
