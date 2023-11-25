@@ -2,6 +2,7 @@ package io.github.pitonite.exch_cx.ui.screens.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.exclude
@@ -41,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.pitonite.exch_cx.BuildConfig
 import io.github.pitonite.exch_cx.PreferredDomainType
 import io.github.pitonite.exch_cx.PreferredProxyType
 import io.github.pitonite.exch_cx.R
@@ -244,6 +246,13 @@ fun Settings(viewModel: SettingsViewModel, upPress: () -> Unit, modifier: Modifi
         }
       }
       // endregion proxy
+
+      Row(horizontalArrangement = Arrangement.Center) {
+        Text(
+            "eXch. v${BuildConfig.VERSION_NAME}",
+            color = MaterialTheme.colorScheme.onSurfaceVariant, 
+        )
+      }
 
       Spacer(Modifier)
     }
