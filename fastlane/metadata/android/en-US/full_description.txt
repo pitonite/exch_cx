@@ -1,4 +1,4 @@
-The official app for exch.cx website.
+The community app for exch.cx website.
 
 App features:
 - Import your current active orders into the app to track them inside the app

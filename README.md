@@ -1,6 +1,6 @@
 # eXch.cx android app
 
-The official app for exch.cx website.
+The community app for exch.cx website.
 
 App features:
 
