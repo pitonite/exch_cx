@@ -63,6 +63,7 @@ import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderAwaiti
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderCancelled
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderCreated
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderCreatedToAddressInvalid
+import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderRefunded
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.orderUnknownState
 import io.github.pitonite.exch_cx.data.UserSettingsRepositoryMock
 import io.github.pitonite.exch_cx.data.room.Order
@@ -531,6 +532,13 @@ fun OrderColumnCancelledPreview() {
 fun OrderColumnUnknownPreview() {
   ExchTheme { Surface { OrderColumn(getMockViewModel(), orderUnknownState, {}) } }
 }
+
+@Preview("order - refunded", widthDp = 360)
+@Composable
+fun OrderColumnRefundedPreview() {
+  ExchTheme { Surface { OrderColumn(getMockViewModel(), orderRefunded, {}) } }
+}
+
 
 @Preview("default")
 @Composable

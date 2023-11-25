@@ -318,6 +318,7 @@ class OrderRepositoryMock : OrderRepository {
         transactionIdSent = "0xzzcb5154bbb0d9d8b6919e989d65f87ca4b536bf6b80f4c9a2b0de25ff26fd70",
         fromAmountReceived = "0.078380831366853865".toBigDecimal(),
         toAmount = "1.078380831366853865".toBigDecimal(),
+        refundAddress = "btcbtcbtcbtcbtcbtcbtcbtcbtcbtcbtcbtcbtcbtcbtc"
     )
 
     val orderRefundedWithPrivateKey = Order(
