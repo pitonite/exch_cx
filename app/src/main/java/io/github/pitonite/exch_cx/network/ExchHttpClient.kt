@@ -8,7 +8,7 @@ import io.github.pitonite.exch_cx.UserSettings
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
 import io.github.pitonite.exch_cx.model.api.ErrorResponse
 import io.github.pitonite.exch_cx.model.api.exceptions.ApiException
-import io.github.pitonite.exch_cx.utils.isTor
+import io.github.pitonite.exch_cx.network.isTor
 import io.github.pitonite.exch_cx.utils.jsonFormat
 import io.github.pitonite.exch_cx.utils.xmlFormat
 import io.ktor.client.HttpClient

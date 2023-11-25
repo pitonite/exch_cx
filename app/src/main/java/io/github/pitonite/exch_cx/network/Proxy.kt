@@ -1,4 +1,4 @@
-package io.github.pitonite.exch_cx.utils
+package io.github.pitonite.exch_cx.network
 
 import io.ktor.client.engine.ProxyConfig
 import io.ktor.client.engine.ProxyType.HTTP
