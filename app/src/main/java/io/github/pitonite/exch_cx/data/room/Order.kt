@@ -13,7 +13,6 @@ import io.github.pitonite.exch_cx.model.api.OrderWalletPool
 import io.github.pitonite.exch_cx.model.api.RateFeeMode
 import io.github.pitonite.exch_cx.utils.codified.enums.CodifiedEnum
 import io.github.pitonite.exch_cx.utils.codified.enums.codifiedEnum
-import kotlinx.serialization.SerialName
 import java.math.BigDecimal
 import java.util.Date
 
@@ -52,9 +51,16 @@ data class Order(
     @ColumnInfo(defaultValue = "null") val transactionIdSent: String? = null,
     // newly added
     @ColumnInfo(defaultValue = "0") val refundAvailable: Boolean = false,
-    /** Private key in case an ETH token is refunded in the REFUNDED state (when from_currency is one of USDC, DAI, USDT) */
+    /**
+     * Private key in case an ETH token is refunded in the REFUNDED state (when from_currency is one
+     * of USDC, DAI, USDT)
+     */
     @ColumnInfo(defaultValue = "null") val refundPrivateKey: String? = null,
-    @ColumnInfo(defaultValue = "null") val walletPool: CodifiedEnum<OrderWalletPool, String>? = null,
+    @ColumnInfo(defaultValue = "null")
+    val walletPool: CodifiedEnum<OrderWalletPool, String>? = null,
+    @ColumnInfo(defaultValue = "null") val refundTransactionId: String? = null,
+    @ColumnInfo(defaultValue = "null") val refundAddress: String? = null,
+    @ColumnInfo(defaultValue = "null") val refundFeeAmount: BigDecimal? = null,
     //
     // custom added data:
     //
@@ -65,38 +71,39 @@ data class Order(
     @ColumnInfo(defaultValue = "null") val referrerId: String? = null,
     @ColumnInfo(defaultValue = "null") val aggregationOption: AggregationOption? = null,
     @ColumnInfo(defaultValue = "null") val feeOption: NetworkFeeOption? = null,
-    @ColumnInfo(defaultValue = "null") val refundAddress: String? = null,
     // fetched using an api while order is being updated:
     @ColumnInfo(defaultValue = "null") val letterOfGuarantee: String? = null,
     @ColumnInfo(defaultValue = "0") val deletedInRemote: Boolean = false,
-
 )
 
 // to not touch archive when updating order
 @Stable
 data class OrderUpdate(
-  val id: String,
-  val createdAt: Date = Date(),
-  val modifiedAt: Date = Date(),
-  val fromAddr: String = "_GENERATING_",
-  val fromCurrency: String,
-  val fromAmountReceived: BigDecimal? = null,
-  val maxInput: BigDecimal,
-  val minInput: BigDecimal,
-  val networkFee: BigDecimal? = null,
-  val rate: BigDecimal,
-  val rateMode: RateFeeMode,
-  val state: CodifiedEnum<OrderState, String>,
-  val stateError: CodifiedEnum<OrderStateError, String>? = null,
-  val svcFee: BigDecimal,
-  val toAmount: BigDecimal? = null,
-  val toAddress: String,
-  val toCurrency: String,
-  val transactionIdReceived: String? = null,
-  val transactionIdSent: String? = null,
-  val walletPool: CodifiedEnum<OrderWalletPool, String>? = null,
-  val refundAvailable: Boolean = false,
-  val refundPrivateKey: String? = null,
+    val id: String,
+    val createdAt: Date = Date(),
+    val modifiedAt: Date = Date(),
+    val fromAddr: String = "_GENERATING_",
+    val fromCurrency: String,
+    val fromAmountReceived: BigDecimal? = null,
+    val maxInput: BigDecimal,
+    val minInput: BigDecimal,
+    val networkFee: BigDecimal? = null,
+    val rate: BigDecimal,
+    val rateMode: RateFeeMode,
+    val state: CodifiedEnum<OrderState, String>,
+    val stateError: CodifiedEnum<OrderStateError, String>? = null,
+    val svcFee: BigDecimal,
+    val toAmount: BigDecimal? = null,
+    val toAddress: String,
+    val toCurrency: String,
+    val transactionIdReceived: String? = null,
+    val transactionIdSent: String? = null,
+    val walletPool: CodifiedEnum<OrderWalletPool, String>? = null,
+    val refundAvailable: Boolean = false,
+    val refundPrivateKey: String? = null,
+    val refundTransactionId: String? = null,
+    val refundAddress: String? = null,
+    val refundFeeAmount: BigDecimal? = null,
 )
 
 @Stable
@@ -124,6 +131,9 @@ data class OrderUpdateWithArchive(
     val walletPool: CodifiedEnum<OrderWalletPool, String>? = null,
     val refundAvailable: Boolean = false,
     val refundPrivateKey: String? = null,
+    val refundTransactionId: String? = null,
+    val refundAddress: String? = null,
+    val refundFeeAmount: BigDecimal? = null,
 )
 
 /** for use when an order is initially created by sending a request to api */
@@ -154,24 +164,24 @@ data class OrderArchive(
 
 @Stable
 data class OrderLetterOfGuarantee(
-  val id: String,
-  val letterOfGuarantee: String,
+    val id: String,
+    val letterOfGuarantee: String,
 )
-
 
 @Stable
 data class OrderToAddress(
-  val id: String,
-  val toAddress: String,
+    val id: String,
+    val toAddress: String,
 )
+
 @Stable
 data class OrderRefundAddress(
-  val id: String,
-  val refundAddress: String,
+    val id: String,
+    val refundAddress: String,
 )
 
 @Stable
 data class OrderDeletedInRemote(
-  val id: String,
-  val deletedInRemote: Boolean,
+    val id: String,
+    val deletedInRemote: Boolean,
 )

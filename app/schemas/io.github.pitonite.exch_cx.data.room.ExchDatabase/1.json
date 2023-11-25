@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "585dde20cae2369bab18596e54d61994",
+    "identityHash": "1d109b37e60b44930149f89009522cb1",
     "entities": [
       {
         "tableName": "Order",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `fromAddr` TEXT NOT NULL DEFAULT '_GENERATING_', `fromCurrency` TEXT NOT NULL, `fromAmountReceived` TEXT DEFAULT null, `maxInput` TEXT NOT NULL, `minInput` TEXT NOT NULL, `networkFee` TEXT DEFAULT null, `rate` TEXT NOT NULL, `rateMode` TEXT NOT NULL, `state` TEXT NOT NULL, `stateError` TEXT DEFAULT null, `svcFee` TEXT NOT NULL, `toAmount` TEXT DEFAULT null, `toAddress` TEXT NOT NULL, `toCurrency` TEXT NOT NULL, `transactionIdReceived` TEXT DEFAULT null, `transactionIdSent` TEXT DEFAULT null, `refundAvailable` INTEGER NOT NULL DEFAULT 0, `refundPrivateKey` TEXT DEFAULT null, `walletPool` TEXT DEFAULT null, `modifiedAt` INTEGER NOT NULL DEFAULT (cast((julianday('now') - 2440587.5) * 86400 * 1000 as integer)), `archived` INTEGER NOT NULL DEFAULT 0, `fromAmount` TEXT DEFAULT null, `referrerId` TEXT DEFAULT null, `aggregationOption` TEXT DEFAULT null, `feeOption` TEXT DEFAULT null, `refundAddress` TEXT DEFAULT null, `letterOfGuarantee` TEXT DEFAULT null, `deletedInRemote` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `fromAddr` TEXT NOT NULL DEFAULT '_GENERATING_', `fromCurrency` TEXT NOT NULL, `fromAmountReceived` TEXT DEFAULT null, `maxInput` TEXT NOT NULL, `minInput` TEXT NOT NULL, `networkFee` TEXT DEFAULT null, `rate` TEXT NOT NULL, `rateMode` TEXT NOT NULL, `state` TEXT NOT NULL, `stateError` TEXT DEFAULT null, `svcFee` TEXT NOT NULL, `toAmount` TEXT DEFAULT null, `toAddress` TEXT NOT NULL, `toCurrency` TEXT NOT NULL, `transactionIdReceived` TEXT DEFAULT null, `transactionIdSent` TEXT DEFAULT null, `refundAvailable` INTEGER NOT NULL DEFAULT 0, `refundPrivateKey` TEXT DEFAULT null, `walletPool` TEXT DEFAULT null, `refundTransactionId` TEXT DEFAULT null, `refundAddress` TEXT DEFAULT null, `refundFeeAmount` TEXT DEFAULT null, `modifiedAt` INTEGER NOT NULL DEFAULT (cast((julianday('now') - 2440587.5) * 86400 * 1000 as integer)), `archived` INTEGER NOT NULL DEFAULT 0, `fromAmount` TEXT DEFAULT null, `referrerId` TEXT DEFAULT null, `aggregationOption` TEXT DEFAULT null, `feeOption` TEXT DEFAULT null, `letterOfGuarantee` TEXT DEFAULT null, `deletedInRemote` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -145,6 +145,27 @@
             "defaultValue": "null"
           },
           {
+            "fieldPath": "refundTransactionId",
+            "columnName": "refundTransactionId",
+            "affinity": "TEXT",
+            "notNull": false,
+            "defaultValue": "null"
+          },
+          {
+            "fieldPath": "refundAddress",
+            "columnName": "refundAddress",
+            "affinity": "TEXT",
+            "notNull": false,
+            "defaultValue": "null"
+          },
+          {
+            "fieldPath": "refundFeeAmount",
+            "columnName": "refundFeeAmount",
+            "affinity": "TEXT",
+            "notNull": false,
+            "defaultValue": "null"
+          },
+          {
             "fieldPath": "modifiedAt",
             "columnName": "modifiedAt",
             "affinity": "INTEGER",
@@ -182,13 +203,6 @@
           {
             "fieldPath": "feeOption",
             "columnName": "feeOption",
-            "affinity": "TEXT",
-            "notNull": false,
-            "defaultValue": "null"
-          },
-          {
-            "fieldPath": "refundAddress",
-            "columnName": "refundAddress",
             "affinity": "TEXT",
             "notNull": false,
             "defaultValue": "null"
@@ -326,7 +340,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '585dde20cae2369bab18596e54d61994')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1d109b37e60b44930149f89009522cb1')"
     ]
   }
 }

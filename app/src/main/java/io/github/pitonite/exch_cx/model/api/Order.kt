@@ -136,4 +136,10 @@ data class OrderResponse(
     val walletPool: CodifiedEnum<OrderWalletPool, String>? = null,
     @SerialName("refund_available") val refundAvailable: Boolean = false,
     @SerialName("refund_private_key") val refundPrivateKey: String? = null,
+    // 
+    @SerialName("refund_transaction_id") val refundTransactionId: String? = null,
+    @SerialName("refund_addr") val refundAddress: String? = null,
+    @SerialName("refund_fee_amount")
+    @Serializable(with = BigDecimalSerializer::class)
+    val refundFeeAmount: BigDecimal? = null,
 )

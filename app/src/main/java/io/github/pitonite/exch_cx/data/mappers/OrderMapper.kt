@@ -29,6 +29,9 @@ fun Order.toOrderUpdateEntity() =
         walletPool = this.walletPool,
         refundAvailable = this.refundAvailable,
         refundPrivateKey = this.refundPrivateKey,
+        refundTransactionId = this.refundTransactionId,
+        refundAddress =  this.refundAddress,
+        refundFeeAmount =  this.refundFeeAmount,
     )
 
 fun OrderResponse.toOrderUpdateEntity() =
@@ -54,6 +57,9 @@ fun OrderResponse.toOrderUpdateEntity() =
         walletPool = this.walletPool,
         refundAvailable = this.refundAvailable,
         refundPrivateKey = this.refundPrivateKey,
+        refundTransactionId = this.refundTransactionId,
+        refundAddress =  this.refundAddress,
+        refundFeeAmount =  this.refundFeeAmount,
     )
 
 fun OrderUpdate.toOrderUpdateWithArchiveEntity(archived: Boolean) =
@@ -80,4 +86,7 @@ fun OrderUpdate.toOrderUpdateWithArchiveEntity(archived: Boolean) =
         walletPool = this.walletPool,
         refundAvailable = this.refundAvailable,
         refundPrivateKey = this.refundPrivateKey,
+        refundTransactionId = this.refundTransactionId,
+        refundAddress =  this.refundAddress,
+        refundFeeAmount =  this.refundFeeAmount,
     )
