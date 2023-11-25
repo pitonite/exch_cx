@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -22,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock.Companion.letterOfGuaranteeExample
+import io.github.pitonite.exch_cx.utils.copyToClipboard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,6 +34,7 @@ fun HiddenContentDialog(
     content: String,
     onDismissRequest: () -> Unit = {},
 ) {
+  val context = LocalContext.current
   if (show) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -56,6 +59,14 @@ fun HiddenContentDialog(
           )
 
           Row(horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_md))) {
+            OutlinedButton(onClick = {
+              copyToClipboard(context, content)
+            }) {
+              Text(
+                  stringResource(R.string.accessibility_label_copy),
+                  color = MaterialTheme.colorScheme.onSurface,
+                  fontWeight = FontWeight.Light)
+            }
             OutlinedButton(onClick = onDismissRequest) {
               Text(
                   stringResource(R.string.close),
