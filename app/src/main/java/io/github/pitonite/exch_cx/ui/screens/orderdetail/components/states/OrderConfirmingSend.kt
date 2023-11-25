@@ -41,7 +41,7 @@ fun OrderConfirmingSend(
       }
     }
 
-    if (order.transactionIdReceived != null) {
+    if (!order.transactionIdReceived.isNullOrBlank()) {
       Column {
         Text(stringResource(R.string.label_transaction_id))
         SelectionContainer {

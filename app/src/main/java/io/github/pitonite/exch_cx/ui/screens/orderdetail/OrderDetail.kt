@@ -409,7 +409,7 @@ fun OrderColumn(
 
 
 
-      if (!order.transactionIdSent.isNullOrEmpty()) {
+      if (!order.transactionIdSent.isNullOrBlank()) {
         val isRefund = order.state.code().lowercase().startsWith("refund")
         val currency = if (isRefund) order.fromCurrency else order.toCurrency
 
@@ -430,7 +430,7 @@ fun OrderColumn(
         }
       }
 
-      if (order.refundAddress != null) {
+      if (!order.refundAddress.isNullOrBlank()) {
         Column {
           Text(stringResource(R.string.label_your_refund_address, order.fromCurrency))
           CopyableText(order.refundAddress, copyConfirmationMessage = R.string.snack_address_copied)
