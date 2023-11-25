@@ -16,6 +16,7 @@ import io.ktor.client.plugins.BrowserUserAgent
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.UserAgent
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.cookies.HttpCookies
 import io.ktor.client.plugins.defaultRequest
@@ -114,10 +115,9 @@ private fun createHttpClient(
       }
     }
 
-    //      install(UserAgent) {
-    //        agent = "Ktor client"
-    //      }
-    BrowserUserAgent()
+    install(UserAgent) {
+      agent = "eXch mobile client/v${BuildConfig.VERSION_NAME}"
+    }
 
     defaultRequest {
       if (!headers.contains("X-Requested-With")) {
