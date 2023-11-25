@@ -250,7 +250,7 @@ fun Settings(viewModel: SettingsViewModel, upPress: () -> Unit, modifier: Modifi
       Row(horizontalArrangement = Arrangement.Center) {
         Text(
             "eXch. v${BuildConfig.VERSION_NAME}",
-            color = MaterialTheme.colorScheme.onSurfaceVariant, 
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
       }
 
