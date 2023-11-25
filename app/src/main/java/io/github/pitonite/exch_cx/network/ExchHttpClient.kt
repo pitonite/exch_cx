@@ -8,7 +8,6 @@ import io.github.pitonite.exch_cx.UserSettings
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
 import io.github.pitonite.exch_cx.model.api.ErrorResponse
 import io.github.pitonite.exch_cx.model.api.exceptions.ApiException
-import io.github.pitonite.exch_cx.network.isTor
 import io.github.pitonite.exch_cx.utils.jsonFormat
 import io.github.pitonite.exch_cx.utils.xmlFormat
 import io.ktor.client.HttpClient
@@ -61,19 +60,6 @@ private const val ONION_SSL_FINGERPRINT_SHA1 = "6F7C160C6B5516E4C2E4E648E5636C2D
 
 fun getExchDomain(preferredDomainType: PreferredDomainType) =
     if (preferredDomainType == PreferredDomainType.ONION) ONION_HOST else NORMAL_HOST
-
-inline fun getExchProtocol(preferredDomainType: PreferredDomainType) =
-    if (preferredDomainType == PreferredDomainType.ONION) URLProtocol.HTTP else URLProtocol.HTTPS
-
-private fun getProxyConfig(settings: UserSettings): ProxyConfig? {
-  return if (settings.isProxyEnabled) {
-    if (settings.preferredProxyType == PreferredProxyType.HTTP) {
-      ProxyBuilder.http("http://${settings.proxyHost}:${settings.proxyPort}")
-    } else {
-      ProxyBuilder.socks(settings.proxyHost, settings.proxyPort.toIntOrNull() ?: 9050)
-    }
-  } else null
-}
 
 private val connectionSpecs = listOf(
     RESTRICTED_TLS, // order matters here, so we put restricted before modern

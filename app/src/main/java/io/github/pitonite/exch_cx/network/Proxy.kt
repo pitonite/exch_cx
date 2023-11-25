@@ -1,8 +1,12 @@
 package io.github.pitonite.exch_cx.network
 
+import io.github.pitonite.exch_cx.PreferredProxyType
+import io.github.pitonite.exch_cx.UserSettings
+import io.ktor.client.engine.ProxyBuilder
 import io.ktor.client.engine.ProxyConfig
 import io.ktor.client.engine.ProxyType.HTTP
 import io.ktor.client.engine.ProxyType.SOCKS
+import io.ktor.client.engine.http
 import io.ktor.client.engine.resolveAddress
 import io.ktor.client.engine.type
 import io.ktor.http.hostIsIp
@@ -20,4 +24,16 @@ internal fun ProxyConfig?.isTor(): Boolean {
   val address = resolveAddress()
   return (type == HTTP && address.port == DEFAULT_PROXY_HTTP_PORT) ||
       (type == SOCKS && address.port == DEFAULT_PROXY_SOCKS_PORT)
+}
+
+internal fun getProxyConfig(settings: UserSettings): ProxyConfig? {
+  return if (settings.isProxyEnabled) {
+    val host = if (settings.proxyHost.isNullOrBlank()) DEFAULT_PROXY_HOST else settings.proxyHost
+    val port = if (settings.proxyPort.isNullOrBlank()) DEFAULT_PROXY_SOCKS_PORT else settings.proxyPort.toIntOrNull() ?: 9050
+    if (settings.preferredProxyType == PreferredProxyType.HTTP) {
+      ProxyBuilder.http("http://${host}:${port}")
+    } else {
+      ProxyBuilder.socks(host, port)
+    }
+  } else null
 }
