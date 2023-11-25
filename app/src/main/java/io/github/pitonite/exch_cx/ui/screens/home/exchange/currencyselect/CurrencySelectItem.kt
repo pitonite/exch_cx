@@ -42,11 +42,8 @@ fun CurrencySelectItem(
         ),
     onClick: () -> Unit = {},
     currencySelection: CurrencySelection,
+    enabled: Boolean = true,
 ) {
-  val enabled =
-      if (currencySelection == CurrencySelection.TO)
-          currency.reserve.compareTo(BigDecimal.ZERO) == 1
-      else true
   Button(
       onClick = onClick,
       modifier = modifier,
