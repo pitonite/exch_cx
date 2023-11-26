@@ -1,6 +1,7 @@
 package io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.WarningAmber
@@ -19,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import io.github.pitonite.exch_cx.R
@@ -49,16 +51,34 @@ fun OrderComplete(
             stringResource(
                 R.string.you_have_sent_us_amount, order.fromAmountReceived, order.fromCurrency))
       }
-    }
 
-    if (!order.transactionIdReceived.isNullOrBlank()) {
-      Column {
-        Text(stringResource(R.string.label_transaction_id))
-        SelectionContainer {
-          TransactionText(currency = order.fromCurrency, txid = order.transactionIdReceived)
+      if (!order.transactionIdReceived.isNullOrBlank()) {
+        Column {
+          Text(stringResource(R.string.label_transaction_id))
+          SelectionContainer {
+            TransactionText(currency = order.fromCurrency, txid = order.transactionIdReceived)
+          }
         }
       }
     }
+
+    Spacer(Modifier)
+
+    if (order.toAmount != null) {
+      Text(stringResource(R.string.we_have_sent_you, order.toAmount, order.toCurrency))
+    }
+
+    if (!order.transactionIdSent.isNullOrBlank()) {
+      Column {
+        Text(stringResource(R.string.label_transaction_id))
+        SelectionContainer {
+          TransactionText(currency = order.toCurrency, txid = order.transactionIdSent)
+        }
+      }
+    }
+
+    Spacer(Modifier)
+
 
     if (order.deletedInRemote) {
       Text(stringResource(R.string.orderstate_complete_data_deleted))

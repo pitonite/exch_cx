@@ -143,7 +143,7 @@
   <string name="having_problem_question">Having problem?</string>
   <string name="open">Open</string>
   <string name="in_order_support_chat">in-order support chat</string>
-  <string name="order_sent_amount">Sent amount: %1$s %2$S</string>
+  <string name="we_have_sent_you">We have sent you %1$s %2$S</string>
   <string name="order_refund_amount">Refunded amount: %1$s %2$S</string>
   <string name="support_chat">Support Chat</string>
   <string name="close">Close</string>

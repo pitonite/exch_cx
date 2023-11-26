@@ -408,19 +408,6 @@ fun OrderColumn(
         CopyableText(order.toAddress, copyConfirmationMessage = R.string.snack_address_copied)
       }
 
-      if (!order.transactionIdSent.isNullOrBlank()) {
-        if (order.toAmount != null) {
-          Text(stringResource(R.string.order_sent_amount, order.toAmount, order.toCurrency))
-        }
-
-        Column {
-          Text(stringResource(R.string.label_transaction_id))
-          SelectionContainer {
-            TransactionText(currency = order.toCurrency, txid = order.transactionIdSent)
-          }
-        }
-      }
-
       if (!order.refundAddress.isNullOrBlank()) {
         Column {
           Text(stringResource(R.string.label_your_refund_address, order.fromCurrency))

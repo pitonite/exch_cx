@@ -2,6 +2,7 @@ package io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.selection.SelectionContainer
@@ -50,9 +51,22 @@ fun OrderConfirmingSend(
       }
     }
 
+    Spacer(Modifier)
+
     if (order.toAmount != null) {
       Text(stringResource(R.string.you_will_receive, order.toAmount, order.toCurrency))
     }
+
+    if (!order.transactionIdSent.isNullOrBlank()) {
+      Column {
+        Text(stringResource(R.string.label_transaction_id))
+        SelectionContainer {
+          TransactionText(currency = order.toCurrency, txid = order.transactionIdSent)
+        }
+      }
+    }
+
+    Spacer(Modifier)
 
     if (order.stateError == null) {
       TextWithLoading(stringResource(R.string.order_state_confirming_send_desc))
