@@ -1,0 +1,1 @@
+- Add QrCode scanner for entering addresses and import dialog
