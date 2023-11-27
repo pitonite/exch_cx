@@ -128,6 +128,8 @@ dependencies {
 
   // for QRCode generation
   implementation("com.google.zxing:core:3.5.2")
+  // for launching scanner
+  implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 }
 
 hilt { enableAggregatingTask = true }

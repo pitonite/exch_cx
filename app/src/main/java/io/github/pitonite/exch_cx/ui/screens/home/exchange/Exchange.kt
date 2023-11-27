@@ -17,6 +17,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.SwapVert
 import androidx.compose.material3.Button
@@ -40,6 +41,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -75,16 +79,17 @@ import io.github.pitonite.exch_cx.utils.ExchangeWorkState
 import io.github.pitonite.exch_cx.utils.isWorking
 import io.github.pitonite.exch_cx.utils.noRippleClickable
 import io.github.pitonite.exch_cx.utils.nonScaledSp
+import io.github.pitonite.exch_cx.utils.rememberQrCodeScanner
 import io.github.pitonite.exch_cx.utils.verticalFadingEdge
 import java.math.BigDecimal
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Exchange(
-  modifier: Modifier = Modifier,
-  viewModel: ExchangeViewModel,
-  onOrderSelected: (String) -> Unit,
-  onNavigateToRoute: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: ExchangeViewModel,
+    onOrderSelected: (String) -> Unit,
+    onNavigateToRoute: (String) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val usable by viewModel.usable.collectAsStateWithLifecycle()
@@ -100,9 +105,9 @@ fun Exchange(
         CenterAlignedTopAppBar(
             scrollBehavior = scrollBehavior,
             colors =
-            TopAppBarDefaults.centerAlignedTopAppBarColors(
-                scrolledContainerColor = MaterialTheme.colorScheme.inverseOnSurface,
-            ),
+                TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    scrolledContainerColor = MaterialTheme.colorScheme.inverseOnSurface,
+                ),
             title = { Text(stringResource(R.string.exchange)) },
             navigationIcon = {
               IconButton(onClick = { onNavigateToRoute(SecondaryDestinations.SETTINGS_ROUTE) }) {
@@ -122,19 +127,18 @@ fun Exchange(
             },
         )
       },
-      contentWindowInsets = ScaffoldDefaults
-          .contentWindowInsets
-          .exclude(WindowInsets.navigationBars),
+      contentWindowInsets =
+          ScaffoldDefaults.contentWindowInsets.exclude(WindowInsets.navigationBars),
   ) { padding ->
     Column(
         modifier =
-        modifier
-            .padding(padding)
-            .consumeWindowInsets(padding)
-            .verticalFadingEdge(scrollState, dimensionResource(R.dimen.fading_edge))
-            .padding(horizontal = dimensionResource(R.dimen.page_padding))
-            .verticalScroll(scrollState)
-            .noRippleClickable() { focusManager.clearFocus() },
+            modifier
+                .padding(padding)
+                .consumeWindowInsets(padding)
+                .verticalFadingEdge(scrollState, dimensionResource(R.dimen.fading_edge))
+                .padding(horizontal = dimensionResource(R.dimen.page_padding))
+                .verticalScroll(scrollState)
+                .noRippleClickable() { focusManager.clearFocus() },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_md)),
     ) {
@@ -146,11 +150,10 @@ fun Exchange(
       Card {
         Column(
             modifier =
-            Modifier
-                .padding(horizontal = dimensionResource(R.dimen.padding_md))
-                .padding(
-                    vertical = dimensionResource(R.dimen.padding_xl),
-                ),
+                Modifier.padding(horizontal = dimensionResource(R.dimen.padding_md))
+                    .padding(
+                        vertical = dimensionResource(R.dimen.padding_xl),
+                    ),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_sm)),
         ) {
@@ -177,8 +180,7 @@ fun Exchange(
             HorizontalDivider(Modifier.weight(1f))
             OutlinedIconButton(
                 onClick = { viewModel.swapCurrencies() },
-                border =
-                BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)),
                 enabled = usable,
             ) {
               Icon(
@@ -220,14 +222,14 @@ fun Exchange(
                   onClick = { viewModel.updateFeeRateMode(RateFeeMode.FLAT) },
                   selected = uiState.rateFeeMode == RateFeeMode.FLAT,
                   shape =
-                  SegmentedButtonDefaults.itemShape(
-                      index = 0,
-                      count = 2,
-                      baseShape =
-                      RoundedCornerShape(
-                          dimensionResource(R.dimen.rounded_md),
+                      SegmentedButtonDefaults.itemShape(
+                          index = 0,
+                          count = 2,
+                          baseShape =
+                              RoundedCornerShape(
+                                  dimensionResource(R.dimen.rounded_md),
+                              ),
                       ),
-                  ),
                   enabled = usable,
               )
               SegmentedButton(
@@ -240,12 +242,11 @@ fun Exchange(
                   onClick = { viewModel.updateFeeRateMode(RateFeeMode.DYNAMIC) },
                   selected = uiState.rateFeeMode == RateFeeMode.DYNAMIC,
                   shape =
-                  SegmentedButtonDefaults.itemShape(
-                      index = 1,
-                      count = 2,
-                      baseShape =
-                      RoundedCornerShape(dimensionResource(R.dimen.rounded_md)),
-                  ),
+                      SegmentedButtonDefaults.itemShape(
+                          index = 1,
+                          count = 2,
+                          baseShape = RoundedCornerShape(dimensionResource(R.dimen.rounded_md)),
+                      ),
                   enabled = usable,
               )
             }
@@ -265,11 +266,10 @@ fun Exchange(
         Card {
           Column(
               modifier =
-              Modifier
-                  .padding(horizontal = dimensionResource(R.dimen.padding_sm))
-                  .padding(
-                      vertical = dimensionResource(R.dimen.padding_lg),
-                  ),
+                  Modifier.padding(horizontal = dimensionResource(R.dimen.padding_sm))
+                      .padding(
+                          vertical = dimensionResource(R.dimen.padding_lg),
+                      ),
               horizontalAlignment = Alignment.CenterHorizontally,
               verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_md)),
           ) {
@@ -291,14 +291,14 @@ fun Exchange(
                     onClick = { viewModel.updateNetworkFeeOption(el) },
                     selected = uiState.networkFeeOption == el,
                     shape =
-                    SegmentedButtonDefaults.itemShape(
-                        index = i,
-                        count = keys.size,
-                        baseShape =
-                        RoundedCornerShape(
-                            dimensionResource(R.dimen.rounded_md),
+                        SegmentedButtonDefaults.itemShape(
+                            index = i,
+                            count = keys.size,
+                            baseShape =
+                                RoundedCornerShape(
+                                    dimensionResource(R.dimen.rounded_md),
+                                ),
                         ),
-                    ),
                     enabled = usable,
                 )
               }
@@ -323,14 +323,25 @@ fun Exchange(
       Card {
         Column(
             modifier =
-            Modifier
-                .padding(horizontal = dimensionResource(R.dimen.padding_xl))
-                .padding(
-                    vertical = dimensionResource(R.dimen.padding_xl),
-                ),
+                Modifier.padding(horizontal = dimensionResource(R.dimen.padding_xl))
+                    .padding(
+                        vertical = dimensionResource(R.dimen.padding_xl),
+                    ),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_xl)),
         ) {
+          var scanRequester by rememberSaveable { mutableStateOf("") }
+
+          val openScanner = rememberQrCodeScanner {
+            if (!it.isNullOrBlank()) {
+              if (scanRequester == "toAddress") {
+                viewModel.updateToAddress(it)
+              } else if (scanRequester == "refundAddress") {
+                viewModel.updateRefundAddress(it)
+              }
+            }
+          }
+
           OutlinedTextField(
               modifier = Modifier.fillMaxWidth(),
               value = viewModel.toAddress,
@@ -339,7 +350,18 @@ fun Exchange(
               supportingText = { Text(stringResource(R.string.hint_to_address_input)) },
               enabled = usable,
               isError = viewModel.workState == ExchangeWorkState.ToAddressRequiredError,
-          )
+              trailingIcon = {
+                IconButton(
+                    onClick = {
+                      scanRequester = "toAddress"
+                      openScanner()
+                    },
+                    enabled = usable) {
+                      Icon(
+                          imageVector = Icons.Default.QrCodeScanner,
+                          contentDescription = stringResource(R.string.open_qr_scanner))
+                    }
+              })
 
           OutlinedTextField(
               modifier = Modifier.fillMaxWidth(),
@@ -353,10 +375,10 @@ fun Exchange(
                   val p2 = stringResource(R.string.hint_refund_address_input_p2)
                   withStyle(
                       style =
-                      SpanStyle(
-                          textDecoration = TextDecoration.Underline,
-                          fontWeight = FontWeight.Bold,
-                      ),
+                          SpanStyle(
+                              textDecoration = TextDecoration.Underline,
+                              fontWeight = FontWeight.Bold,
+                          ),
                   ) {
                     append(p2)
                   }
@@ -364,7 +386,18 @@ fun Exchange(
                 Text(importHintText)
               },
               enabled = usable,
-          )
+              trailingIcon = {
+                IconButton(
+                    onClick = {
+                      scanRequester = "refundAddress"
+                      openScanner()
+                    },
+                    enabled = usable) {
+                      Icon(
+                          imageVector = Icons.Default.QrCodeScanner,
+                          contentDescription = stringResource(R.string.open_qr_scanner))
+                    }
+              })
         }
       }
       // end of address card

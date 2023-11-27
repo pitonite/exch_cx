@@ -223,4 +223,8 @@
   <string name="label_is_proxy_enabled">Enabled ?</string>
   <string name="snack_saved_changes_successfully">Saved changes successfully!</string>
   <string name="label_refund_transaction_id">Refund Transaction ID:</string>
+  <string name="scan_your_qrcode">Scan your QrCode</string>
+  <string name="open_qr_scanner">Open QrCode Scanner</string>
+  <string name="permission_camera_denied">App does not have permission to open the camera</string>
+  <string name="hardware_missing_camera">Sorry, but we couldn\'t find a camera on your device</string>
 </resources>
