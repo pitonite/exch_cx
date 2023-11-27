@@ -253,7 +253,7 @@ fun Exchange(
             if (usable) {
               Text(
                   stringResource(R.string.label_service_fee) +
-                      " ${uiState.rateFee!!.svcFee.setScale(1)}%",
+                      " ${uiState.rateFee?.svcFee?.setScale(1) ?: "0.5"}%",
                   fontSize = 15.sp,
               )
             }

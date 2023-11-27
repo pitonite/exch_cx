@@ -1,0 +1,1 @@
+- fixed app crashing randomly when swapping currencies
