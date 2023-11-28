@@ -2,6 +2,10 @@
 
 The community app for exch.cx website.
 
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
+     alt="Get it on F-Droid"
+     height="80">](https://f-droid.org/packages/io.github.pitonite.exch_cx/)
+
 App features:
 
 - Import your current active orders into the app to track them inside the app
