@@ -214,8 +214,8 @@
   <string name="failed_to_delete_remote_order_data">Failed to automatically delete remote order data, please try again later manually</string>
   <string name="minimum_input_is">Minimum input is %1$s %2$S</string>
   <string name="maximum_input_is">Maximum input is %1$s %2$S</string>
-    <string name="label_proxy_settings">Proxy</string>
-    <string name="label_proxy_host">Hostname</string>
+  <string name="label_proxy_settings">Proxy</string>
+  <string name="label_proxy_host">Hostname</string>
   <string name="label_proxy_port">Port</string>
   <string name="label_proxy_type_socks5">SOCKS5</string>
   <string name="label_proxy_type_http">HTTP</string>
