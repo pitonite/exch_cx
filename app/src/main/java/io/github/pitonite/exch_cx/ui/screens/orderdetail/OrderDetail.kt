@@ -128,7 +128,7 @@ fun OrderDetail(
         }
       }
 
-  if (order?.archived == false) {
+  if (order?.archived == false && order?.deletedInRemote == false) {
     LaunchedEffect(true) {
       // You can replace this with lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) if
       // needed
