@@ -20,7 +20,6 @@ import io.github.pitonite.exch_cx.data.room.OrderRefundAddress
 import io.github.pitonite.exch_cx.data.room.OrderToAddress
 import io.github.pitonite.exch_cx.data.room.OrderUpdate
 import io.github.pitonite.exch_cx.data.room.OrderUpdateWithArchive
-import io.github.pitonite.exch_cx.network.ExchHttpClient
 import io.github.pitonite.exch_cx.model.api.BooleanResult
 import io.github.pitonite.exch_cx.model.api.OrderCreateRequest
 import io.github.pitonite.exch_cx.model.api.OrderCreateResponse
@@ -31,6 +30,7 @@ import io.github.pitonite.exch_cx.model.api.exceptions.FailedToFetchLetterOfGuar
 import io.github.pitonite.exch_cx.model.api.exceptions.FailedToRequestRefundException
 import io.github.pitonite.exch_cx.model.api.exceptions.FailedToRevalidateToAddressException
 import io.github.pitonite.exch_cx.model.api.exceptions.ToAddressRequiredException
+import io.github.pitonite.exch_cx.network.ExchHttpClient
 import io.github.pitonite.exch_cx.utils.toParameterMap
 import io.ktor.client.call.body
 import java.math.BigDecimal
@@ -71,7 +71,16 @@ constructor(
     val orderResp: OrderResponse =
         exchHttpClient.get("/api/order/") { url { parameters.append("orderid", orderid) } }.body()
 
-    return orderResp.toOrderUpdateEntity()
+    val fixedOrderResp =
+        orderResp.copy(
+            fromAmountReceived = orderResp.fromAmountReceived?.stripTrailingZeros(),
+            toAmount = orderResp.toAmount?.stripTrailingZeros(),
+            minInput = orderResp.minInput.stripTrailingZeros(),
+            maxInput = orderResp.maxInput.stripTrailingZeros(),
+            refundFeeAmount = orderResp.refundFeeAmount?.stripTrailingZeros(),
+        )
+
+    return fixedOrderResp.toOrderUpdateEntity()
   }
 
   override suspend fun updateOrder(orderUpdate: Order): Boolean {
