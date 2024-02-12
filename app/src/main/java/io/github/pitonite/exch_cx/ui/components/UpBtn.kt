@@ -10,8 +10,10 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.pitonite.exch_cx.R
+import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 
 @Composable
 fun UpBtn(upPress: () -> Unit) {
@@ -23,4 +25,10 @@ fun UpBtn(upPress: () -> Unit) {
             contentDescription = stringResource(R.string.label_back),
             tint = LocalContentColor.current)
       }
+}
+
+@Preview("default", apiLevel = 33)
+@Composable
+fun CurrencySelectPreview() {
+  ExchTheme { UpBtn(upPress = {}) }
 }
