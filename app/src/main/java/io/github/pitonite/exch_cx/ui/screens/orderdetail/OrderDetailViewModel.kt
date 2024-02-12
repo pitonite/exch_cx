@@ -24,6 +24,7 @@ import io.github.pitonite.exch_cx.ui.navigation.NavArgs
 import io.github.pitonite.exch_cx.utils.WorkState
 import io.github.pitonite.exch_cx.utils.codified.enums.codifiedEnum
 import io.github.pitonite.exch_cx.utils.isWorking
+import io.ktor.client.utils.unwrapCancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapMerge
@@ -32,6 +33,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 val InvalidOrder =
     Order(
@@ -111,13 +113,16 @@ constructor(
         }
         refreshWorkState = WorkState.NotWorking
       } catch (e: Throwable) {
-        refreshWorkState = WorkState.Error(e)
-        SnackbarManager.showMessage(
-            SnackbarMessage.from(
-                message = e.toUserMessage(),
-                withDismissAction = true,
-                duration = SnackbarDuration.Long,
-            ))
+        val unwrappedError = e.unwrapCancellationException()
+        refreshWorkState = WorkState.Error(unwrappedError)
+        if (unwrappedError !is CancellationException) {
+          SnackbarManager.showMessage(
+              SnackbarMessage.from(
+                  message = unwrappedError.toUserMessage(),
+                  withDismissAction = true,
+                  duration = SnackbarDuration.Long,
+              ))
+        }
       }
     }
   }
