@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -28,7 +28,7 @@ fun AutomaticOrderUpdateDialog(
     onResult: (agreed: Boolean) -> Unit,
 ) {
   if (show) {
-    AlertDialog(
+    BasicAlertDialog(
         onDismissRequest = {},
     ) {
       Card() {
@@ -46,8 +46,15 @@ fun AutomaticOrderUpdateDialog(
               modifier = Modifier.padding(dimensionResource(R.dimen.padding_sm)))
 
           Row(horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_md))) {
-            TextButton(onClick = { onResult(false) }) { Text(stringResource(R.string.no), color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Light) }
-            TextButton(onClick = { onResult(true) }) { Text(stringResource(R.string.yes), fontWeight = FontWeight.Bold) }
+            TextButton(onClick = { onResult(false) }) {
+              Text(
+                  stringResource(R.string.no),
+                  color = MaterialTheme.colorScheme.onSurface,
+                  fontWeight = FontWeight.Light)
+            }
+            TextButton(onClick = { onResult(true) }) {
+              Text(stringResource(R.string.yes), fontWeight = FontWeight.Bold)
+            }
           }
         }
       }

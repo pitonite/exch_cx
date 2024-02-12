@@ -1,11 +1,13 @@
 package io.github.pitonite.exch_cx.ui.screens.home.orders
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.QrCodeScanner
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -22,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,17 +53,17 @@ fun getImportError(workState: WorkState.Error): String {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ImportOrderDialog(
+    modifier: Modifier = Modifier,
     show: Boolean,
     onImportPressed: (String) -> Unit,
     onDismissRequest: () -> Unit = {},
     workState: WorkState = WorkState.NotWorking,
-    modifier: Modifier = Modifier,
 ) {
   if (show) {
     var orderid by remember { mutableStateOf("") }
     val enabled = !workState.isWorking()
-    AlertDialog(
-        onDismissRequest,
+    BasicAlertDialog(
+        onDismissRequest = onDismissRequest,
     ) {
       Card() {
         Column(
@@ -93,17 +96,12 @@ fun ImportOrderDialog(
                     { Text(getImportError(workState), color = MaterialTheme.colorScheme.error) }
                   } else null,
               trailingIcon = {
-                IconButton(
-                    onClick = {
-                      openScanner()
-                    },
-                    enabled = enabled) {
+                IconButton(onClick = { openScanner() }, enabled = enabled) {
                   Icon(
                       imageVector = Icons.Default.QrCodeScanner,
                       contentDescription = stringResource(R.string.open_qr_scanner))
                 }
-              }
-          )
+              })
 
           Button(onClick = { onImportPressed(orderid) }, enabled = enabled) {
             if (workState.isWorking()) {

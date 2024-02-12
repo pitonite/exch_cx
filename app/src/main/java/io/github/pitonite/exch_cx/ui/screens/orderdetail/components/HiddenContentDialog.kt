@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -36,7 +36,7 @@ fun HiddenContentDialog(
 ) {
   val context = LocalContext.current
   if (show) {
-    AlertDialog(
+    BasicAlertDialog(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(usePlatformDefaultWidth = false),
         modifier = Modifier.padding(dimensionResource(R.dimen.page_padding)),
@@ -56,12 +56,11 @@ fun HiddenContentDialog(
               content,
               {},
               readOnly = true,
+              maxLines = 14,
           )
 
           Row(horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_md))) {
-            OutlinedButton(onClick = {
-              copyToClipboard(context, content)
-            }) {
+            OutlinedButton(onClick = { copyToClipboard(context, content) }) {
               Text(
                   stringResource(R.string.accessibility_label_copy),
                   color = MaterialTheme.colorScheme.onSurface,
