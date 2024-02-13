@@ -29,6 +29,6 @@ fun UpBtn(upPress: () -> Unit) {
 
 @Preview("default", apiLevel = 33)
 @Composable
-fun CurrencySelectPreview() {
+fun UpBtnPreview() {
   ExchTheme { UpBtn(upPress = {}) }
 }
