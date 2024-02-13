@@ -16,11 +16,11 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.pitonite.exch_cx.worker.OrderAutoUpdateWorker
 import io.github.pitonite.exch_cx.worker.orderAutoUpdateWorkName
 import io.github.pitonite.exch_cx.worker.orderAutoUpdateWorkNameOneTime
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 const val CurrentWorkProgress = "Progress"
 const val TotalWorkItems = "TotalItems"
@@ -43,8 +43,7 @@ constructor(
           else userSettings.orderAutoUpdatePeriodMinutes
 
       val workRequest =
-          PeriodicWorkRequestBuilder<OrderAutoUpdateWorker>(
-                  updatePeriod, TimeUnit.MINUTES, 5, TimeUnit.MINUTES)
+          PeriodicWorkRequestBuilder<OrderAutoUpdateWorker>(updatePeriod, TimeUnit.MINUTES)
               .setConstraints(
                   Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
               .build()
