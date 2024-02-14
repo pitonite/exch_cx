@@ -49,7 +49,7 @@ constructor(
 
   @SuppressLint("MissingPermission")
   override suspend fun doWork(): Result {
-    Log.e(TAG, "Starting OrderUpdaterWorker at ${Date()}")
+    Log.i(TAG, "Starting OrderUpdaterWorker at ${Date()}")
 
     val settings = userSettingsRepository.fetchSettings()
     val context = this.applicationContext
@@ -74,7 +74,7 @@ constructor(
         setProgress(workDataOf(TotalWorkItems to totalCount, CurrentWorkProgress to ++progress))
         if (order != null) {
           dateCondition = order.createdAt
-          Log.e(TAG, "Trying to update order #${order.id}")
+          Log.i(TAG, "Trying to update order #${order.id}")
 
           val hasLetterOfGuarantee = !order.letterOfGuarantee.isNullOrEmpty()
           val hasLetterOfGuaranteeConditions =
