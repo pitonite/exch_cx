@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lightbulb
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,10 +22,27 @@ import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 import io.github.pitonite.exch_cx.utils.currentSpAsDp
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Tip(
     text: String,
+    modifier: Modifier = Modifier,
+    onDismiss: (() -> Unit)? = null,
+) {
+  Tip(
+      text = {
+        Text(
+            text,
+            modifier =
+                Modifier.fillMaxWidth().padding(horizontal = dimensionResource(R.dimen.padding_xl)))
+      },
+      modifier,
+      onDismiss,
+  )
+}
+
+@Composable
+fun Tip(
+    text: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     onDismiss: (() -> Unit)? = null,
 ) {
@@ -49,11 +65,7 @@ fun Tip(
             )
             Text(stringResource(R.string.tip))
           }
-          Text(
-              text,
-              modifier =
-                  Modifier.fillMaxWidth()
-                      .padding(horizontal = dimensionResource(R.dimen.padding_xl)))
+          text()
           if (onDismiss != null) {
             Row {
               Spacer(Modifier.weight(1f))
