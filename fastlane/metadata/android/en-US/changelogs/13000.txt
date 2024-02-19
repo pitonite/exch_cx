@@ -1,0 +1,1 @@
+- Users can now set up alerts for when and how reserves change, which will be checked periodically based on their settings.
