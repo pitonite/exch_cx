@@ -43,4 +43,11 @@ fun createNotificationChannels(context: Context) {
               NotificationManagerCompat.IMPORTANCE_HIGH)
           .setName(context.getString(R.string.channel_name_order_support))
           .build())
+
+  notifManager.createNotificationChannel(
+      NotificationChannelCompat.Builder(
+              context.getString(R.string.channel_id_reserve_alert),
+              NotificationManagerCompat.IMPORTANCE_HIGH)
+          .setName(context.getString(R.string.channel_name_reserve_alert))
+          .build())
 }

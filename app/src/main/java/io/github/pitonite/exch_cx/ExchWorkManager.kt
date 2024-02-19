@@ -14,8 +14,10 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.pitonite.exch_cx.worker.OrderAutoUpdateWorker
+import io.github.pitonite.exch_cx.worker.ReserveCheckWorker
 import io.github.pitonite.exch_cx.worker.orderAutoUpdateWorkName
 import io.github.pitonite.exch_cx.worker.orderAutoUpdateWorkNameOneTime
+import io.github.pitonite.exch_cx.worker.reserveCheckWorkName
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -90,6 +92,43 @@ constructor(
         .map { workInfos -> workInfos.firstOrNull() }
   }
 
+  fun getReserveCheckWorkInfo(): Flow<WorkInfo?> {
+    return WorkManager.getInstance(context)
+        .getWorkInfosForUniqueWorkLiveData(reserveCheckWorkName)
+        .asFlow()
+        .map { workInfos -> workInfos.firstOrNull() }
+  }
+
+  fun adjustReserveCheckWorker(
+      userSettings: UserSettings,
+      existingPeriodicWorkPolicy: ExistingPeriodicWorkPolicy = ExistingPeriodicWorkPolicy.UPDATE,
+      immediate: Boolean = true,
+  ) {
+    if (userSettings.isReserveCheckEnabled) {
+      val updatePeriod =
+          if (userSettings.reserveCheckPeriodMinutes <= 15) 15
+          else userSettings.reserveCheckPeriodMinutes
+
+      val workRequest =
+          PeriodicWorkRequestBuilder<ReserveCheckWorker>(updatePeriod, TimeUnit.MINUTES)
+              .setConstraints(
+                  Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
+
+      if (!immediate) {
+        workRequest.setInitialDelay(updatePeriod, TimeUnit.MINUTES)
+      }
+
+      WorkManager.getInstance(context)
+          .enqueueUniquePeriodicWork(
+              reserveCheckWorkName,
+              existingPeriodicWorkPolicy,
+              workRequest.build(),
+          )
+    } else {
+      WorkManager.getInstance(context).cancelUniqueWork(reserveCheckWorkName)
+    }
+  }
+
   companion object {
     fun runAutoUpdaterOnce(context: Context) {
       WorkManager.getInstance(context)
@@ -100,6 +139,10 @@ constructor(
                   .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                   .build(),
           )
+    }
+
+    fun cancelUniqueWork(context: Context, workName: String) {
+      WorkManager.getInstance(context).cancelUniqueWork(workName)
     }
   }
 }

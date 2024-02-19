@@ -6,11 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -31,7 +27,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -93,6 +88,7 @@ fun Exchange(
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val usable by viewModel.usable.collectAsStateWithLifecycle()
+  val currencyList by viewModel.currencyList.collectAsStateWithLifecycle()
   val userSettings by viewModel.userSettings.collectAsStateWithLifecycle()
   val focusManager = LocalFocusManager.current
   val scrollState = rememberScrollState()
@@ -127,14 +123,11 @@ fun Exchange(
             },
         )
       },
-      contentWindowInsets =
-          ScaffoldDefaults.contentWindowInsets.exclude(WindowInsets.navigationBars),
   ) { padding ->
     Column(
         modifier =
             modifier
                 .padding(padding)
-                .consumeWindowInsets(padding)
                 .verticalFadingEdge(scrollState, dimensionResource(R.dimen.fading_edge))
                 .padding(horizontal = dimensionResource(R.dimen.page_padding))
                 .verticalScroll(scrollState)
@@ -170,6 +163,8 @@ fun Exchange(
                 onFocusLost = { viewModel.updateConversionAmounts(CurrencySelection.FROM) },
                 enabled = usable,
                 currencySelection = CurrencySelection.FROM,
+                currencyList = currencyList,
+                onCurrencySelected = { viewModel.updateFromCurrency(it.name) },
             )
           }
 
@@ -205,6 +200,12 @@ fun Exchange(
                 enabled = usable,
                 imeAction = ImeAction.Done,
                 currencySelection = CurrencySelection.TO,
+                currencyList = currencyList,
+                onCurrencySelected = { viewModel.updateToCurrency(it.name) },
+                showReserveAlertTip = !userSettings.isReserveCheckTipDismissed,
+                onReserveAlertTipDismissed = {
+                  viewModel.setIsReserveCheckTipDismissed(true)
+                }
             )
           }
 

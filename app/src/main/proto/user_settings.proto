@@ -27,4 +27,7 @@ message UserSettings {
   PreferredProxyType preferred_proxy_type = 11;
   string proxy_host = 12;
   string proxy_port = 13;
+  bool is_reserve_check_enabled = 14;
+  int64 reserve_check_period_minutes = 15;
+  bool is_reserve_check_tip_dismissed = 16;
 }

@@ -4,13 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -20,7 +14,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -82,7 +75,7 @@ fun Settings(viewModel: SettingsViewModel, upPress: () -> Unit, modifier: Modifi
       snackbarHost = {
         SnackbarHost(
             hostState = SnackbarManager.snackbarHostState,
-            modifier = Modifier.navigationBarsPadding().imePadding())
+        )
       },
       topBar = {
         TopAppBar(
@@ -94,17 +87,11 @@ fun Settings(viewModel: SettingsViewModel, upPress: () -> Unit, modifier: Modifi
             navigationIcon = { UpBtn(upPress) },
         )
       },
-      contentWindowInsets =
-          ScaffoldDefaults.contentWindowInsets
-              .exclude(WindowInsets.navigationBars)
-              .exclude(WindowInsets.ime),
   ) { padding ->
     Column(
         modifier =
             modifier
                 .padding(padding)
-                .navigationBarsPadding()
-                .imePadding()
                 .padding(
                     horizontal = dimensionResource(R.dimen.page_padding),
                 )
@@ -157,6 +144,7 @@ fun Settings(viewModel: SettingsViewModel, upPress: () -> Unit, modifier: Modifi
       }
       // endregion autoupdate
 
+
       // region api
       Card {
         Column(
@@ -194,6 +182,38 @@ fun Settings(viewModel: SettingsViewModel, upPress: () -> Unit, modifier: Modifi
         }
       }
       // endregion api
+
+      // region reserve alert check
+      Card {
+        Column(
+            modifier = Modifier.padding(dimensionResource(R.dimen.padding_xl)),
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_md)),
+        ) {
+          Text(text = stringResource(R.string.title_alerts), fontSize = 20.sp)
+
+          SettingItemSwitch(
+              text = stringResource(R.string.label_check_reserves_periodically),
+              checked = viewModel.isReserveCheckEnabledDraft,
+              onCheckedChange = { viewModel.updateIsReserveCheckEnabledDraft(it) },
+          )
+
+          val currentPeriod =
+              if (viewModel.reserveCheckPeriodMinutesDraft <= 15) 15
+              else viewModel.reserveCheckPeriodMinutesDraft
+
+          PeriodSelectionInput(
+              label = stringResource(R.string.label_reserve_check_period),
+              value = currentPeriod.toString() + " " + stringResource(R.string.minutes),
+              onPeriodSelected = { viewModel.updateReserveCheckPeriodMinutesDraft(it) },
+              enabled = viewModel.isReserveCheckEnabledDraft,
+          )
+
+          Button(onClick = { viewModel.saveReserveCheckSettings() }) {
+            Text(stringResource(R.string.label_save))
+          }
+        }
+      }
+      // endregion reserve alert check
 
       // region proxy
       Card {

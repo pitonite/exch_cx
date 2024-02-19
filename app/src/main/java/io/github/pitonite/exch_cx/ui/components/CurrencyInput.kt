@@ -3,20 +3,35 @@ package io.github.pitonite.exch_cx.ui.components
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.NotificationsActive
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.pitonite.exch_cx.R
+import io.github.pitonite.exch_cx.model.CurrencyDetail
+import io.github.pitonite.exch_cx.ui.navigation.SecondaryDestinations
 import io.github.pitonite.exch_cx.ui.screens.home.exchange.currencyselect.CurrencySelection
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 import java.math.BigDecimal
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun CurrencyInput(
@@ -32,6 +47,10 @@ fun CurrencyInput(
     enabled: Boolean = true,
     imeAction: ImeAction = ImeAction.Next,
     currencySelection: CurrencySelection,
+    currencyList: PersistentList<CurrencyDetail>,
+    onCurrencySelected: (CurrencyDetail) -> Unit,
+    showReserveAlertTip: Boolean = false,
+    onReserveAlertTipDismissed: () -> Unit = {},
 ) {
   Row(
       modifier.fillMaxWidth(),
@@ -56,11 +75,37 @@ fun CurrencyInput(
         enabled = enabled,
         imeAction = imeAction,
     )
+    val showSelectDialog = remember { mutableStateOf(false) }
     CurrencyPicker(
+        currencyList = currencyList,
         currency = currency,
-        onNavigateToRoute = onNavigateToRoute,
         enabled = enabled,
-        currencySelection = currencySelection,
+        title = {
+          Text(
+              if (currencySelection == CurrencySelection.FROM) stringResource(R.string.you_pay)
+              else stringResource(R.string.you_receive))
+        },
+        actions = {
+          if (currencySelection == CurrencySelection.TO) {
+            IconButton(
+                onClick = {
+                  showSelectDialog.value = false
+                  onNavigateToRoute(SecondaryDestinations.ALERTS_ROUTE)
+                },
+            ) {
+              Icon(
+                  modifier = Modifier.size(32.dp),
+                  imageVector = Icons.Default.NotificationsActive,
+                  contentDescription = stringResource(R.string.alerts),
+              )
+            }
+          }
+        },
+        showReserveAlertTip = showReserveAlertTip,
+        onReserveAlertTipDismissed = onReserveAlertTipDismissed,
+        showReserves = currencySelection == CurrencySelection.TO,
+        onCurrencySelected = onCurrencySelected,
+        showSelectDialog = showSelectDialog,
     )
   }
 }
@@ -76,6 +121,8 @@ fun CurrencyInputPreview() {
         onNavigateToRoute = {},
         onValueChange = {},
         currencySelection = CurrencySelection.FROM,
+        currencyList = persistentListOf(),
+        onCurrencySelected = {},
     )
   }
 }

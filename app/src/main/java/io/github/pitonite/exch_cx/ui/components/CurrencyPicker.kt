@@ -3,17 +3,27 @@ package io.github.pitonite.exch_cx.ui.components
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,29 +32,43 @@ import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import io.github.pitonite.exch_cx.R
-import io.github.pitonite.exch_cx.ui.navigation.ExchangeSections
-import io.github.pitonite.exch_cx.ui.navigation.NavArgs
-import io.github.pitonite.exch_cx.ui.screens.home.exchange.currencyselect.CurrencySelection
-import io.github.pitonite.exch_cx.ui.theme.ExchTheme
+import io.github.pitonite.exch_cx.model.CurrencyDetail
+import io.github.pitonite.exch_cx.ui.screens.home.exchange.currencyselect.CurrencySelect
 import io.github.pitonite.exch_cx.utils.nonScaledSp
+import java.math.BigDecimal
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CurrencyPicker(
     modifier: Modifier = Modifier,
     currency: String? = null,
     enabled: Boolean = true,
-    onNavigateToRoute: (String) -> Unit,
-    currencySelection: CurrencySelection = CurrencySelection.FROM,
+    currencyList: PersistentList<CurrencyDetail>,
+    title: @Composable () -> Unit,
+    actions: @Composable RowScope.() -> Unit = {},
+    showReserves: Boolean = false,
+    onCurrencySelected: (CurrencyDetail) -> Unit = {},
+    showReserveAlertTip: Boolean = false,
+    onReserveAlertTipDismissed: () -> Unit = {},
+    showSelectDialog: MutableState<Boolean> = remember { mutableStateOf(false) },
+    textSize: TextUnit = 23.sp.nonScaledSp,
+    contentPadding: PaddingValues =
+        PaddingValues(
+            start = dimensionResource(R.dimen.padding_sm),
+            top = dimensionResource(R.dimen.padding_sm),
+            bottom = dimensionResource(R.dimen.padding_sm),
+        ),
 ) {
 
   Button(
-      onClick = {
-        onNavigateToRoute(
-            "${ExchangeSections.CURRENCY_SELECT.route}?${NavArgs.SELECTION_KEY}=${currencySelection.name}")
-      },
+      onClick = { showSelectDialog.value = true },
       modifier = modifier,
       colors =
           ButtonDefaults.buttonColors(
@@ -55,7 +79,7 @@ fun CurrencyPicker(
           ),
       enabled = enabled,
       shape = MaterialTheme.shapes.extraSmall,
-      contentPadding = PaddingValues(start = dimensionResource(R.dimen.padding_sm), top = dimensionResource(R.dimen.padding_sm), bottom = dimensionResource(R.dimen.padding_sm)),
+      contentPadding = contentPadding,
   ) {
     Row(
         modifier = Modifier.height(IntrinsicSize.Min),
@@ -79,7 +103,7 @@ fun CurrencyPicker(
               if (currency.isNullOrEmpty()) {
                 "UKWN"
               } else currency.uppercase(),
-          fontSize = 23.sp.nonScaledSp,
+          fontSize = textSize,
       )
       Icon(
           imageVector = Icons.Default.ArrowDropDown,
@@ -88,16 +112,81 @@ fun CurrencyPicker(
       )
     }
   }
+
+  if (showSelectDialog.value) {
+    BasicAlertDialog(
+        onDismissRequest = { showSelectDialog.value = false },
+        properties =
+            DialogProperties(
+                usePlatformDefaultWidth = false,
+                decorFitsSystemWindows = false,
+            ),
+    ) {
+      CurrencySelect(
+          modifier = modifier.fillMaxSize().imePadding(),
+          topBar = {
+            TopAppBar(
+                title = title,
+                navigationIcon = { UpBtn { showSelectDialog.value = false } },
+                actions = actions,
+            )
+          },
+          aboveSearch = {
+            ReserveAlertTip(
+                visible = showReserveAlertTip, onTipDismissed = onReserveAlertTipDismissed)
+          },
+          currencyList = currencyList,
+          onCurrencySelected = {
+            onCurrencySelected(it)
+            showSelectDialog.value = false
+          },
+          showReserves = showReserves,
+      )
+    }
+  }
 }
 
 @Preview("default")
-@Preview("large font", fontScale = 2f)
 @Composable
 fun CurrencyPickerPreview() {
-  ExchTheme(darkTheme = true) {
+  Surface {
     CurrencyPicker(
         currency = "btc",
-        onNavigateToRoute = {},
+        title = { Text("Custom Title") },
+        showReserves = true,
+        actions = {},
+        onCurrencySelected = {},
+        showReserveAlertTip = false,
+        onReserveAlertTipDismissed = {},
+        currencyList =
+            persistentListOf(
+                CurrencyDetail("btc", reserve = BigDecimal.ONE),
+                CurrencyDetail("eth", reserve = BigDecimal.TEN),
+            ),
+        enabled = true,
+    )
+  }
+}
+
+@Preview("default")
+@Composable
+fun CurrencyPickerDialogPreview() {
+  Surface {
+    CurrencyPicker(
+        currency = "btc",
+        title = { Text("Custom Title") },
+        showReserves = true,
+        actions = {},
+        onCurrencySelected = {},
+        showReserveAlertTip = false,
+        onReserveAlertTipDismissed = {},
+        currencyList =
+            persistentListOf(
+                CurrencyDetail("btc", reserve = BigDecimal.ONE),
+                CurrencyDetail("eth", reserve = BigDecimal.TEN),
+            ),
+        enabled = true,
+        showSelectDialog = remember { mutableStateOf(true) },
     )
   }
 }

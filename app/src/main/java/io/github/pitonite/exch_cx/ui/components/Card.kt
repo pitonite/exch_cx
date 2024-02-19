@@ -34,13 +34,14 @@ fun Card(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     isError: Boolean = false,
+    color: Color = MaterialTheme.colorScheme.surfaceContainerHigh,
     errorColor: Color =  MaterialTheme.colorScheme.errorContainer,
     content: @Composable () -> Unit,
 ) {
   Surface(
       color =
           if (isError) errorColor
-          else MaterialTheme.colorScheme.surfaceContainerHigh,
+          else color,
       shape = CardDefaults.shape,
       modifier = modifier.fillMaxWidth(),
       onClick = onClick,

@@ -46,12 +46,18 @@ constructor(
   override suspend fun fetchSettings() = userSettingsFlow.first()
 
   override suspend fun saveSettings(userSettings: UserSettings) {
+    val oldSettings = fetchSettings()
     exchWorkManager.adjustAutoUpdater(
         userSettings,
-        if (userSettings.orderAutoUpdatePeriodMinutes !=
-            fetchSettings().orderAutoUpdatePeriodMinutes)
+        if (userSettings.orderAutoUpdatePeriodMinutes != oldSettings.orderAutoUpdatePeriodMinutes)
             ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE
-        else ExistingPeriodicWorkPolicy.UPDATE)
+        else ExistingPeriodicWorkPolicy.UPDATE,
+    )
+    exchWorkManager.adjustReserveCheckWorker(
+        userSettings,
+        ExistingPeriodicWorkPolicy.UPDATE,
+        false,
+    )
     userSettingsStore.updateData { it.toBuilder().clear().mergeFrom(userSettings).build() }
   }
 
@@ -134,6 +140,24 @@ constructor(
   override suspend fun setPreferredProxyType(value: PreferredProxyType) {
     userSettingsStore.updateData { currentSettings ->
       currentSettings.toBuilder().setPreferredProxyType(value).build()
+    }
+  }
+
+  override suspend fun setIsReserveCheckEnabled(value: Boolean) {
+    userSettingsStore.updateData { currentSettings ->
+      currentSettings.toBuilder().setIsReserveCheckEnabled(value).build()
+    }
+  }
+
+  override suspend fun setReserveCheckPeriodMinutes(value: Long) {
+    userSettingsStore.updateData { currentSettings ->
+      currentSettings.toBuilder().setReserveCheckPeriodMinutes(value).build()
+    }
+  }
+
+  override suspend fun setIsReserveCheckTipDismissed(value: Boolean) {
+    userSettingsStore.updateData { currentSettings ->
+      currentSettings.toBuilder().setIsReserveCheckTipDismissed(value).build()
     }
   }
 }

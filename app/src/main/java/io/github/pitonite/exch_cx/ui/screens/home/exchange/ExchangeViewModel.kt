@@ -39,9 +39,12 @@ import java.math.BigDecimal
 import java.math.MathContext
 import java.math.RoundingMode
 import javax.inject.Inject
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -183,6 +186,15 @@ constructor(
               started = SharingStarted.WhileSubscribed(5_000),
               initialValue = ExchangeUiState())
 
+  val currencyList =
+      rateFeeRepository.currencies
+          .map { it.toPersistentList() }
+          .stateIn(
+              scope = viewModelScope,
+              started = SharingStarted.WhileSubscribed(5_000),
+              initialValue = persistentListOf(),
+          )
+
   var fromAmount by mutableStateOf("")
     private set
 
@@ -247,7 +259,8 @@ constructor(
           }
 
           // check against maximum input
-          if (fee.reserve.compareTo(BigDecimal.ZERO) != 0 && xmlRate?.maxAmount?.compareTo(it) == -1) {
+          if (fee.reserve.compareTo(BigDecimal.ZERO) != 0 &&
+              xmlRate?.maxAmount?.compareTo(it) == -1) {
             updateFromAmount(xmlRate.maxAmount.toString())
             SnackbarManager.showMessage(
                 SnackbarMessage.from(
@@ -330,6 +343,10 @@ constructor(
 
   fun setIsExchangeTipDismissed(value: Boolean) {
     viewModelScope.launch { userSettingsRepository.setExchangeTipDismissed(value) }
+  }
+
+  fun setIsReserveCheckTipDismissed(value: Boolean) {
+    viewModelScope.launch { userSettingsRepository.setIsReserveCheckTipDismissed(value) }
   }
 
   fun createOrder(onOrderCreated: (String) -> Unit) {

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -15,7 +16,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -31,6 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -41,18 +42,32 @@ const val ALPHA_FULL = 1f
 const val ALPHA_DISABLED = 0.6f
 
 // from https://proandroiddev.com/improving-the-compose-dropdownmenu-88469b1ef34
+// with edits
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T> LargeDropdownMenu(
     modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    label: String,
-    notSetLabel: String? = null,
     items: PersistentList<T>,
     selectedIndex: Int = -1,
-    onItemSelected: (index: Int, item: T) -> Unit,
     selectedItemToString: (T) -> String = { it.toString() },
+    enabled: Boolean = true,
+    label: String = "",
+    trigger: @Composable (expanded: Boolean) -> Unit = { expanded ->
+      OutlinedTextField(
+          label = { Text(label) },
+          value = items.getOrNull(selectedIndex)?.let { selectedItemToString(it) } ?: "",
+          enabled = enabled,
+          modifier = Modifier.fillMaxWidth(),
+          trailingIcon = {
+            val icon = if (expanded) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown
+            Icon(icon, "")
+          },
+          onValueChange = {},
+          readOnly = true,
+      )
+    },
+    onItemSelected: (index: Int, item: T) -> Unit,
     drawItem: @Composable (T, Boolean, Boolean, () -> Unit) -> Unit =
         { item, selected, itemEnabled, onClick ->
           LargeDropdownMenuItem(
@@ -65,27 +80,18 @@ fun <T> LargeDropdownMenu(
 ) {
   var expanded by remember { mutableStateOf(false) }
 
-  Box(modifier = modifier.height(IntrinsicSize.Min)) {
-    OutlinedTextField(
-        label = { Text(label) },
-        value = items.getOrNull(selectedIndex)?.let { selectedItemToString(it) } ?: "",
-        enabled = enabled,
-        modifier = Modifier.fillMaxWidth(),
-        trailingIcon = {
-          val icon = if (expanded) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown
-          Icon(icon, "")
-        },
-        onValueChange = {},
-        readOnly = true,
-    )
-
+  Box(
+      modifier = modifier.width(IntrinsicSize.Min).height(IntrinsicSize.Min),
+      contentAlignment = Alignment.Center,
+  ) {
+    trigger(expanded)
     // Transparent clickable surface on top of OutlinedTextField
     Surface(
         modifier =
-            Modifier.fillMaxSize()
-                .padding(top = 8.dp)
-                .clip(MaterialTheme.shapes.extraSmall)
-                .clickable(enabled = enabled) { expanded = true },
+            Modifier.fillMaxSize().clip(MaterialTheme.shapes.extraSmall).clickable(
+                enabled = enabled) {
+                  expanded = true
+                },
         color = Color.Transparent,
     ) {}
   }
@@ -103,16 +109,6 @@ fun <T> LargeDropdownMenu(
         }
 
         LazyColumn(modifier = Modifier.fillMaxWidth(), state = listState) {
-          if (notSetLabel != null) {
-            item {
-              LargeDropdownMenuItem(
-                  text = notSetLabel,
-                  selected = false,
-                  enabled = false,
-                  onClick = {},
-              )
-            }
-          }
           itemsIndexed(items) { index, item ->
             val selectedItem = index == selectedIndex
             drawItem(item, selectedItem, true) {

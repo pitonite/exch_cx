@@ -49,6 +49,12 @@ constructor(
   var deleteRemoteOrderDataAutomaticallyDraft by mutableStateOf(false)
     private set
 
+  var isReserveCheckEnabledDraft by mutableStateOf(false)
+    private set
+
+  var reserveCheckPeriodMinutesDraft by mutableLongStateOf(0)
+    private set
+
   var isProxyEnabledDraft by mutableStateOf(false)
     private set
 
@@ -86,6 +92,14 @@ constructor(
     deleteRemoteOrderDataAutomaticallyDraft = value
   }
 
+  fun updateIsReserveCheckEnabledDraft(value: Boolean) {
+    isReserveCheckEnabledDraft = value
+  }
+
+  fun updateReserveCheckPeriodMinutesDraft(value: Long) {
+    reserveCheckPeriodMinutesDraft = value
+  }
+
   fun updateIsProxyEnabledDraft(value: Boolean) {
     isProxyEnabledDraft = value
   }
@@ -111,6 +125,8 @@ constructor(
         orderAutoUpdatePeriodMinutesDraft = it.orderAutoUpdatePeriodMinutes
         archiveOrdersAutomaticallyDraft = it.archiveOrdersAutomatically
         deleteRemoteOrderDataAutomaticallyDraft = it.deleteRemoteOrderDataAutomatically
+        isReserveCheckEnabledDraft = it.isReserveCheckEnabled
+        reserveCheckPeriodMinutesDraft = it.reserveCheckPeriodMinutes
         isProxyEnabledDraft = it.isProxyEnabled
         proxyHostDraft = it.proxyHost
         proxyPortDraft = it.proxyPort
@@ -138,6 +154,17 @@ constructor(
             orderAutoUpdatePeriodMinutes = orderAutoUpdatePeriodMinutesDraft
             archiveOrdersAutomatically = archiveOrdersAutomaticallyDraft
             deleteRemoteOrderDataAutomatically = deleteRemoteOrderDataAutomaticallyDraft
+          })
+      showSuccessSnack()
+    }
+  }
+
+  fun saveReserveCheckSettings() {
+    viewModelScope.launch {
+      userSettingsRepository.saveSettings(
+          userSettingsRepository.fetchSettings().copy {
+            isReserveCheckEnabled = isReserveCheckEnabledDraft
+            reserveCheckPeriodMinutes = reserveCheckPeriodMinutesDraft
           })
       showSuccessSnack()
     }

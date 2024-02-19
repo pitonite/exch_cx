@@ -4,11 +4,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 
@@ -16,11 +18,13 @@ import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 
 @Composable
 fun MyReadOnlyTextField(
-    modifier: Modifier = Modifier,
-    value: String,
-    label: String,
-    enabled: Boolean = true,
-    onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  value: String,
+  label: String,
+  enabled: Boolean = true,
+  shape: Shape = OutlinedTextFieldDefaults.shape,
+  trailingIcon: @Composable (() -> Unit)? = null,
+  onClick: () -> Unit,
 ) {
   Box(
       modifier = modifier,
@@ -34,7 +38,9 @@ fun MyReadOnlyTextField(
               text = label,
           )
         },
+        shape = shape,
         enabled = enabled,
+        trailingIcon = trailingIcon,
     )
     Box(
         modifier =

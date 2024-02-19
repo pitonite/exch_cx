@@ -38,4 +38,9 @@ interface UserSettingsRepository {
   suspend fun setProxyHost(value: String)
   suspend fun setProxyPort(value: String)
   suspend fun setPreferredProxyType(value: PreferredProxyType)
+
+  suspend fun setIsReserveCheckEnabled(value: Boolean)
+
+  suspend fun setReserveCheckPeriodMinutes(value: Long)
+  suspend fun setIsReserveCheckTipDismissed(value: Boolean)
 }

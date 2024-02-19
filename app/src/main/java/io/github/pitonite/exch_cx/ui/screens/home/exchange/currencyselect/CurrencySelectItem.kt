@@ -41,7 +41,7 @@ fun CurrencySelectItem(
             contentColor = MaterialTheme.colorScheme.onSurface,
         ),
     onClick: () -> Unit = {},
-    currencySelection: CurrencySelection,
+    showReserves: Boolean,
     enabled: Boolean = true,
 ) {
   Button(
@@ -77,7 +77,7 @@ fun CurrencySelectItem(
           fontSize = 23.sp.nonScaledSp,
       )
       Spacer(Modifier.weight(1f))
-      if (currencySelection == CurrencySelection.TO) {
+      if (showReserves) {
         Column(
             horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.Center,
@@ -107,7 +107,7 @@ fun CurrencySelectItemPreview() {
                 "BTC",
                 "0.000001231".toBigDecimalOrNull()!!,
             ),
-        currencySelection = CurrencySelection.TO,
+        showReserves = true,
     )
   }
 }

@@ -104,14 +104,15 @@ fun ExchTheme(
   if (!view.isInEditMode) {
     SideEffect {
       val window = (view.context as Activity).window
+      window.decorView.setBackgroundColor(colorScheme.background.toArgb())
+
       val statusBarColor = colorScheme.inverseOnSurface
       val navigationBarColor = colorScheme.surfaceColorAtElevation(NavigationBarDefaults.Elevation)
       window.statusBarColor = statusBarColor.toArgb()
-      window.decorView.setBackgroundColor(colorScheme.background.toArgb())
       WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars =
           statusBarColor.luminance() >= 0.5
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         window.navigationBarColor = navigationBarColor.toArgb()
         WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars =
             navigationBarColor.luminance() >= 0.5

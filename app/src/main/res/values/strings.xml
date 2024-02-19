@@ -5,6 +5,7 @@
   <string name="orders">Orders</string>
   <string name="history">History</string>
   <string name="details">Details</string>
+  <string name="alerts">Alerts</string>
   <string name="overview">Overview</string>
   <string name="dropdown_arrow">dropdown arrow</string>
   <string name="DYNAMIC">Dynamic</string>
@@ -48,7 +49,7 @@
   <string name="error_order_not_found">Order not found</string>
   <string name="import_order_existed">Order already exists.</string>
   <string name="notice_empty_history">You don\'t have any archived order.</string>
-  <string name="channel_id_order_state_change">channel_id_order_state_change</string>
+  <string name="channel_id_order_state_change" translatable="false">channel_id_order_state_change</string>
   <string name="address">Address</string>
   <string name="hint_to_address_input">On successful exchange, crypto will be sent to this address.</string>
   <string name="hint_refund_address_input_p1">Refund address is optional to create an order and can be provided later when needed,</string>
@@ -206,11 +207,11 @@
   <string name="order_state_complete_delete_data_warning_dialog">Are you sure you want to delete the order data ? this action is irreversible!</string>
   <string name="delete_data">Delete Data</string>
   <string name="accessibility_label_working">Working</string>
-  <string name="channel_id_order_support">channel_id_order_support</string>
+  <string name="channel_id_order_support" translatable="false">channel_id_order_support</string>
   <string name="you_have_a_new_message_from_support">You have a new message from support</string>
   <string name="channel_name_order_support">Order Support</string>
   <string name="label_delete_remote_order_data_automatically">Request order data to be deleted automatically when the order is complete?</string>
-  <string name="channel_id_order_deletion">channel_id_order_deletion</string>
+  <string name="channel_id_order_deletion" translatable="false">channel_id_order_deletion</string>
   <string name="failed_to_delete_remote_order_data">Failed to automatically delete remote order data, please try again later manually</string>
   <string name="minimum_input_is">Minimum input is %1$s %2$S</string>
   <string name="maximum_input_is">Maximum input is %1$s %2$S</string>
@@ -227,4 +228,36 @@
   <string name="open_qr_scanner">Open QrCode Scanner</string>
   <string name="permission_camera_denied">App does not have permission to open the camera</string>
   <string name="hardware_missing_camera">Sorry, but we couldn\'t find a camera on your device</string>
+  <string name="label_add_alert">Add Alert</string>
+  <string name="hint_add_alert">You can add an alert using the add button</string>
+  <string name="label_stop_checking_reserves">Stop checking reserves</string>
+  <string name="notice_empty_alerts">You don\'t have any alert.</string>
+  <string name="channel_id_reserve_alert" translatable="false">channel_id_reserve_alert</string>
+  <string name="currency_reserve_amount_is_now_at">%1$S reserve is now at %2$s</string>
+  <string name="currency_reserve_alert">Reserve Alert</string>
+  <string name="tip_reserve_alert">You can set up alerts for when reserves change by going to alerts screen</string>
+  <string name="channel_name_reserve_alert">Reserve Changes</string>
+  <string name="label_cancel">Cancel</string>
+  <string name="dialog_alert_notify_me_when">Notify me when</string>
+  <string name="dialog_alert_reserve_word">reserve</string>
+  <string name="dialog_alert_is_more_than">is more than</string>
+  <string name="dialog_alert_is_equal_to">is equal to</string>
+  <string name="dialog_alert_is_less_than">is less than</string>
+  <string name="dialog_alert_has_changed">has changed</string>
+  <string name="label_editing_alert">Editing Alert</string>
+  <string name="dialog_alert_only_once">Only Once</string>
+  <string name="edit">Edit</string>
+  <string name="delete">Delete</string>
+  <string name="toggle_recurrence">Toggle Recurrence</string>
+  <string name="alert_when">When</string>
+  <string name="notice_empty_currency_list">There was a problem retrieving the list.</string>
+  <string name="notice_empty_currency_list_refresh">Make sure you are connected and try again by refreshing the list</string>
+  <string name="label_reserve_check_period">Check reserves every:</string>
+  <string name="check_now">Check Now</string>
+  <string name="title_alerts">Alerts</string>
+  <string name="label_check_reserves_periodically">Check reserves periodically?</string>
+  <string name="stop">Stop</string>
+  <string name="grant_permission">Grant Permission</string>
+  <string name="alerts_notification_perm_dialog">In order to use this feature, the app needs your permission to send notifications.</string>
+  <string name="snack_activity_launch_error">Unexpected error when launching activity</string>
 </resources>

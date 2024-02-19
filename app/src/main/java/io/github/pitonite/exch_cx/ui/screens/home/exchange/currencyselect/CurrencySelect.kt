@@ -4,141 +4,220 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.unit.sp
 import io.github.pitonite.exch_cx.R
-import io.github.pitonite.exch_cx.data.OrderRepositoryMock
-import io.github.pitonite.exch_cx.data.RateFeeRepositoryMock
-import io.github.pitonite.exch_cx.data.UserSettingsRepositoryMock
+import io.github.pitonite.exch_cx.model.CurrencyDetail
+import io.github.pitonite.exch_cx.ui.components.Card
 import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import io.github.pitonite.exch_cx.ui.components.UpBtn
-import io.github.pitonite.exch_cx.ui.screens.home.exchange.ExchangeViewModel
-import io.github.pitonite.exch_cx.ui.theme.ExchTheme
+import java.math.BigDecimal
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun CurrencySelect(
-    exchangeViewModel: ExchangeViewModel,
-    viewModel: CurrencySelectViewModel,
-    upPress: () -> Unit,
     modifier: Modifier = Modifier,
-    currencySelection: CurrencySelection = CurrencySelection.FROM,
+    topBar: @Composable () -> Unit = {},
+    aboveSearch: @Composable () -> Unit = {},
+    currencyList: PersistentList<CurrencyDetail>,
+    onCurrencySelected: (CurrencyDetail) -> Unit,
+    showReserves: Boolean = false,
 ) {
-  val currencyList by viewModel.currencyListState.collectAsStateWithLifecycle()
+  var query by remember { mutableStateOf("") }
+
+  val visibleItems by remember {
+    derivedStateOf {
+      (if (query.isNotEmpty()) currencyList.filter { it.name.contains(query) }.toPersistentList()
+      else currencyList)
+    }
+  }
 
   Scaffold(
       snackbarHost = { SnackbarHost(hostState = SnackbarManager.snackbarHostState) },
-      topBar = {
-        TopAppBar(
-            title = {
-              Text(
-                  if (currencySelection == CurrencySelection.FROM) stringResource(R.string.you_pay)
-                  else stringResource(R.string.you_receive))
-            },
-            navigationIcon = { UpBtn(upPress) },
-        )
-      },
-      contentWindowInsets =
-          ScaffoldDefaults.contentWindowInsets.exclude(WindowInsets.navigationBars)) { paddingValues
-        ->
-        Column(Modifier.padding(paddingValues).consumeWindowInsets(paddingValues)) {
-          SearchBar(
-              modifier =
-                  Modifier.fillMaxWidth()
-                      .padding(horizontal = dimensionResource(R.dimen.page_padding)),
-              query = viewModel.searchTerm,
-              onSearch = {},
-              shape = MaterialTheme.shapes.small,
-              colors =
-                  SearchBarDefaults.colors(
-                      containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+      topBar = topBar,
+      modifier = modifier,
+  ) { paddingValues ->
+    Column(
+        Modifier.padding(paddingValues),
+    ) {
+      aboveSearch()
+      SearchBar(
+          modifier =
+              Modifier.fillMaxWidth().padding(horizontal = dimensionResource(R.dimen.page_padding)),
+          query = query,
+          onSearch = {},
+          shape = MaterialTheme.shapes.small,
+          colors =
+              SearchBarDefaults.colors(
+                  containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+              ),
+          onQueryChange = { query = it.lowercase() },
+          active = false,
+          onActiveChange = {},
+          placeholder = { Text(text = stringResource(R.string.label_search)) },
+          leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = null,
+            )
+          },
+          tonalElevation = 0.dp,
+      ) {}
+      LazyColumn(
+          Modifier.padding(horizontal = dimensionResource(R.dimen.page_padding))
+              .padding(top = dimensionResource(R.dimen.page_padding)),
+          verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.page_padding)),
+      ) {
+        if (currencyList.isEmpty()) {
+          item {
+            Card {
+              Column(
+                  Modifier.padding(
+                      horizontal = dimensionResource(R.dimen.padding_md),
+                      vertical = 70.dp,
                   ),
-              onQueryChange = { viewModel.updateSearchTerm(it) },
-              active = false,
-              onActiveChange = {},
-              placeholder = { Text(text = stringResource(R.string.label_search)) },
-              leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = null,
+                  horizontalAlignment = Alignment.CenterHorizontally,
+              ) {
+                Text(
+                    stringResource(R.string.notice_empty_currency_list),
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Center,
                 )
-              },
-              tonalElevation = 0.dp,
-          ) {}
-          LazyColumn(
-              modifier
-                  .padding(horizontal = dimensionResource(R.dimen.page_padding))
-                  .padding(top = dimensionResource(R.dimen.page_padding)),
-              verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.page_padding)),
-          ) {
-            items(items = currencyList, key = { i -> i.name }) { currency ->
-              CurrencySelectItem(
-                  modifier = Modifier.animateItemPlacement(),
-                  currencySelection = currencySelection,
-                  currency = currency,
-                  onClick = {
-                    if (currencySelection == CurrencySelection.FROM) {
-                      exchangeViewModel.updateFromCurrency(currency.name)
-                    } else {
-                      exchangeViewModel.updateToCurrency(currency.name)
-                    }
-                    upPress()
-                  },
-              )
-            }
-            item {
-              Spacer(Modifier)
+                Spacer(Modifier.height(20.dp))
+                val hintText = buildAnnotatedString {
+                  val refreshHint = stringResource(R.string.notice_empty_currency_list_refresh)
+                  withStyle(
+                      SpanStyle(
+                          fontSize = 18.sp,
+                      )) {
+                        append(refreshHint)
+                        append(" (")
+                        appendInlineContent("icon", "([refresh icon])")
+                        append(")")
+                      }
+                }
+                Text(
+                    text = hintText,
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Center,
+                    inlineContent =
+                        mapOf(
+                            Pair(
+                                "icon",
+                                InlineTextContent(
+                                    Placeholder(
+                                        width = 18.sp,
+                                        height = 18.sp,
+                                        placeholderVerticalAlign = PlaceholderVerticalAlign.Center,
+                                    ),
+                                ) {
+                                  Icon(
+                                      Icons.Default.Refresh,
+                                      contentDescription = stringResource(R.string.refresh),
+                                  )
+                                },
+                            ),
+                        ),
+                )
+              }
             }
           }
         }
+        items(items = visibleItems, key = { i -> i.name }) { currency ->
+          CurrencySelectItem(
+              modifier = Modifier.animateItemPlacement(),
+              showReserves = showReserves,
+              currency = currency,
+              onClick = { onCurrencySelected(currency) },
+          )
+        }
+        item { Spacer(Modifier) }
       }
+    }
+  }
 }
 
-@Preview("default", apiLevel = 33)
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview("default")
 @Composable
 fun CurrencySelectPreview() {
-  ExchTheme {
+  Surface {
     CurrencySelect(
-        viewModel =
-            CurrencySelectViewModel(
-                SavedStateHandle(),
-                RateFeeRepositoryMock(),
+        topBar = {
+          TopAppBar(
+              title = { Text("Custom Title") },
+              navigationIcon = { UpBtn {} },
+          )
+        },
+        showReserves = true,
+        onCurrencySelected = {},
+        currencyList =
+            persistentListOf(
+                CurrencyDetail("btc", reserve = BigDecimal.ONE),
+                CurrencyDetail("eth", reserve = BigDecimal.TEN),
             ),
-        upPress = {},
-        exchangeViewModel =
-            ExchangeViewModel(
-                SavedStateHandle(),
-                RateFeeRepositoryMock(),
-                UserSettingsRepositoryMock(),
-                OrderRepositoryMock(),
-            ))
+        aboveSearch = {},
+    )
+  }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview("empty")
+@Composable
+fun CurrencySelectEmptyPreview() {
+  Surface {
+    CurrencySelect(
+        topBar = {
+          TopAppBar(
+              title = { Text("Custom Title") },
+              navigationIcon = { UpBtn {} },
+          )
+        },
+        showReserves = true,
+        onCurrencySelected = {},
+        currencyList = persistentListOf(),
+        aboveSearch = {},
+    )
   }
 }
 

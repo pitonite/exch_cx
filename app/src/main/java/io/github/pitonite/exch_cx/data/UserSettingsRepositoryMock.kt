@@ -44,4 +44,10 @@ class UserSettingsRepositoryMock(
   override suspend fun setProxyPort(value: String) {}
 
   override suspend fun setPreferredProxyType(value: PreferredProxyType) {}
+
+  override suspend fun setIsReserveCheckEnabled(value: Boolean) {}
+
+  override suspend fun setReserveCheckPeriodMinutes(value: Long) {}
+
+  override suspend fun setIsReserveCheckTipDismissed(value: Boolean) {}
 }

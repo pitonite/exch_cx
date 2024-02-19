@@ -5,7 +5,6 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import io.github.pitonite.exch_cx.ui.navigation.ExchNavHost
-import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 import io.github.pitonite.exch_cx.utils.ExchNavigationContentPosition
 import io.github.pitonite.exch_cx.utils.ExchNavigationType
 
@@ -50,5 +49,5 @@ fun MainCompose(
         }
       }
 
-  ExchTheme { ExchNavHost(navigationType, navigationContentPosition, deepLinkHandler) }
+  ExchNavHost(navigationType, navigationContentPosition, deepLinkHandler)
 }

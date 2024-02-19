@@ -17,13 +17,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuOpen
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MenuOpen
+import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -69,53 +69,57 @@ fun ExchNavigationRail(
   NavigationRail(
       modifier = Modifier.fillMaxHeight(),
       containerColor = MaterialTheme.colorScheme.inverseOnSurface) {
-        // TODO remove custom nav rail positioning when NavRail component supports it. ticket :
-        // b/232495216
-        Layout(
-            modifier = Modifier.widthIn(max = 80.dp),
-            content = {
-              Column(
-                  modifier = Modifier.layoutId(LayoutType.HEADER),
-                  horizontalAlignment = Alignment.CenterHorizontally,
-                  verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    NavigationRailItem(
-                        selected = false,
-                        onClick = onDrawerClicked,
-                        icon = {
-                          Icon(
-                              imageVector = Icons.Default.Menu,
-                              contentDescription = stringResource(id = R.string.navigation_drawer))
-                        })
-                    Spacer(Modifier.height(8.dp)) // NavigationRailHeaderPadding
-                    Spacer(Modifier.height(4.dp)) // NavigationRailVerticalPadding
+        Column(
+            modifier = Modifier.layoutId(LayoutType.HEADER),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp)) {
+              NavigationRailItem(
+                  selected = false,
+                  onClick = onDrawerClicked,
+                  icon = {
+                    Icon(
+                        imageVector = Icons.Default.Menu,
+                        contentDescription = stringResource(id = R.string.navigation_drawer))
+                  })
+              Spacer(Modifier.height(8.dp)) // NavigationRailHeaderPadding
+              Spacer(Modifier.height(4.dp)) // NavigationRailVerticalPadding
+        }
+
+        Column(
+            modifier = Modifier.layoutId(LayoutType.CONTENT),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp)) {
+              PrimaryDestinations.entries.forEach { section ->
+                NavigationRailItem(
+                    selected = selectedDestination.startsWith(section.route),
+                    onClick = { navigateTo(section.route) },
+                    icon = {
+                      Icon(
+                          imageVector = section.icon,
+                          contentDescription = stringResource(id = section.title))
+                    })
               }
 
-              Column(
-                  modifier = Modifier.layoutId(LayoutType.CONTENT),
-                  horizontalAlignment = Alignment.CenterHorizontally,
-                  verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    PrimaryDestinations.entries.forEach { section ->
-                      NavigationRailItem(
-                          selected = selectedDestination.startsWith(section.route),
-                          onClick = { navigateTo(section.route) },
-                          icon = {
-                            Icon(
-                                imageVector = section.icon,
-                                contentDescription = stringResource(id = section.title))
-                          })
-                    }
+              NavigationRailItem(
+                  selected = selectedDestination == SecondaryDestinations.ALERTS_ROUTE,
+                  onClick = { navigateTo(SecondaryDestinations.ALERTS_ROUTE) },
+                  icon = {
+                    Icon(
+                        imageVector = Icons.Default.NotificationsActive,
+                        contentDescription = stringResource(R.string.alerts))
+                  },
+              )
 
-                    NavigationRailItem(
-                        selected = selectedDestination == SecondaryDestinations.SETTINGS_ROUTE,
-                        onClick = { navigateTo(SecondaryDestinations.SETTINGS_ROUTE) },
-                        icon = {
-                          Icon(
-                              imageVector = Icons.Default.Settings,
-                              contentDescription = stringResource(R.string.settings))
-                        })
-                  }
-            },
-            measurePolicy = navigationMeasurePolicy(navigationContentPosition))
+              NavigationRailItem(
+                  selected = selectedDestination == SecondaryDestinations.SETTINGS_ROUTE,
+                  onClick = { navigateTo(SecondaryDestinations.SETTINGS_ROUTE) },
+                  icon = {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = stringResource(R.string.settings))
+                  },
+              )
+            }
       }
 }
 
@@ -150,14 +154,16 @@ fun ExchBottomNavigationBarPreview() {
   }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PermanentNavigationDrawerContent(
     selectedDestination: String,
     navigationContentPosition: ExchNavigationContentPosition,
     navigateTo: (String) -> Unit,
 ) {
-  PermanentDrawerSheet(modifier = Modifier.sizeIn(minWidth = 200.dp, maxWidth = 300.dp)) {
+  PermanentDrawerSheet(
+      modifier = Modifier.sizeIn(minWidth = 200.dp, maxWidth = 300.dp),
+      drawerContainerColor = MaterialTheme.colorScheme.inverseOnSurface,
+  ) {
     // TODO remove custom nav drawer content positioning when NavDrawer component supports it.
     // ticket : b/232495216
     Layout(
@@ -197,6 +203,24 @@ fun PermanentNavigationDrawerContent(
                           unselectedContainerColor = Color.Transparent),
                   onClick = { navigateTo(section.route) })
             }
+
+            NavigationDrawerItem(
+                selected = selectedDestination == SecondaryDestinations.ALERTS_ROUTE,
+                label = {
+                  Text(
+                      text = stringResource(R.string.alerts),
+                      modifier = Modifier.padding(horizontal = 16.dp))
+                },
+                icon = {
+                  Icon(
+                      imageVector = Icons.Default.NotificationsActive,
+                      contentDescription = stringResource(R.string.alerts))
+                },
+                colors =
+                    NavigationDrawerItemDefaults.colors(
+                        unselectedContainerColor = Color.Transparent),
+                onClick = { navigateTo(SecondaryDestinations.ALERTS_ROUTE) },
+            )
 
             NavigationDrawerItem(
                 selected = selectedDestination == SecondaryDestinations.SETTINGS_ROUTE,
@@ -280,6 +304,24 @@ fun ModalNavigationDrawerContent(
             }
 
             NavigationDrawerItem(
+                selected = selectedDestination == SecondaryDestinations.ALERTS_ROUTE,
+                label = {
+                  Text(
+                      text = stringResource(R.string.alerts),
+                      modifier = Modifier.padding(horizontal = 16.dp))
+                },
+                icon = {
+                  Icon(
+                      imageVector = Icons.Default.NotificationsActive,
+                      contentDescription = stringResource(R.string.alerts))
+                },
+                colors =
+                    NavigationDrawerItemDefaults.colors(
+                        unselectedContainerColor = Color.Transparent),
+                onClick = { navigateTo(SecondaryDestinations.ALERTS_ROUTE) },
+            )
+
+            NavigationDrawerItem(
                 selected = selectedDestination == SecondaryDestinations.SETTINGS_ROUTE,
                 label = {
                   Text(
@@ -292,9 +334,10 @@ fun ModalNavigationDrawerContent(
                       contentDescription = stringResource(R.string.settings))
                 },
                 colors =
-                NavigationDrawerItemDefaults.colors(
-                    unselectedContainerColor = Color.Transparent),
-                onClick = { navigateTo(SecondaryDestinations.SETTINGS_ROUTE)  })
+                    NavigationDrawerItemDefaults.colors(
+                        unselectedContainerColor = Color.Transparent),
+                onClick = { navigateTo(SecondaryDestinations.SETTINGS_ROUTE) },
+            )
           }
         },
         measurePolicy = navigationMeasurePolicy(navigationContentPosition))
