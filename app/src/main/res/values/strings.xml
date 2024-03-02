@@ -236,7 +236,7 @@
   <string name="currency_reserve_amount_is_now_at">%1$S reserve is now at %2$s</string>
   <string name="currency_reserve_alert">Reserve Alert</string>
   <string name="tip_reserve_alert">You can set up alerts for when reserves change by going to alerts screen</string>
-  <string name="channel_name_reserve_alert">Reserve Changes</string>
+  <string name="channel_name_reserve_alert">Reserve Change</string>
   <string name="label_cancel">Cancel</string>
   <string name="dialog_alert_notify_me_when">Notify me when</string>
   <string name="dialog_alert_reserve_word">reserve</string>
