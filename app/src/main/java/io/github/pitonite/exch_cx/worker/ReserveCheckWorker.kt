@@ -66,6 +66,8 @@ constructor(
         currencyReserveRepository.getCurrencyReserves().associateBy { it.currency }
     val newReserves = currencyReserveRepository.fetchAndUpdateReserves().associateBy { it.currency }
 
+    val notifiedCurrencies = mutableMapOf<String, Boolean>()
+
     newReserves.keys.forEach {
       val oldAmount = currentReserves[it]?.amount
       val newAmount = newReserves[it]!!.amount
@@ -88,36 +90,41 @@ constructor(
           }
 
           if (shouldNotify) {
-            val notifTag = "reserve_trigger:${trigger.id}"
+            // this is to prevent multiple conditions showing new reserve amount of the same currency:
+            if (notifiedCurrencies[trigger.currency] != true) {
+              val notifTag = "reserve_trigger:${trigger.id}"
 
-            val notifBuilder =
-                NotificationCompat.Builder(
-                        context, context.getString(R.string.channel_id_reserve_alert))
-                    .setSmallIcon(R.drawable.x_large)
-                    .setContentTitle(
-                        context.getString(
-                            R.string.currency_reserve_alert,
-                        ),
-                    )
-                    .setContentText(
-                        context.getString(
-                            R.string.currency_reserve_amount_is_now_at,
-                            trigger.currency,
-                            newAmount.stripTrailingZeros().toString(),
-                        ),
-                    )
-                    .setContentIntent(
-                        PendingIntentCompat.getActivity(
-                            context,
-                            0,
-                            Intent(context, MainActivity::class.java),
-                            PendingIntent.FLAG_UPDATE_CURRENT,
-                            false,
-                        ),
-                    )
-                    .setAutoCancel(true)
+              val notifBuilder =
+                  NotificationCompat.Builder(
+                      context, context.getString(R.string.channel_id_reserve_alert))
+                      .setSmallIcon(R.drawable.x_large)
+                      .setContentTitle(
+                          context.getString(
+                              R.string.currency_reserve_alert,
+                          ),
+                      )
+                      .setContentText(
+                          context.getString(
+                              R.string.currency_reserve_amount_is_now_at,
+                              trigger.currency,
+                              newAmount.stripTrailingZeros().toString(),
+                          ),
+                      )
+                      .setContentIntent(
+                          PendingIntentCompat.getActivity(
+                              context,
+                              0,
+                              Intent(context, MainActivity::class.java),
+                              PendingIntent.FLAG_UPDATE_CURRENT,
+                              false,
+                          ),
+                      )
+                      .setAutoCancel(true)
 
-            notifManager.notify(notifTag, R.id.notif_id_reserve_alert, notifBuilder.build())
+              notifManager.notify(notifTag, R.id.notif_id_reserve_alert, notifBuilder.build())
+
+              notifiedCurrencies[trigger.currency] = true
+            }
 
             if (trigger.onlyOnce) {
               try {
