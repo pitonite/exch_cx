@@ -23,8 +23,8 @@ android {
     applicationId = "io.github.pitonite.exch_cx"
     minSdk = 24
     targetSdk = 34
-    versionCode = 13
-    versionName = "1.2.0-rc"
+    versionCode = 14
+    versionName = "1.2.0-rc2"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     vectorDrawables { useSupportLibrary = true }
