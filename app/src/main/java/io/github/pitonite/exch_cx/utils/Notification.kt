@@ -49,5 +49,6 @@ fun createNotificationChannels(context: Context) {
               context.getString(R.string.channel_id_reserve_alert),
               NotificationManagerCompat.IMPORTANCE_HIGH)
           .setName(context.getString(R.string.channel_name_reserve_alert))
+          .setVibrationEnabled(true)
           .build())
 }
