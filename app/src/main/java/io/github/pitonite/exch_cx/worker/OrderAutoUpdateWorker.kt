@@ -11,10 +11,10 @@ import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import io.github.pitonite.exch_cx.CurrentWorkProgress
-import io.github.pitonite.exch_cx.ExchWorkManager
+import io.github.pitonite.exch_cx.workmanager.CurrentWorkProgress
+import io.github.pitonite.exch_cx.workmanager.ExchWorkManager
 import io.github.pitonite.exch_cx.R
-import io.github.pitonite.exch_cx.TotalWorkItems
+import io.github.pitonite.exch_cx.workmanager.TotalWorkItems
 import io.github.pitonite.exch_cx.data.OrderRepository
 import io.github.pitonite.exch_cx.data.SupportMessagesRepository
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
@@ -35,12 +35,12 @@ const val orderAutoUpdateWorkNameOneTime = "auto_update_orders_once"
 class OrderAutoUpdateWorker
 @AssistedInject
 constructor(
-    @Assisted context: Context,
-    @Assisted workerParams: WorkerParameters,
-    private val orderRepository: OrderRepository,
-    private val supportMessagesRepository: SupportMessagesRepository,
-    private val userSettingsRepository: UserSettingsRepository,
-    private val exchWorkManager: ExchWorkManager,
+  @Assisted context: Context,
+  @Assisted workerParams: WorkerParameters,
+  private val orderRepository: OrderRepository,
+  private val supportMessagesRepository: SupportMessagesRepository,
+  private val userSettingsRepository: UserSettingsRepository,
+  private val exchWorkManager: ExchWorkManager,
 ) : CoroutineWorker(context, workerParams) {
 
   companion object {

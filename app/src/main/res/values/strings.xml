@@ -260,4 +260,11 @@
   <string name="grant_permission">Grant Permission</string>
   <string name="alerts_notification_perm_dialog">In order to use this feature, the app needs your permission to send notifications.</string>
   <string name="snack_activity_launch_error">Unexpected error when launching activity</string>
+  <string name="channel_id_domain_check" translatable="false">channel_id_domain_check</string>
+  <string name="clearnet_domain_changed">Will use \"%1$s\" for subsequent requests.</string>
+  <string name="label_is_domain_health_check_enabled">Enabled ?</string>
+  <string name="hint_domain_health_check">In the event that a domain becomes unavailable, the app automatically checks and switches the selected domain. However, you can also run the check or change the domain manually.</string>
+  <string name="title_domain">Domain</string>
+  <string name="channel_name_domain_check">Domain Change</string>
+  <string name="domain_check_failed">Domain check failed.</string>
 </resources>

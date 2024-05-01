@@ -11,11 +11,14 @@ import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
+import androidx.work.WorkManager
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.pitonite.exch_cx.data.UserSettingsRepository
 import io.github.pitonite.exch_cx.ui.components.ProvideSnackbarHostState
 import io.github.pitonite.exch_cx.ui.components.SnackbarMessageHandler
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
+import io.github.pitonite.exch_cx.worker.domainCheckWorkName
+import io.github.pitonite.exch_cx.workmanager.ExchWorkManager
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 
@@ -32,6 +35,9 @@ class MainActivity : AppCompatActivity() {
     // must be called before super.onCreate()
     installSplashScreen()
     super.onCreate(savedInstanceState)
+
+    // cancel domain check in case it is running
+    ExchWorkManager.cancelUniqueWork(this, domainCheckWorkName)
 
     // to preload settings asynchronously, to runBlocking later in di/HttpClientModule
     lifecycleScope.launch {

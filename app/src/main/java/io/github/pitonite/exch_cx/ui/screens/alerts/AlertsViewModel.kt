@@ -17,7 +17,7 @@ import androidx.paging.cachedIn
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.WorkInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.pitonite.exch_cx.ExchWorkManager
+import io.github.pitonite.exch_cx.workmanager.ExchWorkManager
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.UserSettings
 import io.github.pitonite.exch_cx.data.CurrencyReserveTriggerRepository
@@ -35,7 +35,6 @@ import javax.inject.Inject
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn

@@ -198,7 +198,7 @@ fun OrderDetail(
                       text = { Text(stringResource(R.string.label_open_in_browser)) },
                       onClick = {
                         uriHandler.openUri(
-                            "https://${getExchDomain(settings.preferredDomainType)}/order/${order!!.id}")
+                            "https://${getExchDomain(settings.preferredDomainType, settings.selectedClearnetDomainIndex)}/order/${order!!.id}")
                       },
                   )
 

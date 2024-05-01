@@ -12,10 +12,10 @@ import androidx.paging.cachedIn
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.WorkInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.pitonite.exch_cx.CurrentWorkProgress
-import io.github.pitonite.exch_cx.ExchWorkManager
+import io.github.pitonite.exch_cx.workmanager.CurrentWorkProgress
+import io.github.pitonite.exch_cx.workmanager.ExchWorkManager
 import io.github.pitonite.exch_cx.R
-import io.github.pitonite.exch_cx.TotalWorkItems
+import io.github.pitonite.exch_cx.workmanager.TotalWorkItems
 import io.github.pitonite.exch_cx.data.OrderRepository
 import io.github.pitonite.exch_cx.data.SupportMessagesRepository
 import io.github.pitonite.exch_cx.data.UserSettingsRepository

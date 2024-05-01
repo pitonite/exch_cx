@@ -19,14 +19,14 @@ import androidx.compose.ui.unit.dp
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.immutableListOf
+import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun RadioGroup(
-    options: ImmutableList<String>,
+    options: PersistentList<String>,
     selectedOption: String,
-    onOptionSelected: (String) -> Unit,
+    onOptionSelected: (Int, String) -> Unit,
     enabled: Boolean = true,
 ) =
     RadioGroup(
@@ -39,25 +39,25 @@ fun RadioGroup(
 
 @Composable
 fun <T> RadioGroup(
-  options: ImmutableList<T>,
+  options: PersistentList<T>,
   selectedOption: T,
-  onOptionSelected: (T) -> Unit,
+  onOptionSelected: (Int, T) -> Unit,
   label: @Composable (T) -> Unit,
   enabled: Boolean = true,
 ) {
   Column(
       verticalArrangement = Arrangement.spacedBy(5.dp)
   ) {
-    options.forEach { option ->
+    options.forEachIndexed { idx, option ->
       Row(
           modifier =
               Modifier.fillMaxWidth()
                   .selectable(
                       enabled = enabled,
                       selected = (option == selectedOption),
-                      onClick = { onOptionSelected(option) }),
+                      onClick = { onOptionSelected(idx, option) }),
           verticalAlignment = Alignment.CenterVertically) {
-            RadioButton(enabled = enabled,selected = option == selectedOption, onClick = { onOptionSelected(option) })
+            RadioButton(enabled = enabled,selected = option == selectedOption, onClick = { onOptionSelected(idx, option) })
             Spacer(modifier = Modifier.width(6.dp))
             label(option)
           }
@@ -116,7 +116,7 @@ fun RadioGroupPreview() {
     RadioGroup(
         options = persistentListOf("option 1", "option 2"),
         selectedOption = "option 1",
-        onOptionSelected = {},
+        onOptionSelected = {_, _ -> },
     )
   }
 }

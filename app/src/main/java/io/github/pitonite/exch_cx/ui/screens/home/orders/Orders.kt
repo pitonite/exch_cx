@@ -51,14 +51,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
-import io.github.pitonite.exch_cx.ExchWorkManager
+import io.github.pitonite.exch_cx.workmanager.ExchWorkManager
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.OrderRepositoryMock
 import io.github.pitonite.exch_cx.data.SupportMessagesRepositoryMock
 import io.github.pitonite.exch_cx.data.UserSettingsRepositoryMock
 import io.github.pitonite.exch_cx.exceptions.toUserMessage
 import io.github.pitonite.exch_cx.model.SnackbarMessage
-import io.github.pitonite.exch_cx.model.UserMessage
 import io.github.pitonite.exch_cx.ui.components.Card
 import io.github.pitonite.exch_cx.ui.components.RefreshButton
 import io.github.pitonite.exch_cx.ui.components.SnackbarManager
@@ -67,6 +66,7 @@ import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 import io.github.pitonite.exch_cx.utils.WorkState
 import io.github.pitonite.exch_cx.utils.isWorking
 import io.github.pitonite.exch_cx.utils.verticalFadingEdge
+import io.github.pitonite.exch_cx.workmanager.ExchWorkManagerMock
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -277,7 +277,7 @@ fun OrdersPreview() {
             OrderRepositoryMock(),
             SupportMessagesRepositoryMock(),
             UserSettingsRepositoryMock(),
-            ExchWorkManager(LocalContext.current),
+            ExchWorkManagerMock(),
         ),
         onOrderSelected = {},
     )

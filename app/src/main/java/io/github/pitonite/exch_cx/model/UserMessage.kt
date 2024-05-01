@@ -5,7 +5,10 @@ package io.github.pitonite.exch_cx.model
 
 import android.content.Context
 import androidx.annotation.StringRes
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 
 /** A sealed interface for defining user messages that can be displayed in the UI. */
 @Stable
@@ -53,4 +56,11 @@ fun UserMessage.asString(context: Context) =
     when (this) {
       is UserMessage.Text -> value
       is UserMessage.StringResource -> context.getString(resId, *formatArgs)
+    }
+
+@Composable
+fun UserMessage.asString() =
+    when (this) {
+      is UserMessage.Text -> value
+      is UserMessage.StringResource -> stringResource(resId, *formatArgs)
     }

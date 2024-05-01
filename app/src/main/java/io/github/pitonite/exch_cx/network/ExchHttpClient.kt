@@ -8,6 +8,7 @@ import io.github.pitonite.exch_cx.model.api.ErrorResponse
 import io.github.pitonite.exch_cx.model.api.exceptions.ApiException
 import io.github.pitonite.exch_cx.utils.jsonFormat
 import io.github.pitonite.exch_cx.utils.xmlFormat
+import io.github.pitonite.exch_cx.workmanager.ExchWorkManager
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.ProxyConfig
@@ -34,7 +35,6 @@ import io.ktor.http.contentType
 import io.ktor.serialization.ContentConvertException
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.serialization.kotlinx.xml.xml
-import java.net.InetAddress
 import javax.inject.Inject
 import javax.inject.Singleton
 import javax.net.ssl.SSLContext
@@ -45,18 +45,20 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.ConnectionSpec.Companion.CLEARTEXT
 import okhttp3.ConnectionSpec.Companion.MODERN_TLS
 import okhttp3.ConnectionSpec.Companion.RESTRICTED_TLS
-import okhttp3.Dns
 import okhttp3.internal.closeQuietly
 import okhttp3.internal.tls.OkHostnameVerifier
 
-private const val NORMAL_HOST = "exch.cx"
+val CLEARNET_HOSTS = arrayOf("exch.cx", "exch.pw", "exch.bz")
 private const val ONION_HOST = "hszyoqwrcp7cxlxnqmovp6vjvmnwj33g4wviuxqzq47emieaxjaperyd.onion"
 private const val ONION_SSL_FINGERPRINT_SHA256 =
     "1EA14F31FD8A5E2EE1701048CCBC2E01A972BD6FBC3137249539BA5A7A9D2533"
 private const val ONION_SSL_FINGERPRINT_SHA1 = "6F7C160C6B5516E4C2E4E648E5636C2D2BFC7309"
 
-fun getExchDomain(preferredDomainType: PreferredDomainType) =
-    if (preferredDomainType == PreferredDomainType.ONION) ONION_HOST else NORMAL_HOST
+const val HTTPCLIENT_AGENT = "eXch mobile client/v${BuildConfig.VERSION_NAME}"
+
+fun getExchDomain(preferredDomainType: PreferredDomainType, selectedClearnetDomainIndex: Int = 0) =
+    if (preferredDomainType == PreferredDomainType.ONION) ONION_HOST
+    else CLEARNET_HOSTS.getOrElse(selectedClearnetDomainIndex) { CLEARNET_HOSTS[0] }
 
 private val connectionSpecs =
     listOf(
@@ -114,7 +116,7 @@ private fun createHttpClient(
       }
     }
 
-    install(UserAgent) { agent = "eXch mobile client/v${BuildConfig.VERSION_NAME}" }
+    install(UserAgent) { agent = HTTPCLIENT_AGENT }
 
     defaultRequest {
       if (!headers.contains("X-Requested-With")) {
@@ -163,11 +165,15 @@ private fun createHttpClient(
 @Singleton
 class ExchHttpClient
 @Inject
-constructor(private val userSettingsRepository: UserSettingsRepository) {
+constructor(
+    private val userSettingsRepository: UserSettingsRepository,
+    val exchWorkManager: ExchWorkManager
+) {
   /** Don't use this client directly. Use the provided wrappers to set the required defaults. */
   var _client: HttpClient
   private var apiKey: String
   private var preferredDomainType: PreferredDomainType
+  private var selectedClearnetDomainIndex: Int
   private var proxyConfig: ProxyConfig? = null
 
   init {
@@ -177,6 +183,7 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
       val settings = userSettingsRepository.fetchSettings()
       apiKey = settings.apiKey
       preferredDomainType = settings.preferredDomainType
+      selectedClearnetDomainIndex = settings.selectedClearnetDomainIndex
       proxyConfig = getProxyConfig(settings)
       _client = createHttpClient(proxyConfig, preferredDomainType)
     }
@@ -187,6 +194,7 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
         apiKey = it.apiKey
         val newPreferredDomainType = it.preferredDomainType != preferredDomainType
         preferredDomainType = it.preferredDomainType
+        selectedClearnetDomainIndex = it.selectedClearnetDomainIndex
         val newProxyConfig = getProxyConfig(it)
         if (proxyConfig != newProxyConfig || newPreferredDomainType) {
           proxyConfig = newProxyConfig
@@ -200,7 +208,7 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
   fun HttpRequestBuilder.applyDefaultConfigurations() {
     url {
       protocol = URLProtocol.HTTPS
-      host = getExchDomain(preferredDomainType)
+      host = getExchDomain(preferredDomainType, selectedClearnetDomainIndex)
       if (apiKey.isNotEmpty()) {
         parameters["api_key"] = apiKey
       }
@@ -208,9 +216,16 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
   }
 
   suspend inline fun get(crossinline block: HttpRequestBuilder.() -> Unit): HttpResponse {
-    return this._client.get {
-      applyDefaultConfigurations()
-      this.apply(block)
+    try {
+      return this._client.get {
+        applyDefaultConfigurations()
+        this.apply(block)
+      }
+    } catch (e: Throwable) {
+      if (e !is ApiException) {
+        exchWorkManager.startDomainCheck()
+      }
+      throw e
     }
   }
 
@@ -218,9 +233,16 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
       url: Url,
       crossinline block: HttpRequestBuilder.() -> Unit = {}
   ): HttpResponse {
-    return this._client.get(url) {
-      applyDefaultConfigurations()
-      this.apply(block)
+    try {
+      return this._client.get(url) {
+        applyDefaultConfigurations()
+        this.apply(block)
+      }
+    } catch (e: Throwable) {
+      if (e !is ApiException) {
+        exchWorkManager.startDomainCheck()
+      }
+      throw e
     }
   }
 
@@ -228,16 +250,16 @@ constructor(private val userSettingsRepository: UserSettingsRepository) {
       urlString: String,
       crossinline block: HttpRequestBuilder.() -> Unit = {}
   ): HttpResponse {
-    return this._client.get(urlString) {
-      applyDefaultConfigurations()
-      this.apply(block)
+    try {
+      return this._client.get(urlString) {
+        applyDefaultConfigurations()
+        this.apply(block)
+      }
+    } catch (e: Throwable) {
+      if (e !is ApiException) {
+        exchWorkManager.startDomainCheck()
+      }
+      throw e
     }
-  }
-}
-
-/** Prevent DNS requests. Important when proxying all requests over Tor to not leak DNS queries. */
-private class NoDns : Dns {
-  override fun lookup(hostname: String): List<InetAddress> {
-    return listOf(InetAddress.getByAddress(hostname, ByteArray(4)))
   }
 }

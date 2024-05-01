@@ -4,4 +4,5 @@
   <item name="notif_id_order_support_new_message" type="id" />
   <item name="notif_id_order_delete_failed" type="id" />
   <item name="notif_id_reserve_alert" type="id" />
+  <item name="notif_id_domain_check" type="id" />
 </resources>

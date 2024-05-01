@@ -13,7 +13,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import io.github.pitonite.exch_cx.ExchWorkManager
+import io.github.pitonite.exch_cx.workmanager.ExchWorkManager
 import io.github.pitonite.exch_cx.MainActivity
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.CurrencyReserveRepository

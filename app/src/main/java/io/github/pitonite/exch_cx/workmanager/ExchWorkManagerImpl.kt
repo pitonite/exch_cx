@@ -1,4 +1,4 @@
-package io.github.pitonite.exch_cx
+package io.github.pitonite.exch_cx.workmanager
 
 import android.content.Context
 import androidx.compose.runtime.Stable
@@ -8,13 +8,15 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.OutOfQuotaPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.pitonite.exch_cx.UserSettings
+import io.github.pitonite.exch_cx.worker.DomainCheckWorker
 import io.github.pitonite.exch_cx.worker.OrderAutoUpdateWorker
 import io.github.pitonite.exch_cx.worker.ReserveCheckWorker
+import io.github.pitonite.exch_cx.worker.domainCheckWorkName
 import io.github.pitonite.exch_cx.worker.orderAutoUpdateWorkName
 import io.github.pitonite.exch_cx.worker.orderAutoUpdateWorkNameOneTime
 import io.github.pitonite.exch_cx.worker.reserveCheckWorkName
@@ -29,15 +31,15 @@ const val TotalWorkItems = "TotalItems"
 
 @Stable
 @Singleton
-class ExchWorkManager
+class ExchWorkManagerImpl
 @Inject
 constructor(
     @ApplicationContext private val context: Context,
-) {
+) : ExchWorkManager {
 
-  fun adjustAutoUpdater(
+  override fun adjustAutoUpdater(
       userSettings: UserSettings,
-      existingPeriodicWorkPolicy: ExistingPeriodicWorkPolicy = ExistingPeriodicWorkPolicy.UPDATE,
+      existingPeriodicWorkPolicy: ExistingPeriodicWorkPolicy,
   ) {
     if (userSettings.isOrderAutoUpdateEnabled) {
       val updatePeriod =
@@ -60,11 +62,11 @@ constructor(
     }
   }
 
-  fun stopAutoUpdate() {
+  override fun stopAutoUpdate() {
     WorkManager.getInstance(context).cancelUniqueWork(orderAutoUpdateWorkName)
   }
 
-  fun startOneTimeOrderUpdate() {
+  override fun startOneTimeOrderUpdate() {
     val workRequest = OneTimeWorkRequestBuilder<OrderAutoUpdateWorker>().build()
     WorkManager.getInstance(context)
         .enqueueUniqueWork(
@@ -74,35 +76,42 @@ constructor(
         )
   }
 
-  fun stopOneTimeOrderUpdate() {
+  override fun stopOneTimeOrderUpdate() {
     WorkManager.getInstance(context).cancelUniqueWork(orderAutoUpdateWorkNameOneTime)
   }
 
-  fun getAutoUpdateWorkInfo(): Flow<WorkInfo?> {
+  override fun getAutoUpdateWorkInfo(): Flow<WorkInfo?> {
     return WorkManager.getInstance(context)
         .getWorkInfosForUniqueWorkLiveData(orderAutoUpdateWorkName)
         .asFlow()
         .map { workInfos -> workInfos.firstOrNull() }
   }
 
-  fun getOneTimeOrderUpdateWorkInfo(): Flow<WorkInfo?> {
+  override fun getOneTimeOrderUpdateWorkInfo(): Flow<WorkInfo?> {
     return WorkManager.getInstance(context)
         .getWorkInfosForUniqueWorkLiveData(orderAutoUpdateWorkNameOneTime)
         .asFlow()
         .map { workInfos -> workInfos.firstOrNull() }
   }
 
-  fun getReserveCheckWorkInfo(): Flow<WorkInfo?> {
+  override fun getDomainCheckWorkInfo(): Flow<WorkInfo?> {
+    return WorkManager.getInstance(context)
+        .getWorkInfosForUniqueWorkLiveData(domainCheckWorkName)
+        .asFlow()
+        .map { workInfos -> workInfos.firstOrNull() }
+  }
+
+  override fun getReserveCheckWorkInfo(): Flow<WorkInfo?> {
     return WorkManager.getInstance(context)
         .getWorkInfosForUniqueWorkLiveData(reserveCheckWorkName)
         .asFlow()
         .map { workInfos -> workInfos.firstOrNull() }
   }
 
-  fun adjustReserveCheckWorker(
+  override fun adjustReserveCheckWorker(
       userSettings: UserSettings,
-      existingPeriodicWorkPolicy: ExistingPeriodicWorkPolicy = ExistingPeriodicWorkPolicy.UPDATE,
-      immediate: Boolean = true,
+      existingPeriodicWorkPolicy: ExistingPeriodicWorkPolicy,
+      immediate: Boolean,
   ) {
     if (userSettings.isReserveCheckEnabled) {
       val updatePeriod =
@@ -129,20 +138,18 @@ constructor(
     }
   }
 
-  companion object {
-    fun runAutoUpdaterOnce(context: Context) {
-      WorkManager.getInstance(context)
-          .enqueueUniqueWork(
-              orderAutoUpdateWorkName,
-              ExistingWorkPolicy.REPLACE,
-              OneTimeWorkRequestBuilder<OrderAutoUpdateWorker>()
-                  .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                  .build(),
-          )
-    }
-
-    fun cancelUniqueWork(context: Context, workName: String) {
-      WorkManager.getInstance(context).cancelUniqueWork(workName)
-    }
+  override fun startDomainCheck() {
+    val workRequest = OneTimeWorkRequestBuilder<DomainCheckWorker>().build()
+    WorkManager.getInstance(context)
+        .enqueueUniqueWork(
+            domainCheckWorkName,
+            ExistingWorkPolicy.KEEP,
+            workRequest,
+        )
   }
+
+  override fun stopDomainCheck() {
+    WorkManager.getInstance(context).cancelUniqueWork(domainCheckWorkName)
+  }
+
 }

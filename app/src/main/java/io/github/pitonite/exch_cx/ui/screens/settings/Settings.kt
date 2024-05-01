@@ -1,17 +1,21 @@
 package io.github.pitonite.exch_cx.ui.screens.settings
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -22,9 +26,13 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.dimensionResource
@@ -40,6 +48,9 @@ import io.github.pitonite.exch_cx.PreferredDomainType
 import io.github.pitonite.exch_cx.PreferredProxyType
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.UserSettingsRepositoryMock
+import io.github.pitonite.exch_cx.exceptions.toUserMessage
+import io.github.pitonite.exch_cx.model.asString
+import io.github.pitonite.exch_cx.network.CLEARNET_HOSTS
 import io.github.pitonite.exch_cx.ui.components.Card
 import io.github.pitonite.exch_cx.ui.components.NumericInputField
 import io.github.pitonite.exch_cx.ui.components.RadioGroup
@@ -47,8 +58,11 @@ import io.github.pitonite.exch_cx.ui.components.RadioGroupRow
 import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import io.github.pitonite.exch_cx.ui.components.UpBtn
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
+import io.github.pitonite.exch_cx.utils.WorkState
+import io.github.pitonite.exch_cx.utils.isWorking
 import io.github.pitonite.exch_cx.utils.noRippleClickable
 import io.github.pitonite.exch_cx.utils.verticalFadingEdge
+import io.github.pitonite.exch_cx.workmanager.ExchWorkManagerMock
 import kotlinx.collections.immutable.persistentListOf
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,6 +73,11 @@ fun Settings(viewModel: SettingsViewModel, upPress: () -> Unit, modifier: Modifi
   val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsStateWithLifecycle()
   val scrollState = rememberScrollState()
   val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+  val context = LocalContext.current
+  var initialError by remember { mutableStateOf(true) }
+
+  val domainCheckWorkState by viewModel.domainCheckWorkState.collectAsStateWithLifecycle()
+  var domainCheckError by remember { mutableStateOf<String?>(null) }
 
   LaunchedEffect(lifecycleState) {
     when (lifecycleState) {
@@ -67,6 +86,18 @@ fun Settings(viewModel: SettingsViewModel, upPress: () -> Unit, modifier: Modifi
         viewModel.reloadSettings()
       }
       else -> {}
+    }
+  }
+  LaunchedEffect(domainCheckWorkState) {
+    domainCheckError = null
+    viewModel.reloadSettings()
+    if (domainCheckWorkState is WorkState.Error) {
+      if (initialError) {
+        initialError = false
+      } else {
+        domainCheckError =
+            (domainCheckWorkState as WorkState.Error).error.toUserMessage().asString(context)
+      }
     }
   }
 
@@ -144,7 +175,6 @@ fun Settings(viewModel: SettingsViewModel, upPress: () -> Unit, modifier: Modifi
       }
       // endregion autoupdate
 
-
       // region api
       Card {
         Column(
@@ -165,7 +195,7 @@ fun Settings(viewModel: SettingsViewModel, upPress: () -> Unit, modifier: Modifi
           RadioGroup(
               options = persistentListOf(PreferredDomainType.NORMAL, PreferredDomainType.ONION),
               selectedOption = viewModel.preferredDomainTypeDraft,
-              onOptionSelected = { viewModel.updatePreferredDomainDraft(it) },
+              onOptionSelected = { _, it -> viewModel.updatePreferredDomainDraft(it) },
               label = {
                 Text(
                     when (it) {
@@ -174,7 +204,71 @@ fun Settings(viewModel: SettingsViewModel, upPress: () -> Unit, modifier: Modifi
                       PreferredDomainType.ONION -> stringResource(R.string.label_domain_type_onion)
                       else -> stringResource(R.string.Unknown)
                     })
-              })
+              },
+          )
+
+          AnimatedVisibility(
+              visible = viewModel.preferredDomainTypeDraft != PreferredDomainType.ONION) {
+                Column(
+                    verticalArrangement =
+                        Arrangement.spacedBy(dimensionResource(R.dimen.padding_md)),
+                ) {
+                  HorizontalDivider(Modifier.weight(1f).padding(top = 10.dp))
+                  Spacer(Modifier.padding(bottom = 10.dp))
+
+                  Text(text = stringResource(R.string.title_domain), fontSize = 20.sp)
+                  Text(
+                      text = stringResource(R.string.hint_domain_health_check),
+                      style = MaterialTheme.typography.bodySmall)
+
+                  Row(
+                      verticalAlignment = Alignment.CenterVertically,
+                      horizontalArrangement =
+                          Arrangement.spacedBy(
+                              dimensionResource(R.dimen.padding_lg),
+                          ),
+                  ) {
+                    OutlinedButton(
+                        onClick = { viewModel.startDomainCheck() },
+                        enabled = !domainCheckWorkState.isWorking()) {
+                          Row(
+                              verticalAlignment = Alignment.CenterVertically,
+                              horizontalArrangement =
+                                  Arrangement.spacedBy(
+                                      dimensionResource(R.dimen.padding_sm),
+                                  ),
+                          ) {
+                            Text(stringResource(R.string.check_now))
+                            if (domainCheckWorkState.isWorking()) {
+                              CircularProgressIndicator(modifier = Modifier.size(20.dp))
+                            }
+                          }
+                        }
+
+                    if (domainCheckError != null) {
+                      Text(
+                          text = domainCheckError!!,
+                          style = MaterialTheme.typography.bodySmall,
+                          color = MaterialTheme.colorScheme.error,
+                      )
+                    }
+                  }
+
+                  val clearnetHosts = remember { persistentListOf(*CLEARNET_HOSTS) }
+                  RadioGroup(
+                      options = clearnetHosts,
+                      selectedOption =
+                          CLEARNET_HOSTS.getOrElse(viewModel.selectedClearnetDomainIndexDraft) {
+                            CLEARNET_HOSTS[0]
+                          },
+                      onOptionSelected = { idx, _ ->
+                        viewModel.updateSelectedClearnetDomainIndexDraft(idx)
+                      },
+                      label = { Text(it) },
+                      enabled = viewModel.preferredDomainTypeDraft != PreferredDomainType.ONION,
+                  )
+                }
+              }
 
           Button(onClick = { viewModel.saveRequestSettings() }) {
             Text(stringResource(R.string.label_save))
@@ -285,7 +379,12 @@ fun Settings(viewModel: SettingsViewModel, upPress: () -> Unit, modifier: Modifi
 fun SettingsPreview() {
   ExchTheme {
     Settings(
-        viewModel = SettingsViewModel(SavedStateHandle(), UserSettingsRepositoryMock()),
+        viewModel =
+            SettingsViewModel(
+                SavedStateHandle(),
+                UserSettingsRepositoryMock(),
+                ExchWorkManagerMock(),
+            ),
         upPress = {})
   }
 }

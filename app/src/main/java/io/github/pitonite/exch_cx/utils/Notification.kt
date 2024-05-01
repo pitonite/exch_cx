@@ -51,4 +51,12 @@ fun createNotificationChannels(context: Context) {
           .setName(context.getString(R.string.channel_name_reserve_alert))
           .setVibrationEnabled(true)
           .build())
+
+  notifManager.createNotificationChannel(
+      NotificationChannelCompat.Builder(
+              context.getString(R.string.channel_id_domain_check),
+              NotificationManagerCompat.IMPORTANCE_HIGH)
+          .setName(context.getString(R.string.channel_name_domain_check))
+          .setVibrationEnabled(true)
+          .build())
 }

@@ -35,12 +35,18 @@ interface UserSettingsRepository {
   suspend fun setDeleteRemoteOrderDataAutomatically(value: Boolean)
 
   suspend fun setIsProxyEnabled(value: Boolean)
+
   suspend fun setProxyHost(value: String)
+
   suspend fun setProxyPort(value: String)
+
   suspend fun setPreferredProxyType(value: PreferredProxyType)
 
   suspend fun setIsReserveCheckEnabled(value: Boolean)
 
   suspend fun setReserveCheckPeriodMinutes(value: Long)
+
   suspend fun setIsReserveCheckTipDismissed(value: Boolean)
+
+  suspend fun setSelectedClearnetDomainIndex(value: Int)
 }

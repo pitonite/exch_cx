@@ -8,7 +8,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.github.pitonite.exch_cx.ExchWorkManager
+import io.github.pitonite.exch_cx.workmanager.ExchWorkManager
 import io.github.pitonite.exch_cx.data.mappers.toOrderUpdateEntity
 import io.github.pitonite.exch_cx.data.room.ExchDatabase
 import io.github.pitonite.exch_cx.data.room.Order
@@ -44,10 +44,10 @@ import kotlinx.coroutines.flow.Flow
 class OrderRepositoryImpl
 @Inject
 constructor(
-    private val exchDatabase: ExchDatabase,
-    private val exchHttpClient: ExchHttpClient,
-    private val userSettingsRepository: UserSettingsRepository,
-    private val exchWorkManager: ExchWorkManager,
+  private val exchDatabase: ExchDatabase,
+  private val exchHttpClient: ExchHttpClient,
+  private val userSettingsRepository: UserSettingsRepository,
+  private val exchWorkManager: ExchWorkManager,
 ) : OrderRepository {
   override fun getOrder(orderid: String): Flow<Order?> {
     return exchDatabase.ordersDao().orderWithId(orderid)

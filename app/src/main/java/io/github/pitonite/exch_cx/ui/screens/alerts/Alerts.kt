@@ -63,7 +63,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
-import io.github.pitonite.exch_cx.ExchWorkManager
+import io.github.pitonite.exch_cx.workmanager.ExchWorkManager
 import io.github.pitonite.exch_cx.R
 import io.github.pitonite.exch_cx.data.CurrencyReserveTriggerRepositoryMock
 import io.github.pitonite.exch_cx.data.RateFeeRepositoryMock
@@ -79,6 +79,7 @@ import io.github.pitonite.exch_cx.ui.screens.alerts.components.AlertAddEditDialo
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
 import io.github.pitonite.exch_cx.utils.isWorking
 import io.github.pitonite.exch_cx.utils.verticalFadingEdge
+import io.github.pitonite.exch_cx.workmanager.ExchWorkManagerMock
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -349,7 +350,7 @@ fun AlertsPreview() {
             AlertsViewModel(
                 savedStateHandle = SavedStateHandle(),
                 currencyReserveTriggerRepository = CurrencyReserveTriggerRepositoryMock(),
-                workManager = ExchWorkManager(LocalContext.current),
+                workManager = ExchWorkManagerMock(),
                 userSettingsRepository = UserSettingsRepositoryMock(),
                 rateFeeRepository = RateFeeRepositoryMock(),
             ),

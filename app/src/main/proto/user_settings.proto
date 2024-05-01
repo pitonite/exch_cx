@@ -30,4 +30,5 @@ message UserSettings {
   bool is_reserve_check_enabled = 14;
   int64 reserve_check_period_minutes = 15;
   bool is_reserve_check_tip_dismissed = 16;
+  int32 selected_clearnet_domain_index = 17;
 }

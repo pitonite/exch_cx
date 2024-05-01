@@ -50,4 +50,6 @@ class UserSettingsRepositoryMock(
   override suspend fun setReserveCheckPeriodMinutes(value: Long) {}
 
   override suspend fun setIsReserveCheckTipDismissed(value: Boolean) {}
+
+  override suspend fun setSelectedClearnetDomainIndex(value: Int) {}
 }

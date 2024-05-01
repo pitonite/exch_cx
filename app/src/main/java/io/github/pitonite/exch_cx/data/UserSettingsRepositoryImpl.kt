@@ -8,7 +8,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.github.pitonite.exch_cx.ExchWorkManager
+import io.github.pitonite.exch_cx.workmanager.ExchWorkManager
 import io.github.pitonite.exch_cx.PreferredDomainType
 import io.github.pitonite.exch_cx.PreferredProxyType
 import io.github.pitonite.exch_cx.UserSettings
@@ -25,8 +25,8 @@ import kotlinx.coroutines.flow.first
 class UserSettingsRepositoryImpl
 @Inject
 constructor(
-    private val userSettingsStore: DataStore<UserSettings>,
-    private val exchWorkManager: ExchWorkManager,
+  private val userSettingsStore: DataStore<UserSettings>,
+  private val exchWorkManager: ExchWorkManager,
 ) : UserSettingsRepository {
 
   companion object {
@@ -158,6 +158,11 @@ constructor(
   override suspend fun setIsReserveCheckTipDismissed(value: Boolean) {
     userSettingsStore.updateData { currentSettings ->
       currentSettings.toBuilder().setIsReserveCheckTipDismissed(value).build()
+    }
+  }
+  override suspend fun setSelectedClearnetDomainIndex(value: Int) {
+    userSettingsStore.updateData { currentSettings ->
+      currentSettings.toBuilder().setSelectedClearnetDomainIndex(value).build()
     }
   }
 }
