@@ -71,6 +71,8 @@ fun Settings(viewModel: SettingsViewModel, upPress: () -> Unit, modifier: Modifi
   val focusManager = LocalFocusManager.current
   val lifecycleOwner = LocalLifecycleOwner.current
   val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsStateWithLifecycle()
+  val backupWorkState by viewModel.backupWorkState.collectAsStateWithLifecycle()
+  val restoreWorkState by viewModel.restoreWorkState.collectAsStateWithLifecycle()
   val scrollState = rememberScrollState()
   val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
   val context = LocalContext.current
@@ -360,6 +362,30 @@ fun Settings(viewModel: SettingsViewModel, upPress: () -> Unit, modifier: Modifi
         }
       }
       // endregion proxy
+
+      // region backup
+      Card {
+        Column(
+            modifier = Modifier.padding(dimensionResource(R.dimen.padding_xl)),
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_sm)),
+        ) {
+          Text(text = stringResource(R.string.label_backup_restore_settings), fontSize = 20.sp)
+
+          Text(
+              stringResource(R.string.hint_backup_restore),
+              fontSize = 14.sp,
+              color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+          Row(
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_lg)),
+          ) {
+            BackupButton(workState = backupWorkState) { viewModel.saveBackup(it) }
+            RestoreButton(workState = restoreWorkState) { viewModel.restoreBackup(context, it) }
+          }
+        }
+      }
+      // endregion backup
 
       Row(horizontalArrangement = Arrangement.Center) {
         Text(

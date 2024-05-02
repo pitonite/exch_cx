@@ -6,8 +6,11 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import io.github.pitonite.exch_cx.model.api.SupportMessageSender
+import io.github.pitonite.exch_cx.utils.DateSerializer
+import kotlinx.serialization.Serializable
 import java.util.Date
 
+@Serializable
 @Entity(
     primaryKeys = ["orderid", "index"],
     indices = [Index("orderid", "index")],
@@ -23,6 +26,7 @@ import java.util.Date
 data class SupportMessage(
     @ColumnInfo(index = true) val orderid: String,
     val index: Int,
+    @Serializable(with = DateSerializer::class)
     @ColumnInfo(defaultValue = CURRENT_TIMESTAMP_EXPRESSION) val createdAt: Date = Date(),
     @ColumnInfo(defaultValue = "0") val readBySupport: Boolean = false,
     val sender: SupportMessageSender,

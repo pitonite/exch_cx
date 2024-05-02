@@ -13,6 +13,10 @@ import java.util.Date
 /** [Room] DAO for [Order] related operations. */
 @Dao
 abstract class OrderDao : BaseDao<Order> {
+
+  @Query("SELECT * FROM `Order`")
+  abstract suspend fun getAll(): List<Order>
+
   @Query("SELECT * FROM `order` WHERE id = :id") abstract fun orderWithId(id: String): Flow<Order?>
 
   @Query(

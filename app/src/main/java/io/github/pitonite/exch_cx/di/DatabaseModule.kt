@@ -8,7 +8,10 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.github.pitonite.exch_cx.data.room.ExchDatabase
+import java.io.File
 import javax.inject.Singleton
+
+private const val DATABASE_FILE_NAME = "data.db"
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -20,7 +23,7 @@ class DatabaseModule {
     return Room.databaseBuilder(
             context,
             ExchDatabase::class.java,
-            "data.db",
+            DATABASE_FILE_NAME,
         )
         .fallbackToDestructiveMigration()
         .build()

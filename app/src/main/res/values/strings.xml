@@ -267,4 +267,15 @@
   <string name="title_domain">Domain</string>
   <string name="channel_name_domain_check">Domain Change</string>
   <string name="domain_check_failed">Domain check failed.</string>
+  <string name="label_backup_restore_settings">Backup and Restore</string>
+  <string name="hint_backup_restore">Backup includes all data and settings</string>
+  <string name="label_save_backup">Save Backup</string>
+  <string name="label_restore_backup">Restore Backup</string>
+  <string name="snack_backup_permission_failed">Backup aborted due to missing permission to the created file.</string>
+  <string name="snack_restore_permission_failed">Backup aborted due to missing permission to the created file.</string>
+  <string name="snack_backup_successful">Backup successful!</string>
+  <string name="snack_backup_failed">Backup failed!</string>
+  <string name="toast_restore_successful">Restore successful!</string>
+  <string name="toast_restore_require_restart">Please restart application.</string>
+  <string name="snack_restore_failed">Restore failed!</string>
 </resources>

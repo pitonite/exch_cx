@@ -1,6 +1,8 @@
 package io.github.pitonite.exch_cx.workmanager
 
+import android.net.Uri
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.Operation
 import androidx.work.WorkInfo
 import io.github.pitonite.exch_cx.UserSettings
 import kotlinx.coroutines.flow.Flow
@@ -43,4 +45,20 @@ class ExchWorkManagerMock : ExchWorkManager {
   override fun startDomainCheck() {}
 
   override fun stopDomainCheck() {}
+
+  override fun startBackup(fileUri: Uri): Operation {
+    TODO("Not yet implemented")
+  }
+
+  override fun startRestore(fileUri: Uri): Operation {
+    TODO("Not yet implemented")
+  }
+
+  override fun getBackupWorkInfo(): Flow<WorkInfo?> {
+    return flow { emit(null) }
+  }
+
+  override fun getRestoreWorkInfo(): Flow<WorkInfo?> {
+    return flow { emit(null) }
+  }
 }

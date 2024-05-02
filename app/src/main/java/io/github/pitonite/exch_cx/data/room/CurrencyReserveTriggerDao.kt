@@ -8,6 +8,10 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 abstract class CurrencyReserveTriggerDao : BaseDao<CurrencyReserveTrigger> {
+
+  @Query("SELECT * FROM `CurrencyReserveTrigger`")
+  abstract suspend fun getAll(): List<CurrencyReserveTrigger>
+
   @Query("SELECT * FROM `CurrencyReserveTrigger` WHERE id = :id")
   abstract fun triggerById(id: Int): Flow<CurrencyReserveTrigger?>
 

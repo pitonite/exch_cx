@@ -15,6 +15,7 @@ import io.github.pitonite.exch_cx.datastore.UserSettingsSerializer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import java.io.File
 import javax.inject.Singleton
 
 private const val SETTINGS_DATASTORE_FILE_NAME = "user_settings.pb"
@@ -34,4 +35,8 @@ object DataStoreModule {
         scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
     )
   }
+}
+
+fun getUserSettingsDataStoreFile(context: Context): File {
+  return context.dataStoreFile(SETTINGS_DATASTORE_FILE_NAME);
 }

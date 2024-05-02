@@ -11,7 +11,10 @@ import java.util.Date
 
 /** [Room] DAO for [Message] related operations. */
 @Dao
-abstract class SupportMessageDao : BaseDao<Order> {
+abstract class SupportMessageDao : BaseDao<SupportMessage> {
+
+  @Query("SELECT * FROM `SupportMessage`")
+  abstract suspend fun getAll(): List<SupportMessage>
 
   @Transaction
   @Query("SELECT * FROM `SupportMessage` WHERE orderid = :orderid ORDER BY `index` DESC")
@@ -22,7 +25,7 @@ abstract class SupportMessageDao : BaseDao<Order> {
   @Query("SELECT COUNT(*) FROM `SupportMessage` where orderid = :orderid")
   abstract suspend fun count(orderid: String): Int
 
-  @Upsert(entity = SupportMessage::class) abstract suspend fun upsert(entity: SupportMessage)
+  @Upsert(entity = SupportMessage::class) abstract override suspend fun upsert(entity: SupportMessage)
 
   @Upsert(entity = SupportMessage::class) abstract suspend fun upsertMessages(entities: List<SupportMessage>)
 

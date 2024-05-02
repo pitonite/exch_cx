@@ -1,10 +1,12 @@
 package io.github.pitonite.exch_cx.workmanager
 
 import android.content.Context
+import android.net.Uri
 import androidx.compose.runtime.Stable
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.Operation
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
@@ -59,5 +61,12 @@ interface ExchWorkManager {
   )
 
   fun startDomainCheck()
+
   fun stopDomainCheck()
+
+  fun startBackup(fileUri: Uri): Operation
+
+  fun startRestore(fileUri: Uri): Operation
+  fun getBackupWorkInfo(): Flow<WorkInfo?>
+  fun getRestoreWorkInfo(): Flow<WorkInfo?>
 }

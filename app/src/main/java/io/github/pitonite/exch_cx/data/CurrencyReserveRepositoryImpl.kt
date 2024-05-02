@@ -12,8 +12,6 @@ import io.github.pitonite.exch_cx.network.ExchHttpClient
 import io.ktor.client.call.body
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.toPersistentList
 
 @Singleton
 @Stable
@@ -41,7 +39,7 @@ constructor(
   }
 
   override suspend fun getCurrencyReserves(): List<CurrencyReserve> {
-    return exchDatabase.currencyReserveDao().getAllReserves()
+    return exchDatabase.currencyReserveDao().getAll()
   }
 }
 

@@ -7,11 +7,12 @@ import androidx.room.Transaction
 @Dao
 abstract class CurrencyReserveDao : BaseDao<CurrencyReserve> {
 
+  @Query("SELECT * FROM `CurrencyReserve` ORDER BY currency")
+  abstract suspend fun getAll(): List<CurrencyReserve>
+
   @Transaction
   open suspend fun upsertReserves(reserves: List<CurrencyReserve>) {
     reserves.forEach { upsert(it) }
   }
 
-  @Query("SELECT * FROM `CurrencyReserve` ORDER BY currency")
-  abstract suspend fun getAllReserves(): List<CurrencyReserve>
 }

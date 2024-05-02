@@ -1,5 +1,8 @@
 package io.github.pitonite.exch_cx.ui.screens.settings
 
+import android.content.Context
+import android.net.Uri
+import android.widget.Toast
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -12,7 +15,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.pitonite.exch_cx.workmanager.ExchWorkManager
 import io.github.pitonite.exch_cx.PreferredDomainType
 import io.github.pitonite.exch_cx.PreferredProxyType
 import io.github.pitonite.exch_cx.R
@@ -23,11 +25,19 @@ import io.github.pitonite.exch_cx.model.SnackbarMessage
 import io.github.pitonite.exch_cx.model.UserMessage
 import io.github.pitonite.exch_cx.ui.components.SnackbarManager
 import io.github.pitonite.exch_cx.utils.WorkState
+import io.github.pitonite.exch_cx.utils.getActivity
+import io.github.pitonite.exch_cx.workmanager.ExchWorkManager
 import javax.inject.Inject
+import kotlin.system.exitProcess
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 
 @HiltViewModel
@@ -79,27 +89,74 @@ constructor(
   var selectedClearnetDomainIndexDraft by mutableIntStateOf(0)
     private set
 
-  private val domainCheckWorkInfo =
+  val domainCheckWorkState =
       workManager
           .getDomainCheckWorkInfo()
+          .map { info ->
+            when (info?.state) {
+              WorkInfo.State.RUNNING -> {
+                WorkState.Working()
+              }
+              WorkInfo.State.FAILED -> {
+                WorkState.Error(LocalizedException(R.string.domain_check_failed))
+              }
+              else -> {
+                WorkState.NotWorking
+              }
+            }
+          }
           .stateIn(
               scope = viewModelScope,
               started = SharingStarted.WhileSubscribed(5_000),
-              initialValue = null)
+              initialValue = WorkState.NotWorking,
+          )
 
-  val domainCheckWorkState =
-      domainCheckWorkInfo
+  private val backupWorkInfo =
+      workManager
+          .getBackupWorkInfo()
+          .flowOn(Dispatchers.IO)
+          .shareIn(viewModelScope, SharingStarted.Eagerly, 1)
+
+  val backupWorkState =
+      backupWorkInfo
           .map { info ->
             when (info?.state) {
-                WorkInfo.State.RUNNING -> {
-                  WorkState.Working()
-                }
-                WorkInfo.State.FAILED -> {
-                  WorkState.Error(LocalizedException(R.string.domain_check_failed))
-                }
-                else -> {
-                  WorkState.NotWorking
-                }
+              WorkInfo.State.RUNNING -> {
+                WorkState.Working()
+              }
+              WorkInfo.State.FAILED -> {
+                WorkState.Error(LocalizedException(R.string.snack_backup_failed))
+              }
+              else -> {
+                WorkState.NotWorking
+              }
+            }
+          }
+          .stateIn(
+              scope = viewModelScope,
+              started = SharingStarted.WhileSubscribed(5_000),
+              initialValue = WorkState.NotWorking,
+          )
+
+  private val restoreWorkInfo =
+      workManager
+          .getRestoreWorkInfo()
+          .flowOn(Dispatchers.IO)
+          .shareIn(viewModelScope, SharingStarted.Eagerly, 1)
+
+  val restoreWorkState =
+      restoreWorkInfo
+          .map { info ->
+            when (info?.state) {
+              WorkInfo.State.RUNNING -> {
+                WorkState.Working()
+              }
+              WorkInfo.State.FAILED -> {
+                WorkState.Error(LocalizedException(R.string.snack_restore_failed))
+              }
+              else -> {
+                WorkState.NotWorking
+              }
             }
           }
           .stateIn(
@@ -187,7 +244,8 @@ constructor(
             apiKey = apiKeyDraft
             preferredDomainType = preferredDomainTypeDraft
             selectedClearnetDomainIndex = selectedClearnetDomainIndexDraft
-          })
+          },
+      )
       showSuccessSnack()
     }
   }
@@ -200,7 +258,8 @@ constructor(
             orderAutoUpdatePeriodMinutes = orderAutoUpdatePeriodMinutesDraft
             archiveOrdersAutomatically = archiveOrdersAutomaticallyDraft
             deleteRemoteOrderDataAutomatically = deleteRemoteOrderDataAutomaticallyDraft
-          })
+          },
+      )
       showSuccessSnack()
     }
   }
@@ -211,7 +270,8 @@ constructor(
           userSettingsRepository.fetchSettings().copy {
             isReserveCheckEnabled = isReserveCheckEnabledDraft
             reserveCheckPeriodMinutes = reserveCheckPeriodMinutesDraft
-          })
+          },
+      )
       showSuccessSnack()
     }
   }
@@ -224,7 +284,8 @@ constructor(
             proxyHost = proxyHostDraft
             proxyPort = proxyPortDraft
             preferredProxyType = preferredProxyTypeDraft
-          })
+          },
+      )
       showSuccessSnack()
     }
   }
@@ -235,10 +296,69 @@ constructor(
             UserMessage.from(R.string.snack_saved_changes_successfully),
             duration = SnackbarDuration.Short,
             withDismissAction = true,
-        ))
+        ),
+    )
   }
 
   fun startDomainCheck() {
     workManager.startDomainCheck()
+  }
+
+  fun saveBackup(saveUri: Uri) {
+    viewModelScope.launch {
+      val workResult = backupWorkInfo.first { it != null && it.state != WorkInfo.State.RUNNING }
+
+      if (workResult?.state == WorkInfo.State.SUCCEEDED) {
+        SnackbarManager.showMessage(
+            SnackbarMessage.from(
+                UserMessage.from(R.string.snack_backup_successful),
+                duration = SnackbarDuration.Short,
+                withDismissAction = true,
+            ),
+        )
+        this.coroutineContext.job.cancel()
+      } else if (workResult?.state == WorkInfo.State.FAILED) {
+        SnackbarManager.showMessage(
+            SnackbarMessage.from(
+                UserMessage.from(R.string.snack_backup_failed),
+                duration = SnackbarDuration.Short,
+                withDismissAction = true,
+            ),
+        )
+        this.coroutineContext.job.cancel()
+      }
+    }
+    workManager.startBackup(saveUri)
+  }
+
+  fun restoreBackup(context: Context, fileUri: Uri) {
+    viewModelScope.launch {
+      val workResult = restoreWorkInfo.first { it != null && it.state != WorkInfo.State.RUNNING }
+
+      if (workResult?.state == WorkInfo.State.SUCCEEDED) {
+        val currentActivity = context.getActivity()
+        if (currentActivity != null) {
+          Toast.makeText(currentActivity, R.string.toast_restore_successful, Toast.LENGTH_SHORT)
+              .show()
+          val pm = currentActivity.packageManager
+          val intent = pm.getLaunchIntentForPackage(currentActivity.packageName)
+          currentActivity.finishAffinity()
+          currentActivity.startActivity(intent)
+        } else {
+          Toast.makeText(context, R.string.toast_restore_require_restart, Toast.LENGTH_SHORT).show()
+        }
+        exitProcess(0)
+      } else if (workResult?.state == WorkInfo.State.FAILED) {
+        SnackbarManager.showMessage(
+            SnackbarMessage.from(
+                UserMessage.from(R.string.snack_restore_failed),
+                duration = SnackbarDuration.Short,
+                withDismissAction = true,
+            ),
+        )
+        this.coroutineContext.job.cancel()
+      }
+    }
+    workManager.startRestore(fileUri)
   }
 }

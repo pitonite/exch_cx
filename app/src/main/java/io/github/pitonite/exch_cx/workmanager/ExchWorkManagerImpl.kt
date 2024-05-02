@@ -1,6 +1,7 @@
 package io.github.pitonite.exch_cx.workmanager
 
 import android.content.Context
+import android.net.Uri
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.asFlow
 import androidx.work.Constraints
@@ -8,18 +9,24 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.Operation
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import androidx.work.workDataOf
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.pitonite.exch_cx.UserSettings
+import io.github.pitonite.exch_cx.worker.BackupWorker
 import io.github.pitonite.exch_cx.worker.DomainCheckWorker
 import io.github.pitonite.exch_cx.worker.OrderAutoUpdateWorker
 import io.github.pitonite.exch_cx.worker.ReserveCheckWorker
+import io.github.pitonite.exch_cx.worker.RestoreWorker
+import io.github.pitonite.exch_cx.worker.backupWorkName
 import io.github.pitonite.exch_cx.worker.domainCheckWorkName
 import io.github.pitonite.exch_cx.worker.orderAutoUpdateWorkName
 import io.github.pitonite.exch_cx.worker.orderAutoUpdateWorkNameOneTime
 import io.github.pitonite.exch_cx.worker.reserveCheckWorkName
+import io.github.pitonite.exch_cx.worker.restoreWorkName
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -152,4 +159,40 @@ constructor(
     WorkManager.getInstance(context).cancelUniqueWork(domainCheckWorkName)
   }
 
+  override fun startBackup(fileUri: Uri): Operation  {
+    val workRequest =
+        OneTimeWorkRequestBuilder<BackupWorker>()
+            .setInputData(workDataOf("FILE_URI" to fileUri.toString()))
+            .build()
+    return WorkManager.getInstance(context)
+        .enqueueUniqueWork(
+            backupWorkName,
+            ExistingWorkPolicy.KEEP,
+            workRequest,
+        )
+  }
+  override fun startRestore(fileUri: Uri): Operation {
+    val workRequest =
+        OneTimeWorkRequestBuilder<RestoreWorker>()
+            .setInputData(workDataOf("FILE_URI" to fileUri.toString()))
+            .build()
+    return WorkManager.getInstance(context)
+        .enqueueUniqueWork(
+            restoreWorkName,
+            ExistingWorkPolicy.KEEP,
+            workRequest,
+        )
+  }
+
+  override fun getBackupWorkInfo(): Flow<WorkInfo?> {
+    return WorkManager.getInstance(context)
+        .getWorkInfosForUniqueWorkFlow(backupWorkName)
+        .map { workInfos -> workInfos.firstOrNull() }
+  }
+
+  override fun getRestoreWorkInfo(): Flow<WorkInfo?> {
+    return WorkManager.getInstance(context)
+        .getWorkInfosForUniqueWorkFlow(restoreWorkName)
+        .map { workInfos -> workInfos.firstOrNull() }
+  }
 }
