@@ -15,7 +15,8 @@ App features:
 - Allows you to keep the order data locally on your phone indefinitely
 - Allows you to set an api key for requests (if you have one)
 - Allows you to choose whether to use the onion address for connections or not
-- Allows you to use proxy for connections
+- Allows you to set a proxy for connections
+- Allows you to set up notification for when reserves change
 - The app is completely open source
 
 eXch.cx features:
