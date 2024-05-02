@@ -1,0 +1,2 @@
+- App now automatically checks for domain change in case a domain becomes unavailable.
+- You can now backup and restore your app settings and data
