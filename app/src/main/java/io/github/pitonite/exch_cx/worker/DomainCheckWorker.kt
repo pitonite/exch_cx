@@ -65,6 +65,12 @@ constructor(
       notifManager = null
     }
     val userSettings = userSettingsRepository.fetchSettings()
+
+    if (userSettings.preferredDomainType != PreferredDomainType.NORMAL) {
+      Log.i(TAG, "Skipping DomainCheckWorker at ${Date()} due to preferredDomainType not being Normal")
+      return Result.failure()
+    }
+
     val selectedIndex = userSettings.selectedClearnetDomainIndex
     var checkIndex = selectedIndex
     do {

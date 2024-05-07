@@ -172,7 +172,8 @@ constructor(
   /** Don't use this client directly. Use the provided wrappers to set the required defaults. */
   var _client: HttpClient
   private var apiKey: String
-  private var preferredDomainType: PreferredDomainType
+  var preferredDomainType: PreferredDomainType
+    private set
   private var selectedClearnetDomainIndex: Int
   private var proxyConfig: ProxyConfig? = null
 
@@ -222,7 +223,7 @@ constructor(
         this.apply(block)
       }
     } catch (e: Throwable) {
-      if (e !is ApiException) {
+      if (e !is ApiException && preferredDomainType == PreferredDomainType.NORMAL) {
         exchWorkManager.startDomainCheck()
       }
       throw e
@@ -239,7 +240,7 @@ constructor(
         this.apply(block)
       }
     } catch (e: Throwable) {
-      if (e !is ApiException) {
+      if (e !is ApiException && preferredDomainType == PreferredDomainType.NORMAL) {
         exchWorkManager.startDomainCheck()
       }
       throw e
@@ -256,7 +257,7 @@ constructor(
         this.apply(block)
       }
     } catch (e: Throwable) {
-      if (e !is ApiException) {
+      if (e !is ApiException && preferredDomainType == PreferredDomainType.NORMAL) {
         exchWorkManager.startDomainCheck()
       }
       throw e
