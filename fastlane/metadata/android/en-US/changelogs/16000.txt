@@ -1,0 +1,1 @@
+- Fixed an issue with support chat not supporting system messages.
