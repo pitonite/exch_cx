@@ -278,4 +278,5 @@
   <string name="toast_restore_successful">Restore successful!</string>
   <string name="toast_restore_require_restart">Please restart application.</string>
   <string name="snack_restore_failed">Restore failed!</string>
+  <string name="sender_system">System</string>
 </resources>

@@ -15,6 +15,7 @@ import kotlinx.serialization.json.jsonArray
 enum class SupportMessageSender(override val translation: Int? = null) : Translatable {
   @SerialName("user") USER(R.string.sender_user),
   @SerialName("support") SUPPORT(R.string.sender_support),
+  @SerialName("system") SYSTEM(R.string.sender_system),
 }
 
 @Serializable
