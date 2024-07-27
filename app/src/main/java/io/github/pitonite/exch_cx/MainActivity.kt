@@ -4,11 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
-import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
@@ -60,9 +57,7 @@ class MainActivity : AppCompatActivity() {
       ExchTheme {
         SnackbarMessageHandler()
 
-        ProvideSnackbarHostState() {
-          MainCompose(windowSize, deepLinkHandler)
-        }
+        ProvideSnackbarHostState() { MainCompose(windowSize, deepLinkHandler) }
       }
     }
   }
