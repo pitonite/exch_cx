@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -73,21 +72,19 @@ fun CurrencySelect(
     showReserves: Boolean = false,
 ) {
   val isKeyboardOpen = remember { mutableStateOf(false) }
-  val context = LocalContext.current
   val view = LocalView.current
 
   DisposableEffect(Unit) {
-    val listener = ViewTreeObserver.OnGlobalLayoutListener {
-      val rect = Rect()
-      view.getWindowVisibleDisplayFrame(rect)
-      val screenHeight = view.height
-      val keypadHeight = screenHeight - rect.bottom
-      isKeyboardOpen.value = keypadHeight > screenHeight * 0.15
-    }
+    val listener =
+        ViewTreeObserver.OnGlobalLayoutListener {
+          val rect = Rect()
+          view.getWindowVisibleDisplayFrame(rect)
+          val screenHeight = view.height
+          val keypadHeight = screenHeight - rect.bottom
+          isKeyboardOpen.value = keypadHeight > screenHeight * 0.15
+        }
     view.viewTreeObserver.addOnGlobalLayoutListener(listener)
-    onDispose {
-      view.viewTreeObserver.removeOnGlobalLayoutListener(listener)
-    }
+    onDispose { view.viewTreeObserver.removeOnGlobalLayoutListener(listener) }
   }
 
   var query by remember { mutableStateOf("") }
@@ -105,9 +102,13 @@ fun CurrencySelect(
       modifier = modifier,
   ) { paddingValues ->
     Column(
-        Modifier.padding(paddingValues).padding(
-            bottom = if (isKeyboardOpen.value) WindowInsets.ime.asPaddingValues().calculateBottomPadding() else 0.dp // Adjust padding based on keyboard state
-        ),
+        Modifier.padding(paddingValues)
+            .padding(
+                bottom =
+                    if (isKeyboardOpen.value)
+                        WindowInsets.ime.asPaddingValues().calculateBottomPadding()
+                    else 0.dp
+                ),
     ) {
       aboveSearch()
       SearchBar(
