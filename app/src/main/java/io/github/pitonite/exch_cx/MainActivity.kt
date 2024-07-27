@@ -61,11 +61,7 @@ class MainActivity : AppCompatActivity() {
         SnackbarMessageHandler()
 
         ProvideSnackbarHostState() {
-          Box(
-              Modifier.safeDrawingPadding(),
-          ) {
-            MainCompose(windowSize, deepLinkHandler)
-          }
+          MainCompose(windowSize, deepLinkHandler)
         }
       }
     }

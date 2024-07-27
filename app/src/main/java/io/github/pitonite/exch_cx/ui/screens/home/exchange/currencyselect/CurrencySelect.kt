@@ -1,11 +1,17 @@
 package io.github.pitonite.exch_cx.ui.screens.home.exchange.currencyselect
 
+import android.graphics.Rect
+import android.view.ViewTreeObserver
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -25,6 +31,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +39,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.Placeholder
@@ -63,6 +72,24 @@ fun CurrencySelect(
     onCurrencySelected: (CurrencyDetail) -> Unit,
     showReserves: Boolean = false,
 ) {
+  val isKeyboardOpen = remember { mutableStateOf(false) }
+  val context = LocalContext.current
+  val view = LocalView.current
+
+  DisposableEffect(Unit) {
+    val listener = ViewTreeObserver.OnGlobalLayoutListener {
+      val rect = Rect()
+      view.getWindowVisibleDisplayFrame(rect)
+      val screenHeight = view.height
+      val keypadHeight = screenHeight - rect.bottom
+      isKeyboardOpen.value = keypadHeight > screenHeight * 0.15
+    }
+    view.viewTreeObserver.addOnGlobalLayoutListener(listener)
+    onDispose {
+      view.viewTreeObserver.removeOnGlobalLayoutListener(listener)
+    }
+  }
+
   var query by remember { mutableStateOf("") }
 
   val visibleItems by remember {
@@ -78,7 +105,9 @@ fun CurrencySelect(
       modifier = modifier,
   ) { paddingValues ->
     Column(
-        Modifier.padding(paddingValues),
+        Modifier.padding(paddingValues).padding(
+            bottom = if (isKeyboardOpen.value) WindowInsets.ime.asPaddingValues().calculateBottomPadding() else 0.dp // Adjust padding based on keyboard state
+        ),
     ) {
       aboveSearch()
       SearchBar(

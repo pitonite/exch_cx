@@ -123,7 +123,7 @@ fun CurrencyPicker(
             ),
     ) {
       CurrencySelect(
-          modifier = modifier.fillMaxSize().imePadding(),
+          modifier = Modifier.fillMaxSize(),
           topBar = {
             TopAppBar(
                 title = title,
