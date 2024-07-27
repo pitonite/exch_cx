@@ -1,0 +1,1 @@
+- Fixed issue of keyboard pushing up screen too much on older android versions
