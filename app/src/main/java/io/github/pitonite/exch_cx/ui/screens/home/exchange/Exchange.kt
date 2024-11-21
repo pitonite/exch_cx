@@ -37,6 +37,7 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -93,6 +94,7 @@ fun Exchange(
   val focusManager = LocalFocusManager.current
   val scrollState = rememberScrollState()
   val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+  var showEmptyReservesDialog by remember { mutableStateOf(false) }
 
   Scaffold(
       modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -138,6 +140,18 @@ fun Exchange(
       AnimatedVisibility(visible = !userSettings.isExchangeTipDismissed) {
         Tip(stringResource(R.string.tip_exchange)) { viewModel.setIsExchangeTipDismissed(true) }
       }
+
+      EmptyReservesDialog(
+          show = showEmptyReservesDialog,
+          onDismissRequest = { showEmptyReservesDialog = false },
+          onProceedPressed = {
+            showEmptyReservesDialog = false
+            viewModel.createOrder(
+                onOrderCreated = onOrderSelected,
+            )
+          },
+          currency = uiState.toCurrency,
+      )
 
       // Conversion Card
       Card {
@@ -203,9 +217,7 @@ fun Exchange(
                 currencyList = currencyList,
                 onCurrencySelected = { viewModel.updateToCurrency(it.name) },
                 showReserveAlertTip = !userSettings.isReserveCheckTipDismissed,
-                onReserveAlertTipDismissed = {
-                  viewModel.setIsReserveCheckTipDismissed(true)
-                }
+                onReserveAlertTipDismissed = { viewModel.setIsReserveCheckTipDismissed(true) },
             )
           }
 
@@ -357,12 +369,15 @@ fun Exchange(
                       scanRequester = "toAddress"
                       openScanner()
                     },
-                    enabled = usable) {
-                      Icon(
-                          imageVector = Icons.Default.QrCodeScanner,
-                          contentDescription = stringResource(R.string.open_qr_scanner))
-                    }
-              })
+                    enabled = usable,
+                ) {
+                  Icon(
+                      imageVector = Icons.Default.QrCodeScanner,
+                      contentDescription = stringResource(R.string.open_qr_scanner),
+                  )
+                }
+              },
+          )
 
           OutlinedTextField(
               modifier = Modifier.fillMaxWidth(),
@@ -393,21 +408,28 @@ fun Exchange(
                       scanRequester = "refundAddress"
                       openScanner()
                     },
-                    enabled = usable) {
-                      Icon(
-                          imageVector = Icons.Default.QrCodeScanner,
-                          contentDescription = stringResource(R.string.open_qr_scanner))
-                    }
-              })
+                    enabled = usable,
+                ) {
+                  Icon(
+                      imageVector = Icons.Default.QrCodeScanner,
+                      contentDescription = stringResource(R.string.open_qr_scanner),
+                  )
+                }
+              },
+          )
         }
       }
       // end of address card
 
       Button(
           onClick = {
-            viewModel.createOrder(
-                onOrderCreated = onOrderSelected,
-            )
+            if (uiState.rateFee?.let { it.reserve <= BigDecimal.ZERO } == true) {
+              showEmptyReservesDialog = true
+            } else {
+              viewModel.createOrder(
+                  onOrderCreated = onOrderSelected,
+              )
+            }
           },
           enabled = usable,
       ) {

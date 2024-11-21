@@ -99,7 +99,8 @@
   <string name="order_state_waiting_for_input_title">Waiting for you to send %1$S</string>
   <string name="label_minimum">Min: %1$s %2$S</string>
   <string name="label_maximum">Max: %1$s %2$S</string>
-  <string name="order_state_max_input_zero">Sorry, but we cannot accept %1$S right now.</string>
+  <string name="label_any_amount">Send any amount of %1$S</string>
+  <string name="order_state_max_input_zero">Notice: We do not have the required %1$S reserves at this moment, But your order will be processed automatically when the reserves come up.</string>
   <string name="label_to_order_address">To the %1$S address:</string>
   <string name="desc_send_qrcode_image">%1$S address QRCode</string>
   <string name="address_generating">Generating…</string>
@@ -279,4 +280,6 @@
   <string name="toast_restore_require_restart">Please restart application.</string>
   <string name="snack_restore_failed">Restore failed!</string>
   <string name="sender_system">System</string>
+  <string name="desc_empty_reserve_dialog">There\'s not enough reserves for %1$S right now.\n\nHowever, you can create a backorder and wait for it to be executed automatically once the reserves come up.\n\nWould you like to proceed with a backorder creation?</string>
+  <string name="label_proceed">Proceed</string>
 </resources>

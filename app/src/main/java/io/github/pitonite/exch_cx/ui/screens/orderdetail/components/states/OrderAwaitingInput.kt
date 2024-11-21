@@ -8,12 +8,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.dimensionResource
@@ -42,101 +40,106 @@ fun OrderAwaitingInput(
     order: Order,
 ) {
   OrderStateCard {
+    Text(
+        stringResource(R.string.order_state_waiting_for_input_title, order.fromCurrency),
+        style = MaterialTheme.typography.headlineSmall,
+    )
+
+    Spacer(Modifier)
+
     if (order.maxInput.compareTo(BigDecimal.ZERO) == 0) {
-
-      Text(stringResource(R.string.order_state_max_input_zero, order.fromCurrency))
-    } else {
-      Text(
-          stringResource(R.string.order_state_waiting_for_input_title, order.fromCurrency),
-          style = MaterialTheme.typography.headlineSmall,
-      )
-
+      Text(stringResource(R.string.order_state_max_input_zero, order.toCurrency))
       Spacer(Modifier)
+    }
 
-      if (order.fromAmount != null) {
-        SelectionContainer {
-          Text(stringResource(R.string.label_send, order.fromAmount, order.fromCurrency))
-        }
-        SelectionContainer {
-          val hundred = BigDecimal.valueOf(100)
-          val receiveAmount =
-              order.fromAmount
-                  .times(
-                      BigDecimal.valueOf(100).minus(order.svcFee).divide(hundred).times(order.rate),
-                  )
-                  .minus(order.networkFee ?: BigDecimal.ZERO)
-                  .stripTrailingZeros()
-          Text(
-              stringResource(R.string.label_receive, receiveAmount, order.toCurrency) +
-                  " (${stringResource(R.string.network_fee_included)})",
-          )
-        }
-      } else {
-        SelectionContainer {
-          Text(stringResource(R.string.label_minimum, order.minInput, order.fromCurrency))
-        }
-
-        SelectionContainer {
-          Text(stringResource(R.string.label_maximum, order.maxInput, order.fromCurrency))
-        }
+    if (order.fromAmount != null) {
+      SelectionContainer {
+        Text(stringResource(R.string.label_send, order.fromAmount, order.fromCurrency))
+      }
+      SelectionContainer {
+        val hundred = BigDecimal.valueOf(100)
+        val receiveAmount =
+            order.fromAmount
+                .times(
+                    BigDecimal.valueOf(100).minus(order.svcFee).divide(hundred).times(order.rate),
+                )
+                .minus(order.networkFee ?: BigDecimal.ZERO)
+                .stripTrailingZeros()
+        Text(
+            stringResource(R.string.label_receive, receiveAmount, order.toCurrency) +
+                " (${stringResource(R.string.network_fee_included)})",
+        )
+      }
+    } else if (order.maxInput.compareTo(BigDecimal.ZERO) == 0) {
+      Text(stringResource(R.string.label_any_amount, order.fromCurrency))
+    } else {
+      SelectionContainer {
+        Text(stringResource(R.string.label_minimum, order.minInput, order.fromCurrency))
       }
 
-      Spacer(Modifier)
+      SelectionContainer {
+        Text(stringResource(R.string.label_maximum, order.maxInput, order.fromCurrency))
+      }
+    }
 
-      Column(verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_md))) {
-        Text(stringResource(R.string.label_to_order_address, order.fromCurrency))
+    Spacer(Modifier)
 
-        if (order.fromAddr != GENERATING_FROM_ADDRESS) {
-          CopyableText(
-              order.fromAddr,
-              copyConfirmationMessage = R.string.snack_address_copied,
-              fontSize = 19.sp,
-          )
+    Column(verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_md))) {
+      Text(stringResource(R.string.label_to_order_address, order.fromCurrency))
 
-          if (order.stateError == null && etheriumBasedCoins.containsMatchIn(order.fromCurrency)) {
-            Notice(stringResource(R.string.notice_etherium_based_coins))
-          }
+      if (order.fromAddr != GENERATING_FROM_ADDRESS) {
+        CopyableText(
+            order.fromAddr,
+            copyConfirmationMessage = R.string.snack_address_copied,
+            fontSize = 19.sp,
+        )
 
-          Row(
-              modifier = Modifier.fillMaxWidth(),
-              horizontalArrangement = Arrangement.Center,
-          ) {
-            Image(
-                painter =
-                    rememberQrBitmapPainter(
-                        content = order.fromAddr,
-                        size = 300.dp,
-                        padding = 1.dp,
-                    ),
-                contentDescription =
-                    stringResource(R.string.desc_send_qrcode_image, order.fromCurrency),
-                modifier = Modifier.clip(MaterialTheme.shapes.large),
-            )
-          }
+        if (order.stateError == null && etheriumBasedCoins.containsMatchIn(order.fromCurrency)) {
+          Notice(stringResource(R.string.notice_etherium_based_coins))
+        }
 
-          if (order.fromAmount != null) {
-            Notice {
-              Text(
-                  stringResource(
-                      R.string.notice_order_different_amount,
-                      order.fromAmount,
-                      order.fromCurrency,
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+        ) {
+          Image(
+              painter =
+                  rememberQrBitmapPainter(
+                      content = order.fromAddr,
+                      size = 300.dp,
+                      padding = 1.dp,
                   ),
-                  textAlign = TextAlign.Justify,
-              )
+              contentDescription =
+                  stringResource(R.string.desc_send_qrcode_image, order.fromCurrency),
+              modifier = Modifier.clip(MaterialTheme.shapes.large),
+          )
+        }
 
-              SelectionContainer {
-                Text(stringResource(R.string.label_minimum, order.minInput, order.fromCurrency))
-              }
+        if (order.fromAmount != null) {
+          Notice {
+            Text(
+                stringResource(
+                    R.string.notice_order_different_amount,
+                    order.fromAmount,
+                    order.fromCurrency,
+                ),
+                textAlign = TextAlign.Justify,
+            )
 
-              SelectionContainer {
-                Text(stringResource(R.string.label_maximum, order.maxInput, order.fromCurrency))
-              }
+            SelectionContainer {
+              Text(stringResource(R.string.label_minimum, order.minInput, order.fromCurrency))
+            }
+
+            SelectionContainer {
+              Text(stringResource(R.string.label_maximum, order.maxInput, order.fromCurrency))
             }
           }
-        } else {
-          TextWithLoading(stringResource(R.string.address_generating), fontSize = MaterialTheme.typography.bodyLarge.fontSize,color = MaterialTheme.colorScheme.onSurfaceVariant )
         }
+      } else {
+        TextWithLoading(
+            stringResource(R.string.address_generating),
+            fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+            color = MaterialTheme.colorScheme.onSurfaceVariant)
       }
     }
   }

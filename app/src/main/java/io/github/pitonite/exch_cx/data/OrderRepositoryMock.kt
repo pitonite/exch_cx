@@ -134,21 +134,6 @@ class OrderRepositoryMock : OrderRepository {
         letterOfGuarantee = letterOfGuaranteeExample,
     )
 
-    val orderAwaitingInputMaxInputZeroFromBTC = Order(
-        id = "c6b728fe153f566d97",
-        fromCurrency = "btc",
-        toCurrency = "xmr",
-        rate = "0.078180003629105696".toBigDecimal(),
-        networkFee = BigDecimal.valueOf(0.00087897),
-        rateMode = RateFeeMode.FLAT,
-        state = OrderState.AWAITING_INPUT.codifiedEnum(),
-        svcFee = BigDecimal.valueOf(1),
-        toAddress = "0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ",
-        minInput = BigDecimal.ZERO,
-        maxInput = BigDecimal.ZERO,
-        letterOfGuarantee = letterOfGuaranteeExample,
-    )
-
     // note again, addresses here are randomly taken from internet, changed a bit, for demo purposes.
     val orderConfirmingInput = Order(
         id = "c6b728fe153f566d97",
