@@ -68,7 +68,7 @@ private val connectionSpecs =
     )
 
 private const val TIMEOUT_MILLIS_HIGH = 30_000L
-private const val TIMEOUT_MILLIS_LOW = 8_000L
+private const val TIMEOUT_MILLIS_LOW = 12_000L
 
 private fun createHttpClient(
     proxyConfig: ProxyConfig?,
