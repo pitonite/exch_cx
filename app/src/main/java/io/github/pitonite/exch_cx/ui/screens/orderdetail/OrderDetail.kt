@@ -92,6 +92,7 @@ import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.Order
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderRefundRequest
 import io.github.pitonite.exch_cx.ui.screens.orderdetail.components.states.OrderRefunded
 import io.github.pitonite.exch_cx.ui.theme.ExchTheme
+import io.github.pitonite.exch_cx.utils.capitalizeWords
 import io.github.pitonite.exch_cx.utils.codified.enums.toLocalizedString
 import io.github.pitonite.exch_cx.utils.createNotificationChannels
 import io.github.pitonite.exch_cx.utils.isWorking
@@ -395,6 +396,10 @@ fun OrderColumn(
           Text(
               stringResource(R.string.order_state_unknown),
               style = MaterialTheme.typography.headlineSmall,
+          )
+          Text(
+              "(" + order.state.code().capitalizeWords() + ")",
+              style = MaterialTheme.typography.labelLarge,
           )
 
           Text(stringResource(R.string.order_state_unknown_tip))
