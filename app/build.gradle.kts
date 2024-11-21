@@ -75,7 +75,7 @@ dependencies {
   androidTestImplementation("androidx.compose.ui:ui-test-junit4")
   debugImplementation("androidx.compose.ui:ui-tooling")
   debugImplementation("androidx.compose.ui:ui-test-manifest")
-  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
+  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
 
   // navigation
   implementation("androidx.navigation:navigation-compose:2.7.7")
@@ -88,7 +88,7 @@ dependencies {
   // for work manager
   implementation("androidx.hilt:hilt-work:1.2.0")
   ksp("androidx.hilt:hilt-compiler:1.2.0")
-  implementation("androidx.work:work-runtime-ktx:2.9.0")
+  implementation("androidx.work:work-runtime-ktx:2.9.1")
 
   // for locale change to work, all activities need to extend AppCompatActivity
   val appcompatVersion = "1.7.0"
@@ -98,7 +98,7 @@ dependencies {
   // for more icons:
   implementation("androidx.compose.material:material-icons-extended")
   // for json serialization
-  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
   // for requesting network and parsing json responses into data class
   val ktorVersion = "3.0.0-beta-2"
   implementation("io.ktor:ktor-client-core:$ktorVersion")
@@ -123,7 +123,7 @@ dependencies {
   ksp("androidx.room:room-compiler:$roomVersion")
   implementation("androidx.room:room-ktx:$roomVersion")
   implementation("androidx.room:room-paging:$roomVersion")
-  val pagingVersion = "3.3.1"
+  val pagingVersion = "3.3.4"
   implementation("androidx.paging:paging-runtime-ktx:$pagingVersion")
   implementation("androidx.paging:paging-compose:$pagingVersion")
 
